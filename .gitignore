@@ -1,0 +1,13 @@
+.DS_Store
+.dart_tool/
+
+.packages
+.pub/
+pubspec.lock
+
+build/
+
+# dooboolab
+.idea/
+flutter_inapp.iml
+flutter_inapp_android.iml
