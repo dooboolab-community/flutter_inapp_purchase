@@ -46,13 +46,19 @@ class FlutterInapp {
 
       return result;
     } else if (Platform.isIOS) {
-      final String result = await _channel.invokeMethod(
+      var result = await _channel.invokeMethod(
         'getItems',
         {
-          skus: skus,
+          'skus': skus,
         },
       );
-      return null;
+
+      result = json.encode(result);
+      result = json.decode(result).map<IAPItem>(
+        (product) => new IAPItem.fromJSON(product),
+      ).toList();
+
+      return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);
   }
@@ -77,14 +83,16 @@ class FlutterInapp {
       var result = await _channel.invokeMethod(
         'getItems',
         {
-          skus: skus,
+          'skus': skus,
         },
       );
 
+      print('result\n$result');
       result = json.decode(result).map<IAPItem>(
             (product) => new IAPItem.fromJSON(product),
       ).toList();
-      return null;
+      print('result\n$result');
+      return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);
   }

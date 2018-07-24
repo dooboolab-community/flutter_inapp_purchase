@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -13,12 +14,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final List<String>_productLists = [
-    'android.test.purchased',
-    'point_1000',
-    '5000_point',
-    'android.test.canceled',
-  ];
+  final List<String>_productLists = Platform.isAndroid
+      ? [
+        'android.test.purchased',
+        'point_1000',
+        '5000_point',
+        'android.test.canceled',
+      ]
+      : ['com.cooni.point1000','com.cooni.point5000'];
 
   String _platformVersion = 'Unknown';
   List<IAPItem> _items = [];
