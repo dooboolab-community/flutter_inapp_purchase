@@ -179,7 +179,15 @@ class FlutterInapp {
       result = json.decode(result);
       return result;
     } else if (Platform.isIOS) {
-      return null;
+      var result = await _channel.invokeMethod(
+          'buyItemByType',
+          <String, dynamic>{
+            'sku': sku,
+          }
+      );
+
+      result = json.decode(result);
+      return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);
   }

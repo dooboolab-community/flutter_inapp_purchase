@@ -1,5 +1,8 @@
 #import "FlutterInappPlugin.h"
-@interface FlutterInappPlugin()
+@interface FlutterInappPlugin() {
+    BOOL autoReceiptConform;
+    SKPaymentTransaction *currentTransaction;
+}
 
 @property (atomic, retain) NSMutableArray<FlutterResult>* fetchPurchases;
 @property (atomic, retain) NSMutableDictionary<NSValue*, FlutterResult>* fetchProducts;
@@ -57,8 +60,10 @@
         } else {
             result([FlutterError errorWithCode:@"ERROR" message:@"Invalid or missing arguments!" details:nil]);
         }
-    } else if ([@"buyProduct" isEqualToString:call.method]) {
+    } else if ([@"buyItemByType" isEqualToString:call.method]) {
+        NSLog(@"buyItemByType");
         NSString* identifier = (NSString*)call.arguments[@"sku"];
+        NSLog(@"identifier %@", identifier);
         if (identifier != nil) {
             [self purchase:identifier result:result];
         } else {
@@ -73,24 +78,6 @@
     BOOL canMakePayments = [SKPaymentQueue canMakePayments];
     NSString* str = canMakePayments ? @"true" : @"false";
     result(str);
-}
-
-- (void)purchase:(NSString*)identifier result:(FlutterResult)result {
-    SKProduct* product;
-    for (SKProduct* p in products) {
-        if ([p.productIdentifier isEqualToString:identifier]) {
-            product = p;
-            break;
-        }
-    }
-
-    if (product != nil) {
-        SKPayment* payment = [SKPayment paymentWithProduct:product];
-        [requestedPayments setObject:result forKey:payment];
-        [[SKPaymentQueue defaultQueue] addPayment:payment];
-    } else {
-        result([FlutterError errorWithCode:@"ERROR" message:@"Failed to make a payment!" details:nil]);
-    }
 }
 
 - (void)fetchProducts:(NSArray<NSString*>*)identifiers result:(FlutterResult)result {
@@ -146,6 +133,116 @@
     }];
 
     result(allValues);
+}
+
+- (void)purchase:(NSString*)identifier result:(FlutterResult)result {
+    SKProduct* product;
+    for (SKProduct* p in products) {
+        if ([p.productIdentifier isEqualToString:identifier]) {
+            product = p;
+            break;
+        }
+    }
+    
+    if (product != nil) {
+        SKPayment* payment = [SKPayment paymentWithProduct:product];
+        [requestedPayments setObject:result forKey:payment];
+        [[SKPaymentQueue defaultQueue] addPayment:payment];
+    } else {
+        result([FlutterError errorWithCode:@"ERROR" message:@"Failed to make a payment!" details:nil]);
+    }
+}
+
+-(void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
+    for (SKPaymentTransaction *transaction in transactions) {
+        FlutterResult result = [requestedPayments objectForKey:transaction.payment];
+        switch (transaction.transactionState) {
+            case SKPaymentTransactionStatePurchasing:
+                NSLog(@"\n\n Purchase Started !! \n\n");
+                break;
+            case SKPaymentTransactionStatePurchased:
+                NSLog(@"\n\n\n\n\n Purchase Successful !! \n\n\n\n\n.");
+                [self purchaseProcess:transaction];
+                break;
+            case SKPaymentTransactionStateRestored: // 기존 구매한 아이템 복구..
+                NSLog(@"Restored ");
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                break;
+            case SKPaymentTransactionStateDeferred:
+                NSLog(@"Deferred (awaiting approval via parental controls, etc.)");
+                break;
+            case SKPaymentTransactionStateFailed:
+                if (result == nil) return;
+                [requestedPayments removeObjectForKey:transaction.payment];
+                result(@"purchase failed");
+                NSLog(@"\n\n\n\n\n\n Purchase Failed  !! \n\n\n\n\n");
+                break;
+        }
+    }
+}
+
+-(void)purchaseProcess:(SKPaymentTransaction *)transaction {
+    NSMutableArray<FlutterResult>* results = [[NSMutableArray alloc] init];
+    if (autoReceiptConform) {
+        [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+        currentTransaction = nil;
+    } else {
+        currentTransaction = transaction;
+    }
+
+    NSURL *receiptUrl = [[NSBundle mainBundle] appStoreReceiptURL];
+    NSDictionary* purchase = [self getPurchaseData:transaction];
+    FlutterResult result = [requestedPayments objectForKey:transaction.payment];
+    if (result != nil) {
+        result(purchase);
+        [requestedPayments removeObjectForKey:transaction.payment];
+    }
+    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+}
+
+- (NSDictionary *)getPurchaseData:(SKPaymentTransaction *)transaction {
+    NSData *receiptData;
+    if (NSFoundationVersionNumber >= NSFoundationVersionNumber_iOS_7_0) {
+        receiptData = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
+    } else {
+        receiptData = [transaction transactionReceipt];
+    }
+    
+    if (receiptData == nil) return nil;
+    
+    NSMutableDictionary *purchase = [NSMutableDictionary dictionaryWithDictionary: @{
+                                                                                     @"transactionDate": @(transaction.transactionDate.timeIntervalSince1970 * 1000),
+                                                                                     @"transactionId": transaction.transactionIdentifier,
+                                                                                     @"productId": transaction.payment.productIdentifier,
+                                                                                     @"transactionReceipt":[receiptData base64EncodedStringWithOptions:0]
+                                                                                     }];
+    // originalTransaction is available for restore purchase and purchase of cancelled/expired subscriptions
+    SKPaymentTransaction *originalTransaction = transaction.originalTransaction;
+    if (originalTransaction) {
+        purchase[@"originalTransactionDate"] = @(originalTransaction.transactionDate.timeIntervalSince1970 * 1000);
+        purchase[@"originalTransactionIdentifier"] = originalTransaction.transactionIdentifier;
+    }
+    
+    return purchase;
+}
+
+- (void)purchased:(NSArray<SKPaymentTransaction*>*)transactions {
+    NSMutableArray<FlutterResult>* results = [[NSMutableArray alloc] init];
+    
+    [transactions enumerateObjectsUsingBlock:^(SKPaymentTransaction* transaction, NSUInteger idx, BOOL* stop) {
+        [purchases addObject:transaction.payment.productIdentifier];
+        FlutterResult result = [requestedPayments objectForKey:transaction.payment];
+        if (result != nil) {
+            [requestedPayments removeObjectForKey:transaction.payment];
+            [results addObject:result];
+        }
+        [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+    }];
+    
+    NSArray<NSString*>* productIdentifiers = [purchases allObjects];
+    [results enumerateObjectsUsingBlock:^(FlutterResult result, NSUInteger idx, BOOL* stop) {
+        result(productIdentifiers);
+    }];
 }
 
 @end

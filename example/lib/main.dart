@@ -15,13 +15,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final List<String>_productLists = Platform.isAndroid
-      ? [
-        'android.test.purchased',
-        'point_1000',
-        '5000_point',
-        'android.test.canceled',
-      ]
-      : ['com.cooni.point1000','com.cooni.point5000'];
+    ? [
+      'android.test.purchased',
+      'point_1000',
+      '5000_point',
+      'android.test.canceled',
+    ]
+    : ['com.cooni.point1000','com.cooni.point5000'];
 
   String _platformVersion = 'Unknown';
   List<IAPItem> _items = [];
@@ -57,8 +57,13 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Null> _buyProduct(IAPItem item) async {
-    var bought = await FlutterInapp.buyProduct(item.productId);
-    print('${bought.toString()}');
+    try {
+      var bought = await FlutterInapp.buyProduct(item.productId);
+      print('bought - ${bought.toString()}');
+    } catch (error) {
+      print('$error');
+    }
+
   }
 
   Future<Null> _getProduct() async {
