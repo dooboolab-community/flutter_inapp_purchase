@@ -239,14 +239,13 @@ class FlutterInappPurchase {
 
   static Future<String> consumePurchase(String token) async {
     if (Platform.isAndroid) {
-      var result = await _channel.invokeMethod(
+      String result = await _channel.invokeMethod(
           'consumeProduct',
           <String, dynamic>{
             'token': token,
           }
       );
 
-      result = json.decode(result);
       return result;
     } else if (Platform.isIOS) {
       return 'no-ops in ios';
