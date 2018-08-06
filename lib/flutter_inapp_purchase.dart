@@ -18,6 +18,16 @@ class FlutterInappPurchase {
     return version;
   }
 
+  static Future get consumeAllItems async {
+    if (Platform.isAndroid) {
+      final String result = await _channel.invokeMethod('consumeAllItems');
+      return result;
+    } else if (Platform.isIOS) {
+      return 'no-ops in ios';
+    }
+    return 'Current platform is not supported';
+  }
+
   static Future<String> get prepare async {
     if (Platform.isAndroid) {
       final String result = await _channel.invokeMethod('prepare');
@@ -126,6 +136,7 @@ class FlutterInappPurchase {
       return result;
     } else if (Platform.isIOS) {
       var result = await _channel.invokeMethod('getAvailableItems');
+      result = json.encode(result);
       result = json.decode(result).map<IAPItem>(
             (product) => new IAPItem.fromJSON(product),
       ).toList();
@@ -163,6 +174,7 @@ class FlutterInappPurchase {
       return result;
     } else if (Platform.isIOS) {
       var result = await _channel.invokeMethod('getAvailableItems');
+      result = json.encode(result);
       result = json.decode(result).map<IAPItem>(
             (product) => new IAPItem.fromJSON(product),
       ).toList();
@@ -171,7 +183,7 @@ class FlutterInappPurchase {
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<IAPItem> buyProduct(String sku, { oldSku }) async {
+  static Future<dynamic> buyProduct(String sku, { oldSku }) async {
     if (Platform.isAndroid) {
       var result = await _channel.invokeMethod(
           'buyItemByType',
@@ -191,14 +203,14 @@ class FlutterInappPurchase {
             'sku': sku,
           }
       );
-
+      result = json.encode(result);
       result = json.decode(result);
       return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<IAPItem> buySubscription(String sku, { oldSku }) async {
+  static Future<dynamic> buySubscription(String sku, { oldSku }) async {
     if (Platform.isAndroid) {
       var result = await _channel.invokeMethod(
           'buyItemByType',
@@ -218,6 +230,7 @@ class FlutterInappPurchase {
             'sku': sku,
           }
       );
+      result = json.encode(result);
       result = json.decode(result);
       return result;
     }
@@ -253,7 +266,7 @@ class FlutterInappPurchase {
   }
 
   /// ios specific
-  static Future<String> buyProductWithoutFinishTransaction(String sku) async {
+  static Future<dynamic> buyProductWithoutFinishTransaction(String sku) async {
     if (Platform.isAndroid) {
       var result = await _channel.invokeMethod(
           'buyItemByType',
@@ -268,6 +281,8 @@ class FlutterInappPurchase {
       return result;
     } else if (Platform.isIOS) {
       var result = await _channel.invokeMethod('buyProductWithoutFinishTransaction');
+      result = json.encode(result);
+      result = json.decode(result);
       return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);

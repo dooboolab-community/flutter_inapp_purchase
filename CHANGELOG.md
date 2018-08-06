@@ -1,3 +1,6 @@
+## 0.2.3
+* Quickly fixed purchase bug out there in [issue](https://github.com/dooboolab/flutter_inapp_purchase/issues/2). Need much more improvement currently.
+
 ## 0.2.2
 * Migrated packages from FlutterInApp to FlutterInAppPurchase because pub won't get it.
 

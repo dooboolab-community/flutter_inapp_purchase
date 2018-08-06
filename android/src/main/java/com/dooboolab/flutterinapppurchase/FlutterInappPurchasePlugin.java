@@ -124,9 +124,9 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
     }
 
     /**
-     * refreshItems
+     * consumeAllItems
      */
-    else if (call.method.equals("refreshItems")) {
+    else if (call.method.equals("consumeAllItems")) {
       try {
         Bundle ownedItems = mService.getPurchases(3, context.getPackageName(), "inapp", null);
         int response = ownedItems.getInt("RESPONSE_CODE");
@@ -360,7 +360,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
         public void onConsumeResponse(@BillingClient.BillingResponse int responseCode, String outToken) {
           if (responseCode == BillingClient.BillingResponse.OK) {
             Log.d(TAG, "consume responseCode: " + responseCode);
-            result.success("succesfully consumed " + responseCode);
+            result.success("Consumed: " + responseCode);
           }
           else {
             result.error(TAG, "consumeProduct", "consumeResponse is not ok: " + responseCode);
@@ -406,8 +406,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
           result.success(item.toString());
           result = null;
         }
-      }
-      else {
+      } else {
         if (result != null) {
           result.error(TAG, "purchase error", "responseCode: " + responseCode);
           result = null;

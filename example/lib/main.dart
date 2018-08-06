@@ -53,6 +53,10 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _platformVersion = platformVersion;
     });
+
+    // refresh items for android
+    String msg = await FlutterInappPurchase.consumeAllItems;
+    print('consumeAllItems: $msg');
   }
 
   Future<Null> _buyProduct(IAPItem item) async {
