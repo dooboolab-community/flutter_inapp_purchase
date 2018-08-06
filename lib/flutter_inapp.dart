@@ -126,6 +126,9 @@ class FlutterInapp {
       return result;
     } else if (Platform.isIOS) {
       var result = await _channel.invokeMethod('getAvailableItems');
+      result = json.decode(result).map<IAPItem>(
+            (product) => new IAPItem.fromJSON(product),
+      ).toList();
       return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);
@@ -160,6 +163,9 @@ class FlutterInapp {
       return result;
     } else if (Platform.isIOS) {
       var result = await _channel.invokeMethod('getAvailableItems');
+      result = json.decode(result).map<IAPItem>(
+            (product) => new IAPItem.fromJSON(product),
+      ).toList();
       return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);

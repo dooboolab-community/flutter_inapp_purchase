@@ -1,3 +1,4 @@
-## 0.0.1
+## 0.1.0
 
-* TODO: Describe initial release.
+* Initial release of beta
+* Moved code from [react-native-iap](https://github.com/dooboolab/react-native-iap)
