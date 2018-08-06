@@ -1,6 +1,6 @@
 # flutter_inapp
 
-In App Purchase plugin for flutter. This project has been `forked` from `react-native-iap`. We are trying to have same experience of `in-app-purchase` in `flutter` as in `react-native`.
+In App Purchase plugin for flutter. This project has been `forked` from [react-native-iap](https://github.com/dooboolab/react-native-iap). We are trying to have same experience of `in-app-purchase` in `flutter` as in `react-native`.
 Since [dooboolab](https://github.com/dooboolab) is working alone currently, need much improvement with the testing and maintenance.
 We will keep working on it as time goes by just like we did in `react-native-iap`.
 `PR` is always welcomed.
