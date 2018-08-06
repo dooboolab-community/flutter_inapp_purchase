@@ -2,9 +2,9 @@
 @interface FlutterInappPlugin() {
     BOOL autoReceiptConform;
     SKPaymentTransaction *currentTransaction;
+    FlutterResult flutterResult;
 }
 
-@property (atomic, retain) NSMutableArray<FlutterResult>* fetchPurchases;
 @property (atomic, retain) NSMutableDictionary<NSValue*, FlutterResult>* fetchProducts;
 @property (atomic, retain) NSMutableDictionary<SKPayment*, FlutterResult>* requestedPayments;
 @property (atomic, retain) NSArray<SKProduct*>* products;
@@ -15,7 +15,6 @@
 
 @implementation FlutterInappPlugin
 
-@synthesize fetchPurchases;
 @synthesize fetchProducts;
 @synthesize requestedPayments;
 @synthesize products;
@@ -33,8 +32,6 @@
 
 - (instancetype)init {
     self = [super init];
-
-    self.fetchPurchases = [[NSMutableArray alloc] init];
     self.fetchProducts = [[NSMutableDictionary alloc] init];
     self.requestedPayments = [[NSMutableDictionary alloc] init];
     self.products = [[NSArray alloc] init];
@@ -60,15 +57,32 @@
         } else {
             result([FlutterError errorWithCode:@"ERROR" message:@"Invalid or missing arguments!" details:nil]);
         }
-    } else if ([@"buyItemByType" isEqualToString:call.method]) {
-        NSLog(@"buyItemByType");
+    } else if ([@"buyProductWithFinishTransaction" isEqualToString:call.method]) {
         NSString* identifier = (NSString*)call.arguments[@"sku"];
         NSLog(@"identifier %@", identifier);
         if (identifier != nil) {
+            autoReceiptConform = true;
             [self purchase:identifier result:result];
         } else {
             result([FlutterError errorWithCode:@"ERROR" message:@"Invalid or missing arguments!" details:nil]);
         }
+    } else if ([@"buyProductWithoutFinishTransaction" isEqualToString:call.method]) {
+        NSString* identifier = (NSString*)call.arguments[@"sku"];
+        NSLog(@"identifier %@", identifier);
+        if (identifier != nil) {
+            autoReceiptConform = false;
+            [self purchase:identifier result:result];
+        } else {
+            result([FlutterError errorWithCode:@"ERROR" message:@"Invalid or missing arguments!" details:nil]);
+        }
+    } else if ([@"finishTransaction" isEqualToString:call.method]) {
+        if (currentTransaction) {
+            [[SKPaymentQueue defaultQueue] finishTransaction:currentTransaction];
+        }
+        currentTransaction = nil;
+        result(@"Finished current transaction");
+    } else if ([@"getAvailableItems" isEqualToString:call.method]) {
+        [self getAvailableItems:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -243,6 +257,27 @@
     [results enumerateObjectsUsingBlock:^(FlutterResult result, NSUInteger idx, BOOL* stop) {
         result(productIdentifiers);
     }];
+}
+
+// getAvailablePurchases
+- (void)getAvailableItems:(FlutterResult)result {
+    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+    flutterResult = result;
+}
+
+-(void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue {  ////////   RESTORE
+    NSMutableArray* items = [NSMutableArray arrayWithCapacity:queue.transactions.count];
+    for(SKPaymentTransaction *transaction in queue.transactions) {
+        if(transaction.transactionState == SKPaymentTransactionStateRestored) {
+            NSDictionary *restored = [self getPurchaseData:transaction];
+            [items addObject:restored];
+            [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+        }
+    }
+    if (flutterResult != nil) {
+        flutterResult(items);
+    }
+    flutterResult = nil;
 }
 
 @end

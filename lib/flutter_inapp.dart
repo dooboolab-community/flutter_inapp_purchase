@@ -180,7 +180,7 @@ class FlutterInapp {
       return result;
     } else if (Platform.isIOS) {
       var result = await _channel.invokeMethod(
-          'buyItemByType',
+          'buyProductFinishTransaction',
           <String, dynamic>{
             'sku': sku,
           }
@@ -206,7 +206,14 @@ class FlutterInapp {
       result = json.decode(result);
       return result;
     } else if (Platform.isIOS) {
-      return null;
+      var result = await _channel.invokeMethod(
+          'buyProductWithFinishTransaction',
+          <String, dynamic>{
+            'sku': sku,
+          }
+      );
+      result = json.decode(result);
+      return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);
   }
@@ -223,7 +230,7 @@ class FlutterInapp {
       result = json.decode(result);
       return result;
     } else if (Platform.isIOS) {
-      return null;
+      return 'no-ops in ios';
     }
     throw new PlatformException(code: Platform.operatingSystem);
   }
@@ -254,7 +261,7 @@ class FlutterInapp {
       result = json.decode(result);
       return result;
     } else if (Platform.isIOS) {
-      var result = await _channel.invokeMethod('buyProductWithFinishTransaction');
+      var result = await _channel.invokeMethod('buyProductWithoutFinishTransaction');
       return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);
