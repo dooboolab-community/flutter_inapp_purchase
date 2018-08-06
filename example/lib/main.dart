@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_inapp/flutter_inapp.dart';
