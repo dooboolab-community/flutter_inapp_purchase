@@ -1,4 +1,4 @@
-## 0.2.0
+## 0.2.2
 * Migrated packages from FlutterInApp to FlutterInAppPurchase because pub won't get it.
 
 ## 0.1.0
