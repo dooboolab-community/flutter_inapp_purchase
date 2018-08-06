@@ -1,4 +1,4 @@
-group 'com.dooboolab.flutterinapp'
+group 'com.dooboolab.flutterinapppurchase'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -36,3 +36,4 @@ android {
 dependencies {
   implementation 'com.android.billingclient:billing:1.1'
 }
+

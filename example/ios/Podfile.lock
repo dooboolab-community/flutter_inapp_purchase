@@ -1,21 +1,21 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_inapp (0.0.1):
+  - flutter_inapp_purchase (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `.symlinks/flutter/ios`)
-  - flutter_inapp (from `.symlinks/plugins/flutter_inapp/ios`)
+  - flutter_inapp_purchase (from `.symlinks/plugins/flutter_inapp_purchase/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: ".symlinks/flutter/ios"
-  flutter_inapp:
-    :path: ".symlinks/plugins/flutter_inapp/ios"
+  flutter_inapp_purchase:
+    :path: ".symlinks/plugins/flutter_inapp_purchase/ios"
 
 SPEC CHECKSUMS:
   Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
-  flutter_inapp: abe8507c8025c37610b770ffa839fae303ac826d
+  flutter_inapp_purchase: eba22dd904e272c0d3fb5dda201287e9f12cd363
 
 PODFILE CHECKSUM: 1e5af4103afd21ca5ead147d7b81d06f494f51a2
 

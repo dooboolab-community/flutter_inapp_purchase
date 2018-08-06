@@ -1,4 +1,4 @@
-package com.dooboolab.flutterinapp;
+package com.dooboolab.flutterinapppurchase;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -37,11 +37,11 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-/** FlutterInappPlugin */
-public class FlutterInappPlugin implements MethodCallHandler {
+/** FlutterInappPurchasePlugin */
+public class FlutterInappPurchasePlugin implements MethodCallHandler {
   private static Activity activity;
   private static Context context;
-  private final String TAG = "FlutterInappPlugin";
+  private final String TAG = "FlutterInappPurchasePlugin";
   private IInAppBillingService mService;
   private BillingClient mBillingClient;
   private Result result = null;
@@ -59,7 +59,7 @@ public class FlutterInappPlugin implements MethodCallHandler {
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_inapp");
-    channel.setMethodCallHandler(new FlutterInappPlugin());
+    channel.setMethodCallHandler(new FlutterInappPurchasePlugin());
     activity = registrar.activity();
     context = registrar.activeContext();
   }
@@ -358,13 +358,13 @@ public class FlutterInappPlugin implements MethodCallHandler {
       mBillingClient.consumeAsync(token, new ConsumeResponseListener() {
         @Override
         public void onConsumeResponse(@BillingClient.BillingResponse int responseCode, String outToken) {
-        if (responseCode == BillingClient.BillingResponse.OK) {
-          Log.d(TAG, "consume responseCode: " + responseCode);
-          result.success("succesfully consumed " + responseCode);
-        }
-        else {
-          result.error(TAG, "consumeProduct", "consumeResponse is not ok: " + responseCode);
-        }
+          if (responseCode == BillingClient.BillingResponse.OK) {
+            Log.d(TAG, "consume responseCode: " + responseCode);
+            result.success("succesfully consumed " + responseCode);
+          }
+          else {
+            result.error(TAG, "consumeProduct", "consumeResponse is not ok: " + responseCode);
+          }
         }
       });
     }

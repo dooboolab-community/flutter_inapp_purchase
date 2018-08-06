@@ -1,5 +1,6 @@
-#import "FlutterInappPlugin.h"
-@interface FlutterInappPlugin() {
+#import "FlutterInappPurchasePlugin.h"
+
+@interface FlutterInappPurchasePlugin() {
     BOOL autoReceiptConform;
     SKPaymentTransaction *currentTransaction;
     FlutterResult flutterResult;
@@ -13,7 +14,7 @@
 
 @end
 
-@implementation FlutterInappPlugin
+@implementation FlutterInappPurchasePlugin
 
 @synthesize fetchProducts;
 @synthesize requestedPayments;
@@ -22,7 +23,7 @@
 @synthesize channel;
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    FlutterInappPlugin* instance = [[FlutterInappPlugin alloc] init];
+    FlutterInappPurchasePlugin* instance = [[FlutterInappPurchasePlugin alloc] init];
     instance.channel = [FlutterMethodChannel
                         methodChannelWithName:@"flutter_inapp"
                         binaryMessenger:[registrar messenger]];
@@ -157,7 +158,7 @@
             break;
         }
     }
-    
+
     if (product != nil) {
         SKPayment* payment = [SKPayment paymentWithProduct:product];
         [requestedPayments setObject:result forKey:payment];
@@ -221,9 +222,9 @@
     } else {
         receiptData = [transaction transactionReceipt];
     }
-    
+
     if (receiptData == nil) return nil;
-    
+
     NSMutableDictionary *purchase = [NSMutableDictionary dictionaryWithDictionary: @{
                                                                                      @"transactionDate": @(transaction.transactionDate.timeIntervalSince1970 * 1000),
                                                                                      @"transactionId": transaction.transactionIdentifier,
@@ -236,13 +237,13 @@
         purchase[@"originalTransactionDate"] = @(originalTransaction.transactionDate.timeIntervalSince1970 * 1000);
         purchase[@"originalTransactionIdentifier"] = originalTransaction.transactionIdentifier;
     }
-    
+
     return purchase;
 }
 
 - (void)purchased:(NSArray<SKPaymentTransaction*>*)transactions {
     NSMutableArray<FlutterResult>* results = [[NSMutableArray alloc] init];
-    
+
     [transactions enumerateObjectsUsingBlock:^(SKPaymentTransaction* transaction, NSUInteger idx, BOOL* stop) {
         [purchases addObject:transaction.payment.productIdentifier];
         FlutterResult result = [requestedPayments objectForKey:transaction.payment];
@@ -252,7 +253,7 @@
         }
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
     }];
-    
+
     NSArray<NSString*>* productIdentifiers = [purchases allObjects];
     [results enumerateObjectsUsingBlock:^(FlutterResult result, NSUInteger idx, BOOL* stop) {
         result(productIdentifiers);

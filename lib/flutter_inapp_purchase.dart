@@ -4,14 +4,14 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 
-class FlutterInapp {
+class FlutterInappPurchase {
   static final List<String> _typeInApp = [
     'inapp',
     'subs',
   ];
 
   static const MethodChannel _channel =
-      const MethodChannel('flutter_inapp');
+  const MethodChannel('flutter_inapp');
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
@@ -41,7 +41,7 @@ class FlutterInapp {
       );
 
       result = json.decode(result).map<IAPItem>(
-        (product) => new IAPItem.fromJSON(product),
+            (product) => new IAPItem.fromJSON(product),
       ).toList();
 
       return result;
@@ -55,7 +55,7 @@ class FlutterInapp {
 
       result = json.encode(result);
       result = json.decode(result).map<IAPItem>(
-        (product) => new IAPItem.fromJSON(product),
+            (product) => new IAPItem.fromJSON(product),
       ).toList();
 
       return result;
@@ -75,7 +75,7 @@ class FlutterInapp {
       );
 
       result = json.decode(result).map<IAPItem>(
-        (product) => new IAPItem.fromJSON(product),
+            (product) => new IAPItem.fromJSON(product),
       ).toList();
 
       return result;
@@ -174,19 +174,19 @@ class FlutterInapp {
   static Future<IAPItem> buyProduct(String sku, { oldSku }) async {
     if (Platform.isAndroid) {
       var result = await _channel.invokeMethod(
-        'buyItemByType',
-        <String, dynamic>{
-          'type': _typeInApp[0],
-          'sku': sku,
-          'oldSku': null,
-        }
+          'buyItemByType',
+          <String, dynamic>{
+            'type': _typeInApp[0],
+            'sku': sku,
+            'oldSku': null,
+          }
       );
 
       result = json.decode(result);
       return result;
     } else if (Platform.isIOS) {
       var result = await _channel.invokeMethod(
-          'buyProductFinishTransaction',
+          'buyProductWithFinishTransaction',
           <String, dynamic>{
             'sku': sku,
           }
@@ -227,10 +227,10 @@ class FlutterInapp {
   static Future<String> consumePurchase(String token) async {
     if (Platform.isAndroid) {
       var result = await _channel.invokeMethod(
-        'consumeProduct',
-        <String, dynamic>{
-          'token': token,
-        }
+          'consumeProduct',
+          <String, dynamic>{
+            'token': token,
+          }
       );
 
       result = json.decode(result);

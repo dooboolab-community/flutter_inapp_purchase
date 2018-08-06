@@ -1,9 +1,10 @@
-name: flutter_inapp
-description: In App Purchase plugin for flutter.
-version: 0.1.0
-author:
-homepage:
-
+name: flutter_inapp_purchase
+description: In App Purchase plugin for flutter. This project has been forked by react-native-iap and we are willing to share same experience with that on react-native.
+version: 0.2.1
+author: dooboolab<dooboolab@gmail.com>
+homepage: https://github.com/dooboolab/flutter_inapp_purchase/blob/master/pubspec.yaml
+environment:
+  sdk: ">=1.19.0 <2.0.0"
 dependencies:
   flutter:
     sdk: flutter
@@ -14,8 +15,8 @@ dependencies:
 # The following section is specific to Flutter.
 flutter:
   plugin:
-    androidPackage: com.dooboolab.flutterinapp
-    pluginClass: FlutterInappPlugin
+    androidPackage: com.dooboolab.flutterinapppurchase
+    pluginClass: FlutterInappPurchasePlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

@@ -1,6 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dooboolab.iapexample">
-    <uses-permission android:name="com.android.vending.BILLING" />
+    package="com.dooboolab.test">
 
     <!-- The INTERNET permission is required for development. Specifically,
          flutter needs it to communicate with the running application
@@ -15,7 +14,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="flutter_inapp_example"
+        android:label="flutter_inapp_purchase_example"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

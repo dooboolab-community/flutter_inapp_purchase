@@ -1,6 +1,6 @@
-# flutter_inapp_example
+# flutter_inapp_purchase_example
 
-Demonstrates how to use the flutter_inapp plugin.
+Demonstrates how to use the flutter_inapp_purchase plugin.
 
 ## Getting Started
 
