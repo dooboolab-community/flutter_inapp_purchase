@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  _renderInapps() {
+  List<Widget> _renderInapps() {
     List<Widget> widgets = this._items.map((item) => Container(
       margin: EdgeInsets.symmetric(vertical: 10.0),
       child: Container(
