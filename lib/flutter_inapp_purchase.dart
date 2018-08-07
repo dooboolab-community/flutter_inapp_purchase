@@ -346,8 +346,17 @@ class PurchasedItem {
   final String productId;
   final String transactionReceipt;
   final String purchaseToken;
+
+  // Android only
   final bool autoRenewing;
+  // Android only
+  final String data;
+  // Android only
+  final String signature;
+  
+  // iOS only
   final dynamic originalTransactionDate;
+  // iOS only
   final String originalTransactionIdentifier;
 
   PurchasedItem.fromJSON(Map<String, dynamic> json)
@@ -357,6 +366,8 @@ class PurchasedItem {
       transactionReceipt = json['transactionReceipt'] as String,
       purchaseToken = json['purchaseToken'] as String,
       autoRenewing = json['autoRenewing'] as bool,
+      data = json['data'] as String,
+      signature = json['signature'] as String,
       originalTransactionDate = json['originalTransactionDate'] as dynamic,
       originalTransactionIdentifier = json['originalTransactionIdentifier'] as String
   ;
@@ -370,6 +381,8 @@ class PurchasedItem {
       'transactionReceipt: $transactionReceipt, '
       'purchaseToken: $purchaseToken, '
       'autoRenewing: $autoRenewing, '
+      'data: $data, '
+      'signature: $signature, '
       'originalTransactionDate: $originalTransactionDate, '
       'originalTransactionIdentifier: $originalTransactionIdentifier'
     ;
