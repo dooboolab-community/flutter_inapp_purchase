@@ -1,3 +1,7 @@
+## 0.3.1
+* Upgraded readme for ease of usage.
+* Enabled strong mode.
+
 ## 0.3.0
 * Moved dynamic return type away and instead give `PurchasedItem`.
 

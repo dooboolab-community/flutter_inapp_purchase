@@ -8,12 +8,14 @@ Since [dooboolab](https://github.com/dooboolab) is working alone currently, need
 We will keep working on it as time goes by just like we did in `react-native-iap`.
 `PR` is always welcomed.
 
+
 ## Getting Started
 
 For help getting started with Flutter, view our online
 [documentation](https://flutter.io/).
 
 For help on editing plugin code, view the [documentation](https://flutter.io/developing-packages/#edit-plugin-package).
+
 
 ## Methods
 | Func  | Param  | Return | Description |
@@ -30,6 +32,7 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | consumePurchase | `String` Purchase token | `String` | Consume a product (on Android.) No-op on iOS. |
 | endConnection | | `String` | End billing connection (on Android.) No-op on iOS. |
 | consumeAllItems | | `String` | Manually consume all items in android. No-op on iOS. |
+
 
 ## Data Type
 * IAPItem
@@ -55,13 +58,16 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
   final dynamic originalTransactionDate;
   ```
 
+
 ## Install
 Add ```flutter_inapp_purchase``` as a dependency in pubspec.yaml
 
 For help on adding as a dependency, view the [documentation](https://flutter.io/using-packages/).
 
+
 ## Configuring in app purchase
 - Please refer to [Blog](https://medium.com/@dooboolab/react-native-in-app-purchase-121622d26b67).
+
 
 ## Usage Guide
 #### Android `connect` and `endConnection`
