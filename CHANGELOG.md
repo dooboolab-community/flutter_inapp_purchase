@@ -1,3 +1,6 @@
+## 0.3.0
+* Moved dynamic return type away and instead give `PurchasedItem`.
+
 ## 0.2.3
 * Quickly fixed purchase bug out there in [issue](https://github.com/dooboolab/flutter_inapp_purchase/issues/2). Need much more improvement currently.
 

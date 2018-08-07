@@ -73,7 +73,7 @@ class FlutterInappPurchase {
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<List<IAPItem>> getSubscriptions(List<String> skus) async {
+  static Future<PurchasedItem> getSubscriptions(List<String> skus) async {
     skus = skus.toList();
     if (Platform.isAndroid) {
       var result = await _channel.invokeMethod(
@@ -84,9 +84,7 @@ class FlutterInappPurchase {
         },
       );
 
-      result = json.decode(result).map<IAPItem>(
-            (product) => new IAPItem.fromJSON(product),
-      ).toList();
+      result = new PurchasedItem.fromJSON(json.decode(result));
 
       return result;
     } else if (Platform.isIOS) {
@@ -97,10 +95,8 @@ class FlutterInappPurchase {
         },
       );
 
-      print('result\n$result');
-      result = json.decode(result).map<IAPItem>(
-            (product) => new IAPItem.fromJSON(product),
-      ).toList();
+      result = json.encode(result);
+      result = new PurchasedItem.fromJSON(json.decode(result));
       print('result\n$result');
       return result;
     }
@@ -183,7 +179,7 @@ class FlutterInappPurchase {
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<dynamic> buyProduct(String sku, { oldSku }) async {
+  static Future<PurchasedItem> buyProduct(String sku, { oldSku }) async {
     if (Platform.isAndroid) {
       var result = await _channel.invokeMethod(
           'buyItemByType',
@@ -194,7 +190,7 @@ class FlutterInappPurchase {
           }
       );
 
-      result = json.decode(result);
+      result = new PurchasedItem.fromJSON(json.decode(result));
       return result;
     } else if (Platform.isIOS) {
       var result = await _channel.invokeMethod(
@@ -204,13 +200,13 @@ class FlutterInappPurchase {
           }
       );
       result = json.encode(result);
-      result = json.decode(result);
+      result = new PurchasedItem.fromJSON(json.decode(result));
       return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<dynamic> buySubscription(String sku, { oldSku }) async {
+  static Future<PurchasedItem> buySubscription(String sku, { oldSku }) async {
     if (Platform.isAndroid) {
       var result = await _channel.invokeMethod(
           'buyItemByType',
@@ -221,7 +217,7 @@ class FlutterInappPurchase {
           }
       );
 
-      result = json.decode(result);
+      result = new PurchasedItem.fromJSON(json.decode(result));
       return result;
     } else if (Platform.isIOS) {
       var result = await _channel.invokeMethod(
@@ -231,7 +227,7 @@ class FlutterInappPurchase {
           }
       );
       result = json.encode(result);
-      result = json.decode(result);
+      result = new PurchasedItem.fromJSON(json.decode(result));
       return result;
     }
     throw new PlatformException(code: Platform.operatingSystem);
@@ -265,7 +261,7 @@ class FlutterInappPurchase {
   }
 
   /// ios specific
-  static Future<dynamic> buyProductWithoutFinishTransaction(String sku) async {
+  static Future<PurchasedItem> buyProductWithoutFinishTransaction(String sku) async {
     if (Platform.isAndroid) {
       var result = await _channel.invokeMethod(
           'buyItemByType',
@@ -279,7 +275,9 @@ class FlutterInappPurchase {
       result = json.decode(result);
       return result;
     } else if (Platform.isIOS) {
-      var result = await _channel.invokeMethod('buyProductWithoutFinishTransaction');
+      var result = await _channel.invokeMethod(
+          'buyProductWithoutFinishTransaction'
+      );
       result = json.encode(result);
       result = json.decode(result);
       return result;
@@ -321,14 +319,34 @@ class IAPItem {
   String toString() {
     return
       'productId: $productId, '
-          'price: $price, '
-          'currency: $currency, '
-          'type: $type, '
-          'localizedPrice: $localizedPrice, '
-          'title: $title, '
-          'description: $title'
+      'price: $price, '
+      'currency: $currency, '
+      'type: $type, '
+      'localizedPrice: $localizedPrice, '
+      'title: $title, '
+      'description: $title'
     ;
   }
+}
 
+class PurchasedItem {
+  final String transactionId;
+  final dynamic transactionDate;
+  final dynamic originalTransactionDate;
+  final String productId;
+  final String transactionReceipt;
+  final String purchaseToken;
+  final bool autoRenewing;
+  final String originalTransactionIdentifier;
 
+  PurchasedItem.fromJSON(Map<String, dynamic> json)
+    : transactionDate = json['transactionDate'],
+      transactionId = json['transactionId'],
+      productId = json['productId'],
+      transactionReceipt = json['transactionReceipt'],
+      purchaseToken = json['purchaseToken'],
+      autoRenewing = json['autoRenewing'],
+      originalTransactionDate = json['originalTransactionDate'],
+      originalTransactionIdentifier = json['originalTransactionIdentifier']
+  ;
 }
