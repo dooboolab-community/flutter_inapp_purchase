@@ -330,14 +330,14 @@ class IAPItem {
 }
 
 class PurchasedItem {
-  final String transactionId;
   final dynamic transactionDate;
-  final dynamic originalTransactionDate;
+  final String transactionId;
   final String productId;
   final String transactionReceipt;
   final String purchaseToken;
   final bool autoRenewing;
   final String originalTransactionIdentifier;
+  final dynamic originalTransactionDate;
 
   PurchasedItem.fromJSON(Map<String, dynamic> json)
     : transactionDate = json['transactionDate'],
@@ -349,4 +349,18 @@ class PurchasedItem {
       originalTransactionDate = json['originalTransactionDate'],
       originalTransactionIdentifier = json['originalTransactionIdentifier']
   ;
+
+  @override
+  String toString() {
+    return
+      'transactionDate: $transactionDate, '
+      'transactionId: $transactionId, '
+      'productId: $productId, '
+      'transactionReceipt: $transactionReceipt, '
+      'purchaseToken: $purchaseToken, '
+      'autoRenewing: $autoRenewing, '
+      'originalTransactionDate: $originalTransactionDate, '
+      'originalTransactionIdentifier: $originalTransactionIdentifier'
+    ;
+  }
 }
