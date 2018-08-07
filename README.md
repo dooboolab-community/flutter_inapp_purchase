@@ -31,6 +31,30 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | endConnection | | `String` | End billing connection (on Android.) No-op on iOS. |
 | consumeAllItems | | `String` | Manually consume all items in android. No-op on iOS. |
 
+## Data Type
+* IAPItem
+  ```dart
+  final String productId;
+  final String price;
+  final String currency;
+  final String type;
+  final String localizedPrice;
+  final String title;
+  final String description;
+  ```
+
+* PurchasedItem
+  ```dart
+  final dynamic transactionDate;
+  final String transactionId;
+  final String productId;
+  final String transactionReceipt;
+  final String purchaseToken;
+  final bool autoRenewing;
+  final String originalTransactionIdentifier;
+  final dynamic originalTransactionDate;
+  ```
+
 ## Install
 Add ```flutter_inapp_purchase``` as a dependency in pubspec.yaml
 
