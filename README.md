@@ -39,18 +39,45 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
 ## Configuring in app purchase
 - Please refer to [Blog](https://medium.com/@dooboolab/react-native-in-app-purchase-121622d26b67).
 
+## Usage Guide
+#### Android `connect` and `endConnection`
+* You should start the billing service in android to use its funtionalities. We recommend you to use `prepare` getter method in `initState()`. 
+  ```dart
+    /// start connection for android
+    @override
+    void initState() async{
+      super.initState();
+      await FlutterInappPurchase.prepare;
+    }
+  ```
+* You should end the billing service in android when you are done with it. Otherwise it will be keep running in background. We recommend to use this feature in `dispose()`.
+  ```
+    /// start connection for android
+    @override
+    void dispose() async{
+      super.dispose();
+      await FlutterInappPurchase.endConnection;
+    }
+  ```
+#### Get IAP items
+  ```dart
+  List<IAPItem> items = await FlutterInappPurchase.getProducts(_productLists);
+  for (var item in items) {
+    print('${item.toString()}');
+    this._items.add(item);
+  }
+  ```
+
+#### Purcase Item
+  ```dart
+  PurchasedItem purchased = await FlutterInappPurchase.buyProduct(item.productId);
+  print('purcuased - ${purchased.toString()}');
+  ```
+
+
 ## Example
 Below code is just a `cp` from example project. You can test this in real example project.
 ```dart
-import 'package:flutter/material.dart';
-import 'dart:async';
-import 'dart:io';
-
-import 'package:flutter/services.dart';
-import 'package:flutter_inapp/flutter_inapp.dart';
-
-void main() => runApp(new MyApp());
-
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => new _MyAppState();
@@ -58,13 +85,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final List<String>_productLists = Platform.isAndroid
-    ? [
-      'android.test.purchased',
-      'point_1000',
-      '5000_point',
-      'android.test.canceled',
-    ]
-    : ['com.cooni.point1000','com.cooni.point5000'];
+      ? [
+    'android.test.purchased',
+    'point_1000',
+    '5000_point',
+    'android.test.canceled',
+  ]
+      : ['com.cooni.point1000','com.cooni.point5000'];
 
   String _platformVersion = 'Unknown';
   List<IAPItem> _items = [];
@@ -80,13 +107,13 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformVersion = await FlutterInapp.platformVersion;
+      platformVersion = await FlutterInappPurchase.platformVersion;
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
 
     // prepare
-    var result = await FlutterInapp.prepare;
+    var result = await FlutterInappPurchase.prepare;
     print ('result: $result');
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -97,20 +124,23 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _platformVersion = platformVersion;
     });
+
+    // refresh items for android
+    String msg = await FlutterInappPurchase.consumeAllItems;
+    print('consumeAllItems: $msg');
   }
 
   Future<Null> _buyProduct(IAPItem item) async {
     try {
-      var bought = await FlutterInapp.buyProduct(item.productId);
-      print('bought - ${bought.toString()}');
+      PurchasedItem purchased= await FlutterInappPurchase.buyProduct(item.productId);
+      print('purcuased - ${purchased.toString()}');
     } catch (error) {
       print('$error');
     }
-
   }
 
   Future<Null> _getProduct() async {
-    List<IAPItem> items = await FlutterInapp.getProducts(_productLists);
+    List<IAPItem> items = await FlutterInappPurchase.getProducts(_productLists);
     for (var item in items) {
       print('${item.toString()}');
       this._items.add(item);
@@ -169,103 +199,103 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Flutter Inapp Plugin by dooboolab'),
         ),
         body:
-          Container(
-            padding: EdgeInsets.all(10.0),
-            child: ListView(
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        'Running on: $_platformVersion\n',
-                        style: TextStyle(
-                            fontSize: 18.0
-                        ),
+        Container(
+          padding: EdgeInsets.all(10.0),
+          child: ListView(
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      'Running on: $_platformVersion\n',
+                      style: TextStyle(
+                          fontSize: 18.0
                       ),
                     ),
-                    Container(
-                      height: 60.0,
-                      margin: EdgeInsets.only(bottom: 10.0),
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Container(
-                                margin: EdgeInsets.symmetric(horizontal: 15.0),
-                                child: FlatButton(
-                                  color: Colors.green,
-                                  padding: EdgeInsets.all(0.0),
-                                  onPressed: () async {
-                                    await FlutterInapp.prepare;
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                                    alignment: Alignment(0.0, 0.0),
-                                    child: Text(
-                                      'Connect Billing',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              FlatButton(
+                  ),
+                  Container(
+                    height: 60.0,
+                    margin: EdgeInsets.only(bottom: 10.0),
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              margin: EdgeInsets.symmetric(horizontal: 15.0),
+                              child: FlatButton(
                                 color: Colors.green,
                                 padding: EdgeInsets.all(0.0),
-                                onPressed: () {
-                                  this._getProduct();
+                                onPressed: () async {
+                                  await FlutterInappPurchase.prepare;
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                                   alignment: Alignment(0.0, 0.0),
                                   child: Text(
-                                    'Get Items',
+                                    'Connect Billing',
                                     style: TextStyle(
                                       fontSize: 16.0,
                                     ),
                                   ),
                                 ),
                               ),
-                              Container(
-                                margin: EdgeInsets.only(left: 15.0),
-                                child: FlatButton(
-                                  color: Colors.green,
-                                  padding: EdgeInsets.all(0.0),
-                                  onPressed: () async {
-                                    await FlutterInapp.endConnection;
-                                    setState(() {
-                                      this._items = [];
-                                    });
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                                    alignment: Alignment(0.0, 0.0),
-                                    child: Text(
-                                      'End Connection',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                      ),
+                            ),
+                            FlatButton(
+                              color: Colors.green,
+                              padding: EdgeInsets.all(0.0),
+                              onPressed: () {
+                                this._getProduct();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                alignment: Alignment(0.0, 0.0),
+                                child: Text(
+                                  'Get Items',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(left: 15.0),
+                              child: FlatButton(
+                                color: Colors.green,
+                                padding: EdgeInsets.all(0.0),
+                                onPressed: () async {
+                                  await FlutterInappPurchase.endConnection;
+                                  setState(() {
+                                    this._items = [];
+                                  });
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                  alignment: Alignment(0.0, 0.0),
+                                  child: Text(
+                                    'End Connection',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
                                     ),
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    Column(
-                      children: this._renderInapps(),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                  Column(
+                    children: this._renderInapps(),
+                  ),
+                ],
+              ),
+            ],
           ),
+        ),
       ),
     );
   }

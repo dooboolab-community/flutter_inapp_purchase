@@ -61,12 +61,11 @@ class _MyAppState extends State<MyApp> {
 
   Future<Null> _buyProduct(IAPItem item) async {
     try {
-      var bought = await FlutterInappPurchase.buyProduct(item.productId);
-      print('bought - ${bought.toString()}');
+      PurchasedItem purchased= await FlutterInappPurchase.buyProduct(item.productId);
+      print('purcuased - ${purchased.toString()}');
     } catch (error) {
       print('$error');
     }
-
   }
 
   Future<Null> _getProduct() async {
