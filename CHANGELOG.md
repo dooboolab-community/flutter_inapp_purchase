@@ -1,3 +1,7 @@
+## 0.3.3
+* Code formatted
+* Updated missing data types
+
 ## 0.3.1
 * Upgraded readme for ease of usage.
 * Enabled strong mode.

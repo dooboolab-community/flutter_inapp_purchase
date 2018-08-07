@@ -10,8 +10,7 @@ class FlutterInappPurchase {
     'subs',
   ];
 
-  static const MethodChannel _channel =
-  const MethodChannel('flutter_inapp');
+  static const MethodChannel _channel = const MethodChannel('flutter_inapp');
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
@@ -51,9 +50,12 @@ class FlutterInappPurchase {
       );
 
       List list = json.decode(result.toString());
-      List<IAPItem> products = list.map<IAPItem>(
-            (dynamic product) => new IAPItem.fromJSON(product as Map<String, dynamic>),
-      ).toList();
+      List<IAPItem> products = list
+          .map<IAPItem>(
+            (dynamic product) =>
+                new IAPItem.fromJSON(product as Map<String, dynamic>),
+          )
+          .toList();
 
       return products;
     } else if (Platform.isIOS) {
@@ -66,9 +68,12 @@ class FlutterInappPurchase {
 
       result = json.encode(result);
       List list = json.decode(result.toString());
-      List<IAPItem> products = list.map<IAPItem>(
-            (dynamic product) => new IAPItem.fromJSON(product as Map<String, dynamic>),
-      ).toList();
+      List<IAPItem> products = list
+          .map<IAPItem>(
+            (dynamic product) =>
+                new IAPItem.fromJSON(product as Map<String, dynamic>),
+          )
+          .toList();
 
       return products;
     }
@@ -121,22 +126,34 @@ class FlutterInappPurchase {
         },
       );
 
-      List<String> decoded1 = json.decode(result1.toString()).map<IAPItem>(
-            (dynamic product) => new IAPItem.fromJSON(product as Map<String, dynamic>),
-      ).toList();
+      List<String> decoded1 = json
+          .decode(result1.toString())
+          .map<IAPItem>(
+            (dynamic product) =>
+                new IAPItem.fromJSON(product as Map<String, dynamic>),
+          )
+          .toList();
 
-      List<String> decoded2 = json.decode(result2.toString()).map<IAPItem>(
-            (dynamic product) => new IAPItem.fromJSON(product as Map<String, dynamic>),
-      ).toList();
+      List<String> decoded2 = json
+          .decode(result2.toString())
+          .map<IAPItem>(
+            (dynamic product) =>
+                new IAPItem.fromJSON(product as Map<String, dynamic>),
+          )
+          .toList();
 
       List<IAPItem> items = new List<dynamic>.from(decoded1)..addAll(decoded2);
       return items;
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
       result = json.encode(result);
-      List<IAPItem> items = json.decode(result.toString()).map<IAPItem>(
-            (dynamic product) => new IAPItem.fromJSON(product as Map<String, dynamic>),
-      ).toList();
+      List<IAPItem> items = json
+          .decode(result.toString())
+          .map<IAPItem>(
+            (dynamic product) =>
+                new IAPItem.fromJSON(product as Map<String, dynamic>),
+          )
+          .toList();
       return items;
     }
     throw new PlatformException(code: Platform.operatingSystem);
@@ -158,13 +175,21 @@ class FlutterInappPurchase {
         },
       );
 
-      List<IAPItem> decoded1 = json.decode(result1.toString()).map<IAPItem>(
-            (dynamic product) => new IAPItem.fromJSON(product as Map<String, dynamic>),
-      ).toList();
+      List<IAPItem> decoded1 = json
+          .decode(result1.toString())
+          .map<IAPItem>(
+            (dynamic product) =>
+                new IAPItem.fromJSON(product as Map<String, dynamic>),
+          )
+          .toList();
 
-      List<IAPItem> decoded2 = json.decode(result2.toString()).map<IAPItem>(
-            (dynamic product) => new IAPItem.fromJSON(product as Map<String, dynamic>),
-      ).toList();
+      List<IAPItem> decoded2 = json
+          .decode(result2.toString())
+          .map<IAPItem>(
+            (dynamic product) =>
+                new IAPItem.fromJSON(product as Map<String, dynamic>),
+          )
+          .toList();
 
       var items = new List<IAPItem>.from(decoded1)..addAll(decoded2);
       return items;
@@ -172,36 +197,36 @@ class FlutterInappPurchase {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
       result = json.encode(result);
 
-      List<IAPItem> items = json.decode(result.toString()).map<IAPItem>(
-            (dynamic product) => new IAPItem.fromJSON(product as Map<String, dynamic>),
-      ).toList();
+      List<IAPItem> items = json
+          .decode(result.toString())
+          .map<IAPItem>(
+            (dynamic product) =>
+                new IAPItem.fromJSON(product as Map<String, dynamic>),
+          )
+          .toList();
       return items;
     }
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<PurchasedItem> buyProduct(String sku, { String oldSku }) async {
+  static Future<PurchasedItem> buyProduct(String sku, {String oldSku}) async {
     if (Platform.isAndroid) {
-      dynamic result = await _channel.invokeMethod(
-          'buyItemByType',
-          <String, dynamic>{
-            'type': _typeInApp[0],
-            'sku': sku,
-            'oldSku': null,
-          }
-      );
+      dynamic result =
+          await _channel.invokeMethod('buyItemByType', <String, dynamic>{
+        'type': _typeInApp[0],
+        'sku': sku,
+        'oldSku': null,
+      });
 
       Map<String, dynamic> param = json.decode(result.toString());
       PurchasedItem item = new PurchasedItem.fromJSON(param);
 
       return item;
     } else if (Platform.isIOS) {
-      dynamic result = await _channel.invokeMethod(
-          'buyProductWithFinishTransaction',
-          <String, dynamic>{
-            'sku': sku,
-          }
-      );
+      dynamic result = await _channel
+          .invokeMethod('buyProductWithFinishTransaction', <String, dynamic>{
+        'sku': sku,
+      });
       result = json.encode(result);
 
       Map<String, dynamic> param = json.decode(result.toString());
@@ -211,27 +236,24 @@ class FlutterInappPurchase {
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<PurchasedItem> buySubscription(String sku, { String oldSku }) async {
+  static Future<PurchasedItem> buySubscription(String sku,
+      {String oldSku}) async {
     if (Platform.isAndroid) {
-      dynamic result = await _channel.invokeMethod(
-          'buyItemByType',
-          <String, dynamic>{
-            'type': _typeInApp[1],
-            'sku': sku,
-            'oldSku': oldSku,
-          }
-      );
+      dynamic result =
+          await _channel.invokeMethod('buyItemByType', <String, dynamic>{
+        'type': _typeInApp[1],
+        'sku': sku,
+        'oldSku': oldSku,
+      });
 
       Map<String, dynamic> param = json.decode(result.toString());
       PurchasedItem item = new PurchasedItem.fromJSON(param);
       return item;
     } else if (Platform.isIOS) {
-      dynamic result = await _channel.invokeMethod(
-          'buyProductWithFinishTransaction',
-          <String, dynamic>{
-            'sku': sku,
-          }
-      );
+      dynamic result = await _channel
+          .invokeMethod('buyProductWithFinishTransaction', <String, dynamic>{
+        'sku': sku,
+      });
       result = json.encode(result);
 
       Map<String, dynamic> param = json.decode(result.toString());
@@ -243,12 +265,10 @@ class FlutterInappPurchase {
 
   static Future<String> consumePurchase(String token) async {
     if (Platform.isAndroid) {
-      String result = await _channel.invokeMethod(
-          'consumeProduct',
-          <String, dynamic>{
-            'token': token,
-          }
-      );
+      String result =
+          await _channel.invokeMethod('consumeProduct', <String, dynamic>{
+        'token': token,
+      });
 
       return result;
     } else if (Platform.isIOS) {
@@ -269,24 +289,22 @@ class FlutterInappPurchase {
   }
 
   /// ios specific
-  static Future<PurchasedItem> buyProductWithoutFinishTransaction(String sku) async {
+  static Future<PurchasedItem> buyProductWithoutFinishTransaction(
+      String sku) async {
     if (Platform.isAndroid) {
-      dynamic result = await _channel.invokeMethod(
-          'buyItemByType',
-          <String, dynamic>{
-            'type': _typeInApp[0],
-            'sku': sku,
-            'oldSku': null,
-          }
-      );
+      dynamic result =
+          await _channel.invokeMethod('buyItemByType', <String, dynamic>{
+        'type': _typeInApp[0],
+        'sku': sku,
+        'oldSku': null,
+      });
 
       Map<String, dynamic> param = json.decode(result.toString());
       PurchasedItem item = new PurchasedItem.fromJSON(param);
       return item;
     } else if (Platform.isIOS) {
-      dynamic result = await _channel.invokeMethod(
-          'buyProductWithoutFinishTransaction'
-      );
+      dynamic result =
+          await _channel.invokeMethod('buyProductWithoutFinishTransaction');
       result = json.encode(result);
 
       Map<String, dynamic> param = json.decode(result.toString());
@@ -323,20 +341,17 @@ class IAPItem {
         type = json['type'] as String,
         localizedPrice = json['localizedPrice'] as String,
         title = json['title'] as String,
-        description = json['description'] as String
-  ;
+        description = json['description'] as String;
 
   @override
   String toString() {
-    return
-      'productId: $productId, '
-      'price: $price, '
-      'currency: $currency, '
-      'type: $type, '
-      'localizedPrice: $localizedPrice, '
-      'title: $title, '
-      'description: $title'
-    ;
+    return 'productId: $productId, '
+        'price: $price, '
+        'currency: $currency, '
+        'type: $type, '
+        'localizedPrice: $localizedPrice, '
+        'title: $title, '
+        'description: $title';
   }
 }
 
@@ -353,38 +368,36 @@ class PurchasedItem {
   final String data;
   // Android only
   final String signature;
-  
+
   // iOS only
   final dynamic originalTransactionDate;
   // iOS only
   final String originalTransactionIdentifier;
 
   PurchasedItem.fromJSON(Map<String, dynamic> json)
-    : transactionDate = json['transactionDate'] as dynamic,
-      transactionId = json['transactionId'] as String,
-      productId = json['productId'] as String,
-      transactionReceipt = json['transactionReceipt'] as String,
-      purchaseToken = json['purchaseToken'] as String,
-      autoRenewing = json['autoRenewing'] as bool,
-      data = json['data'] as String,
-      signature = json['signature'] as String,
-      originalTransactionDate = json['originalTransactionDate'] as dynamic,
-      originalTransactionIdentifier = json['originalTransactionIdentifier'] as String
-  ;
+      : transactionDate = json['transactionDate'] as dynamic,
+        transactionId = json['transactionId'] as String,
+        productId = json['productId'] as String,
+        transactionReceipt = json['transactionReceipt'] as String,
+        purchaseToken = json['purchaseToken'] as String,
+        autoRenewing = json['autoRenewing'] as bool,
+        data = json['data'] as String,
+        signature = json['signature'] as String,
+        originalTransactionDate = json['originalTransactionDate'] as dynamic,
+        originalTransactionIdentifier =
+            json['originalTransactionIdentifier'] as String;
 
   @override
   String toString() {
-    return
-      'transactionDate: $transactionDate, '
-      'transactionId: $transactionId, '
-      'productId: $productId, '
-      'transactionReceipt: $transactionReceipt, '
-      'purchaseToken: $purchaseToken, '
-      'autoRenewing: $autoRenewing, '
-      'data: $data, '
-      'signature: $signature, '
-      'originalTransactionDate: $originalTransactionDate, '
-      'originalTransactionIdentifier: $originalTransactionIdentifier'
-    ;
+    return 'transactionDate: $transactionDate, '
+        'transactionId: $transactionId, '
+        'productId: $productId, '
+        'transactionReceipt: $transactionReceipt, '
+        'purchaseToken: $purchaseToken, '
+        'autoRenewing: $autoRenewing, '
+        'data: $data, '
+        'signature: $signature, '
+        'originalTransactionDate: $originalTransactionDate, '
+        'originalTransactionIdentifier: $originalTransactionIdentifier';
   }
 }

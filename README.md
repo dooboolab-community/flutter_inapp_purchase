@@ -54,8 +54,16 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
   final String transactionReceipt;
   final String purchaseToken;
   final bool autoRenewing;
-  final String originalTransactionIdentifier;
+    // Android only
+  final bool autoRenewing;
+  // Android only
+  final String data;
+  // Android only
+  final String signature;
+  // iOS only
   final dynamic originalTransactionDate;
+  // iOS only
+  final String originalTransactionIdentifier;
   ```
 
 
