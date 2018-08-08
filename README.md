@@ -10,6 +10,7 @@ We will keep working on it as time goes by just like we did in `react-native-iap
 
 
 ## Getting Started
+Follow the [Medium Blog](https://medium.com/@dooboolab/flutter-in-app-purchase-7a3fb9345e2a) for the configuration.
 
 For help getting started with Flutter, view our online
 [documentation](https://flutter.io/).
