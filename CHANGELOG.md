@@ -1,3 +1,9 @@
+## 0.4.2
+* Update readme.
+
+## 0.4.0
+* Well formatted code.
+
 ## 0.3.3
 * Code formatted
 * Updated missing data types

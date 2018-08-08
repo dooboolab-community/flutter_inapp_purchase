@@ -109,7 +109,7 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
   }
   ```
 
-#### Purcase Item
+#### Purchase Item
   ```dart
   void purchase() async {
     PurchasedItem purchased = await FlutterInappPurchase.buyProduct(item.productId);
