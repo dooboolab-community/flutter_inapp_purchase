@@ -26,9 +26,9 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | getSubscriptions | `List<String>` Subscription IDs/skus | `List<IAPItem>` | Get a list of subscriptions. Note: On iOS  this method has the same output as `getProducts`. Because iOS does not differentiate between IAP products and subscriptions.  |
 | getPurchaseHistory | | `List<IAPItem>` | Gets an invetory of purchases made by the user regardless of consumption status (where possible) |
 | getAvailablePurchases | | `List<IAPItem>` | Get all purchases made by the user (either non-consumable, or haven't been consumed yet)
-| buySubscription | `string` Subscription ID/sku, `string` Old Subscription ID/sku (on Android) | `json` | Create (buy) a subscription to a sku. For upgrading/downgrading subscription on Android pass second parameter with current subscription ID, on iOS this is handled automatically by store. |
-| buyProduct | `string` Product ID/sku | `json` | Buy a product |
-| buyProductWithoutFinishTransaction | `string` Product ID/sku | `json` | Buy a product without finish transaction call (iOS only) |
+| buySubscription | `string` Subscription ID/sku, `string` Old Subscription ID/sku (on Android) | `PurchasedItem` | Create (buy) a subscription to a sku. For upgrading/downgrading subscription on Android pass second parameter with current subscription ID, on iOS this is handled automatically by store. |
+| buyProduct | `string` Product ID/sku | `PurchasedItem` | Buy a product |
+| buyProductWithoutFinishTransaction | `string` Product ID/sku | `PurchasedItem` | Buy a product without finish transaction call (iOS only) |
 | finishTransaction | `void` | `String` | Send finishTransaction call to Apple IAP server. Call this function after receipt validation process |
 | consumePurchase | `String` Purchase token | `String` | Consume a product (on Android.) No-op on iOS. |
 | endConnection | | `String` | End billing connection (on Android.) No-op on iOS. |
@@ -100,17 +100,21 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
   ```
 #### Get IAP items
   ```dart
-  List<IAPItem> items = await FlutterInappPurchase.getProducts(_productLists);
-  for (var item in items) {
-    print('${item.toString()}');
-    this._items.add(item);
+  void getItems () async {
+    List<IAPItem> items = await FlutterInappPurchase.getProducts(_productLists);
+    for (var item in items) {
+      print('${item.toString()}');
+      this._items.add(item);
+    }
   }
   ```
 
 #### Purcase Item
   ```dart
-  PurchasedItem purchased = await FlutterInappPurchase.buyProduct(item.productId);
-  print('purcuased - ${purchased.toString()}');
+  void purchase() async {
+    PurchasedItem purchased = await FlutterInappPurchase.buyProduct(item.productId);
+    print('purcuased - ${purchased.toString()}');
+  }
   ```
 
 
