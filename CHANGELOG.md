@@ -1,5 +1,5 @@
-## 0.4.2
-* Update readme.
+## 0.4.3
+* Fixed subscription return types.
 
 ## 0.4.0
 * Well formatted code.

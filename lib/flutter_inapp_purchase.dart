@@ -80,7 +80,7 @@ class FlutterInappPurchase {
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<PurchasedItem> getSubscriptions(List<String> skus) async {
+  static Future<List<IAPItem>> getSubscriptions(List<String> skus) async {
     skus = skus.toList();
     if (Platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(
@@ -91,9 +91,15 @@ class FlutterInappPurchase {
         },
       );
 
-      Map<String, String> param = json.decode(result.toString());
-      PurchasedItem item = new PurchasedItem.fromJSON(param);
-      return item;
+      List list = json.decode(result.toString());
+      List<IAPItem> products = list
+          .map<IAPItem>(
+            (dynamic product) =>
+                new IAPItem.fromJSON(product as Map<String, dynamic>),
+          )
+          .toList();
+
+      return products;
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod(
         'getItems',
@@ -103,14 +109,21 @@ class FlutterInappPurchase {
       );
       result = json.encode(result);
 
-      Map<String, String> param = json.decode(result.toString());
-      PurchasedItem purchase = new PurchasedItem.fromJSON(param);
-      return purchase;
+      result = json.encode(result);
+      List list = json.decode(result.toString());
+      List<IAPItem> products = list
+          .map<IAPItem>(
+            (dynamic product) =>
+                new IAPItem.fromJSON(product as Map<String, dynamic>),
+          )
+          .toList();
+
+      return products;
     }
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<List<IAPItem>> getPurchaseHistory() async {
+  static Future<List<PurchasedItem>> getPurchaseHistory() async {
     if (Platform.isAndroid) {
       dynamic result1 = await _channel.invokeMethod(
         'getPurchaseHistoryByType',
@@ -136,20 +149,21 @@ class FlutterInappPurchase {
 
       List<String> decoded2 = json
           .decode(result2.toString())
-          .map<IAPItem>(
+          .map<PurchasedItem>(
             (dynamic product) =>
                 new IAPItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
-      List<IAPItem> items = new List<dynamic>.from(decoded1)..addAll(decoded2);
+      List<PurchasedItem> items = new List<dynamic>.from(decoded1)
+        ..addAll(decoded2);
       return items;
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
       result = json.encode(result);
-      List<IAPItem> items = json
+      List<PurchasedItem> items = json
           .decode(result.toString())
-          .map<IAPItem>(
+          .map<PurchasedItem>(
             (dynamic product) =>
                 new IAPItem.fromJSON(product as Map<String, dynamic>),
           )
