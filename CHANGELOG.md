@@ -1,3 +1,8 @@
+## 0.5.0
+* Code migration.
+* Support subscription period.
+* There was parameter renaming in `0.5.0` to identify different parameters sent from the device. Please check the readme.
+
 ## 0.4.3
 * Fixed subscription return types.
 

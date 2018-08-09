@@ -129,13 +129,29 @@
 
         // NSString* itemType = @"Do not use this. It returned sub only before";
         NSString* currencyCode = @"";
-        NSString* subscriptionPeriod;
+        NSString* periodNumberIOS = @"0";
+        NSString* periodUnitIOS = @"";
+        
 
         if (@available(iOS 11.2, *)) {
-          // itemType = product.subscriptionPeriod ? @"sub" : @"iap";
-          subscriptionPeriod =  [[NSString alloc] initWithFormat:@"%lu", (unsigned long) product.subscriptionPeriod.numberOfUnits];
-          // subscriptionPeriod = product.subscriptionPeriod ? [product.subscriptionPeriod stringValue] : @"";
-          introductoryPrice = product.introductoryPrice ? [NSString stringWithFormat:@"%@", product.introductoryPrice] : @"";
+            // itemType = product.subscriptionPeriod ? @"sub" : @"iap";
+            unsigned long numOfUnits = (unsigned long) product.subscriptionPeriod.numberOfUnits;
+            SKProductPeriodUnit unit = product.subscriptionPeriod.unit;
+
+            if (unit == SKProductPeriodUnitYear) {
+                periodUnitIOS = @"YEAR";
+            } else if (unit == SKProductPeriodUnitMonth) {
+                periodUnitIOS = @"MONTH";
+            } else if (unit == SKProductPeriodUnitWeek) {
+                periodUnitIOS = @"WEEK";
+            } else if (unit == SKProductPeriodUnitDay) {
+                periodUnitIOS = @"DAY";
+            }
+
+            periodNumberIOS = [NSString stringWithFormat:@"%lu", numOfUnits];
+
+            // subscriptionPeriod = product.subscriptionPeriod ? [product.subscriptionPeriod stringValue] : @"";
+            introductoryPrice = product.introductoryPrice ? [NSString stringWithFormat:@"%@", product.introductoryPrice] : @"";
         }
 
         if (@available(iOS 10.0, *)) {
@@ -150,7 +166,8 @@
           @"title" : product.localizedTitle ? product.localizedTitle : @"",
           @"description" : product.localizedDescription ? product.localizedDescription : @"",
           @"localizedPrice" : localizedPrice,
-          @"subscriptionPeriod" : subscriptionPeriod ? subscriptionPeriod : @"",
+          @"subscriptionPeriodNumberIOS" : periodNumberIOS,
+          @"subscriptionPeriodUnitIOS" : periodUnitIOS,
           @"introductoryPrice" : introductoryPrice
         };
 
@@ -243,8 +260,8 @@
     // originalTransaction is available for restore purchase and purchase of cancelled/expired subscriptions
     SKPaymentTransaction *originalTransaction = transaction.originalTransaction;
     if (originalTransaction) {
-        purchase[@"originalTransactionDate"] = @(originalTransaction.transactionDate.timeIntervalSince1970 * 1000);
-        purchase[@"originalTransactionIdentifier"] = originalTransaction.transactionIdentifier;
+        purchase[@"originalTransactionDateIOS"] = @(originalTransaction.transactionDate.timeIntervalSince1970 * 1000);
+        purchase[@"originalTransactionIdentifierIOS"] = originalTransaction.transactionIdentifier;
     }
 
     return purchase;

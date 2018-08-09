@@ -8,6 +8,8 @@ Since [dooboolab](https://github.com/dooboolab) is working alone currently, need
 We will keep working on it as time goes by just like we did in `react-native-iap`.
 `PR` is always welcomed.
 
+## Breaking Changes
+* There was parameter renaming in `0.5.0` to identify different parameters sent from the device. Please check the readme.
 
 ## Getting Started
 Follow the [Medium Blog](https://medium.com/@dooboolab/flutter-in-app-purchase-7a3fb9345e2a) for the configuration.
@@ -45,6 +47,14 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
   final String localizedPrice;
   final String title;
   final String description;
+  /// ios only
+  final String subscriptionPeriodNumberIOS;
+  final String subscriptionPeriodUnitIOS;
+  /// android only
+  final String subscriptionPeriodAndroid;
+  final String introductoryPriceCyclesAndroid;
+  final String introductoryPricePeriodAndroid;
+  final String freeTrialPeriodAndroid;
   ```
 
 * PurchasedItem
@@ -54,17 +64,13 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
   final String productId;
   final String transactionReceipt;
   final String purchaseToken;
-  final bool autoRenewing;
-    // Android only
-  final bool autoRenewing;
   // Android only
-  final String data;
-  // Android only
-  final String signature;
+  final bool autoRenewingAndroid;
+  final String dataAndroid;
+  final String signatureAndroid;
   // iOS only
-  final dynamic originalTransactionDate;
-  // iOS only
-  final String originalTransactionIdentifier;
+  final dynamic originalTransactionDateIOS;
+  final String originalTransactionIdentifierIOS;
   ```
 
 

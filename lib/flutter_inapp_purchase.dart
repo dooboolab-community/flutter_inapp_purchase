@@ -343,29 +343,54 @@ class IAPItem {
   final String productId;
   final String price;
   final String currency;
-  final String type;
   final String localizedPrice;
   final String title;
   final String description;
+  final String introductoryPrice;
+
+  /// ios only
+  final String subscriptionPeriodNumberIOS;
+  final String subscriptionPeriodUnitIOS;
+
+  /// android only
+  final String subscriptionPeriodAndroid;
+  final String introductoryPriceCyclesAndroid;
+  final String introductoryPricePeriodAndroid;
+  final String freeTrialPeriodAndroid;
 
   IAPItem.fromJSON(Map<String, dynamic> json)
       : productId = json['productId'] as String,
         price = json['price'] as String,
         currency = json['currency'] as String,
-        type = json['type'] as String,
         localizedPrice = json['localizedPrice'] as String,
         title = json['title'] as String,
-        description = json['description'] as String;
+        description = json['description'] as String,
+        introductoryPrice = json['introductoryPrice'] as String,
+        subscriptionPeriodNumberIOS =
+            json['subscriptionPeriodNumberIOS'] as String,
+        subscriptionPeriodUnitIOS = json['subscriptionPeriodUnitIOS'] as String,
+        subscriptionPeriodAndroid = json['subscriptionPeriodAndroid'] as String,
+        introductoryPriceCyclesAndroid =
+            json['introductoryPriceCyclesAndroid'] as String,
+        introductoryPricePeriodAndroid =
+            json['introductoryPricePeriodAndroid'] as String,
+        freeTrialPeriodAndroid = json['freeTrialPeriodAndroid'] as String;
 
   @override
   String toString() {
     return 'productId: $productId, '
         'price: $price, '
         'currency: $currency, '
-        'type: $type, '
         'localizedPrice: $localizedPrice, '
         'title: $title, '
-        'description: $title';
+        'description: $title, '
+        'introductoryPrice: $introductoryPrice, '
+        'subscriptionPeriodNumberIOS: $subscriptionPeriodNumberIOS, '
+        'subscriptionPeriodUnitIOS: $subscriptionPeriodUnitIOS, '
+        'subscriptionPeriodAndroid: $subscriptionPeriodAndroid, '
+        'introductoryPriceCyclesAndroid: $introductoryPriceCyclesAndroid, '
+        'introductoryPricePeriodAndroid: $introductoryPricePeriodAndroid, '
+        'freeTrialPeriodAndroid: $freeTrialPeriodAndroid, ';
   }
 }
 
@@ -377,16 +402,13 @@ class PurchasedItem {
   final String purchaseToken;
 
   // Android only
-  final bool autoRenewing;
-  // Android only
-  final String data;
-  // Android only
-  final String signature;
+  final bool autoRenewingAndroid;
+  final String dataAndroid;
+  final String signatureAndroid;
 
   // iOS only
-  final dynamic originalTransactionDate;
-  // iOS only
-  final String originalTransactionIdentifier;
+  final dynamic originalTransactionDateIOS;
+  final String originalTransactionIdentifierIOS;
 
   PurchasedItem.fromJSON(Map<String, dynamic> json)
       : transactionDate = json['transactionDate'] as dynamic,
@@ -394,12 +416,13 @@ class PurchasedItem {
         productId = json['productId'] as String,
         transactionReceipt = json['transactionReceipt'] as String,
         purchaseToken = json['purchaseToken'] as String,
-        autoRenewing = json['autoRenewing'] as bool,
-        data = json['data'] as String,
-        signature = json['signature'] as String,
-        originalTransactionDate = json['originalTransactionDate'] as dynamic,
-        originalTransactionIdentifier =
-            json['originalTransactionIdentifier'] as String;
+        autoRenewingAndroid = json['autoRenewingAndroid'] as bool,
+        dataAndroid = json['dataAndroid'] as String,
+        signatureAndroid = json['signatureAndroid'] as String,
+        originalTransactionDateIOS =
+            json['originalTransactionDateIOS'] as dynamic,
+        originalTransactionIdentifierIOS =
+            json['originalTransactionIdentifierIOS'] as String;
 
   @override
   String toString() {
@@ -408,10 +431,10 @@ class PurchasedItem {
         'productId: $productId, '
         'transactionReceipt: $transactionReceipt, '
         'purchaseToken: $purchaseToken, '
-        'autoRenewing: $autoRenewing, '
-        'data: $data, '
-        'signature: $signature, '
-        'originalTransactionDate: $originalTransactionDate, '
-        'originalTransactionIdentifier: $originalTransactionIdentifier';
+        'autoRenewingAndroid: $autoRenewingAndroid, '
+        'dataAndroid: $dataAndroid, '
+        'signatureAndroid: $signatureAndroid, '
+        'originalTransactionDateIOS: $originalTransactionDateIOS, '
+        'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS';
   }
 }

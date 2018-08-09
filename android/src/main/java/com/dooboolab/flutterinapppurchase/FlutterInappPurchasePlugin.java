@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -41,7 +42,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class FlutterInappPurchasePlugin implements MethodCallHandler {
   private static Activity activity;
   private static Context context;
-  private final String TAG = "FlutterInappPurchasePlugin";
+  private final String TAG = "InappPurchasePlugin";
   private IInAppBillingService mService;
   private BillingClient mBillingClient;
   private Result result = null;
@@ -70,7 +71,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       result.success("Android " + android.os.Build.VERSION.RELEASE);
     }
 
-    /**
+    /*
      * prepare
      */
     else if (call.method.equals("prepare")) {
@@ -110,7 +111,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       }
     }
 
-    /**
+    /*
      * endConnection
      */
     else if (call.method.equals("endConnection")) {
@@ -123,7 +124,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       }
     }
 
-    /**
+    /*
      * consumeAllItems
      */
     else if (call.method.equals("consumeAllItems")) {
@@ -147,7 +148,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       }
     }
 
-    /**
+    /*
      * getItemsByType
      * arguments: type, skus
      */
@@ -180,12 +181,17 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
                   for (SkuDetails skuDetails : skuDetailsList) {
                     JSONObject item = new JSONObject();
                     item.put("productId", skuDetails.getSku());
-                    item.put("price", String.format("%.02f", skuDetails.getPriceAmountMicros() / 1000000f));
+                    item.put("price", String.format(Locale.ENGLISH, "%.02f", skuDetails.getPriceAmountMicros() / 1000000f));
                     item.put("currency", skuDetails.getPriceCurrencyCode());
                     item.put("type", skuDetails.getType());
                     item.put("localizedPrice", skuDetails.getPrice());
                     item.put("title", skuDetails.getTitle());
                     item.put("description", skuDetails.getDescription());
+                    item.put("introductoryPrice", skuDetails.getIntroductoryPrice());
+                    item.put("subscriptionPeriodAndroid", skuDetails.getSubscriptionPeriod());
+                    item.put("freeTrialPeriodAndroid", skuDetails.getFreeTrialPeriod());
+                    item.put("introductoryPriceCyclesAndroid", skuDetails.getIntroductoryPriceCycles());
+                    item.put("introductoryPricePeriodAndroid", skuDetails.getIntroductoryPricePeriod());
                     items.put(item);
                   }
                 } catch (JSONException e) {
@@ -201,7 +207,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       );
     }
 
-    /**
+    /*
      * getAvailableItemsByType
      * arguments: type
      */
@@ -240,12 +246,12 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
             item.put("transactionId", json.getString("orderId"));
             item.put("transactionDate", json.getString("purchaseTime"));
             item.put("transactionReceipt", json.getString("purchaseToken"));
-            item.put("data", data);
-            item.put("signature", signature);
+            item.put("dataAndroid", data);
+            item.put("signatureAndroid", signature);
             item.put("purchaseToken", json.getString("purchaseToken"));
 
             if (type.equals(BillingClient.SkuType.SUBS)) {
-              item.put("autoRenewing", json.getBoolean("autoRenewing"));
+              item.put("autoRenewingAndroid", json.getBoolean("autoRenewing"));
             }
 
             items.put(item);
@@ -260,7 +266,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       }
     }
 
-    /**
+    /*
      * getPurchaseHistoryByType
      * arguments: type
      */
@@ -290,12 +296,12 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
                 item.put("transactionId", purchase.getOrderId());
                 item.put("transactionDate", String.valueOf(purchase.getPurchaseTime()));
                 item.put("transactionReceipt", purchase.getPurchaseToken());
-                item.put("data", purchase.getOriginalJson());
-                item.put("signature", purchase.getSignature());
                 item.put("purchaseToken", purchase.getPurchaseToken());
+                item.put("dataAndroid", purchase.getOriginalJson());
+                item.put("signatureAndroid", purchase.getSignature());
 
                 if (type.equals(BillingClient.SkuType.SUBS)) {
-                  item.put("autoRenewing", purchase.isAutoRenewing());
+                  item.put("autoRenewingAndroid", purchase.isAutoRenewing());
                 }
 
                 items.put(item);
@@ -311,7 +317,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       });
     }
 
-    /**
+    /*
      * buyItemByType
      * arguments: type, sku, oldSku
      */
@@ -343,7 +349,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       }
     }
 
-    /**
+    /*
      * consumeProduct
      * arguments: type
      */
@@ -369,7 +375,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       });
     }
 
-    /**
+    /*
      * else
      */
     else {
@@ -377,7 +383,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
     }
   }
 
-  PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
+  private PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
     @Override
     public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> purchases) {
       Log.d(TAG, "Purchase Updated Listener");
@@ -392,10 +398,10 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
           item.put("transactionId", purchase.getOrderId());
           item.put("transactionDate", String.valueOf(purchase.getPurchaseTime()));
           item.put("transactionReceipt", purchase.getPurchaseToken());
-          item.put("data", purchase.getOriginalJson());
-          item.put("signature", purchase.getSignature());
           item.put("purchaseToken", purchase.getPurchaseToken());
-          item.put("autoRenewing", purchase.isAutoRenewing());
+          item.put("dataAndroid", purchase.getOriginalJson());
+          item.put("signatureAndroid", purchase.getSignature());
+          item.put("autoRenewingAndroid", purchase.isAutoRenewing());
         } catch (JSONException je) {
           if (result != null) {
             result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
