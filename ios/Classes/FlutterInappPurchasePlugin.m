@@ -124,23 +124,34 @@
         NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
         formatter.numberStyle = NSNumberFormatterCurrencyStyle;
         formatter.locale = product.priceLocale;
-        NSString *localizedPrice = [formatter stringFromNumber:product.price];
+        NSString* localizedPrice = [formatter stringFromNumber:product.price];
+        NSString* introductoryPrice;
 
-        NSString* itemType = @"Do not use this. It returned sub only before";
+        // NSString* itemType = @"Do not use this. It returned sub only before";
         NSString* currencyCode = @"";
+        NSString* subscriptionPeriod;
+
+        if (@available(iOS 11.2, *)) {
+          // itemType = product.subscriptionPeriod ? @"sub" : @"iap";
+          subscriptionPeriod =  [[NSString alloc] initWithFormat:@"%lu", (unsigned long) product.subscriptionPeriod.numberOfUnits];
+          // subscriptionPeriod = product.subscriptionPeriod ? [product.subscriptionPeriod stringValue] : @"";
+          introductoryPrice = product.introductoryPrice ? [NSString stringWithFormat:@"%@", product.introductoryPrice] : @"";
+        }
 
         if (@available(iOS 10.0, *)) {
           currencyCode = product.priceLocale.currencyCode;
         }
 
-        NSString* obj = @{
+        NSDictionary* obj = @{
           @"productId" : product.productIdentifier,
           @"price" : [product.price stringValue],
           @"currency" : currencyCode,
-          @"type": itemType,
+          // @"type": itemType,
           @"title" : product.localizedTitle ? product.localizedTitle : @"",
           @"description" : product.localizedDescription ? product.localizedDescription : @"",
-          @"localizedPrice" : localizedPrice
+          @"localizedPrice" : localizedPrice,
+          @"subscriptionPeriod" : subscriptionPeriod ? subscriptionPeriod : @"",
+          @"introductoryPrice" : introductoryPrice
         };
 
 
@@ -189,7 +200,7 @@
             case SKPaymentTransactionStateFailed:
                 if (result == nil) return;
                 [requestedPayments removeObjectForKey:transaction.payment];
-                result(@"purchase failed");
+                result([FlutterError errorWithCode:@"ERROR" message:@"Purcahse failed!" details:nil]);
                 NSLog(@"\n\n\n\n\n\n Purchase Failed  !! \n\n\n\n\n");
                 break;
         }
@@ -197,7 +208,6 @@
 }
 
 -(void)purchaseProcess:(SKPaymentTransaction *)transaction {
-    NSMutableArray<FlutterResult>* results = [[NSMutableArray alloc] init];
     if (autoReceiptConform) {
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         currentTransaction = nil;
@@ -205,7 +215,6 @@
         currentTransaction = transaction;
     }
 
-    NSURL *receiptUrl = [[NSBundle mainBundle] appStoreReceiptURL];
     NSDictionary* purchase = [self getPurchaseData:transaction];
     FlutterResult result = [requestedPayments objectForKey:transaction.payment];
     if (result != nil) {
@@ -245,10 +254,10 @@
     NSMutableArray<FlutterResult>* results = [[NSMutableArray alloc] init];
 
     [transactions enumerateObjectsUsingBlock:^(SKPaymentTransaction* transaction, NSUInteger idx, BOOL* stop) {
-        [purchases addObject:transaction.payment.productIdentifier];
-        FlutterResult result = [requestedPayments objectForKey:transaction.payment];
+        [self -> purchases addObject:transaction.payment.productIdentifier];
+        FlutterResult result = [self -> requestedPayments objectForKey:transaction.payment];
         if (result != nil) {
-            [requestedPayments removeObjectForKey:transaction.payment];
+            [self -> requestedPayments removeObjectForKey:transaction.payment];
             [results addObject:result];
         }
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
