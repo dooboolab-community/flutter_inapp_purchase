@@ -108,7 +108,10 @@
     FlutterResult result = [fetchProducts objectForKey:key];
     if (result != nil) {
         [fetchProducts removeObjectForKey:key];
-        result([FlutterError errorWithCode:@"ERROR" message:@"Failed to make IAP request!" details:nil]);
+        result([FlutterError
+                errorWithCode:[self standardErrorCode:(int)error.code]
+                message:[self englishErrorCodeDescription:(int)error.code]
+                details:nil]);
     }
 }
 
@@ -192,7 +195,7 @@
         [requestedPayments setObject:result forKey:payment];
         [[SKPaymentQueue defaultQueue] addPayment:payment];
     } else {
-        result([FlutterError errorWithCode:@"ERROR" message:@"Failed to make a payment!" details:nil]);
+        result([FlutterError errorWithCode:@"E_DEVELOPER_ERROR" message:@"Invalid product ID." details:nil]);
     }
 }
 
@@ -217,7 +220,12 @@
             case SKPaymentTransactionStateFailed:
                 if (result == nil) return;
                 [requestedPayments removeObjectForKey:transaction.payment];
-                result([FlutterError errorWithCode:@"ERROR" message:@"Purcahse failed!" details:nil]);
+
+                result([FlutterError
+                        errorWithCode:[self standardErrorCode:(int)transaction.error.code]
+                        message:[self englishErrorCodeDescription:(int)transaction.error.code]
+                        details:transaction.error
+                ]);
                 NSLog(@"\n\n\n\n\n\n Purchase Failed  !! \n\n\n\n\n");
                 break;
         }
@@ -305,6 +313,44 @@
         flutterResult(items);
     }
     flutterResult = nil;
+}
+
+-(NSString *)standardErrorCode:(int)code {
+    NSArray *descriptions = @[
+                              @"E_UNKNOWN",
+                              @"E_SERVICE_ERROR",
+                              @"E_USER_CANCELLED",
+                              @"E_USER_ERROR",
+                              @"E_USER_ERROR",
+                              @"E_ITEM_UNAVAILABLE",
+                              @"E_REMOTE_ERROR",
+                              @"E_NETWORK_ERROR",
+                              @"E_SERVICE_ERROR"
+                              ];
+    
+    if (code > descriptions.count - 1) {
+        return descriptions[0];
+    }
+    return descriptions[code];
+}
+
+-(NSString *)englishErrorCodeDescription:(int)code {
+    NSArray *descriptions = @[
+                              @"An unknown or unexpected error has occured. Please try again later.",
+                              @"Unable to process the transaction: your device is not allowed to make purchases.",
+                              @"Cancelled.",
+                              @"Oops! Payment information invalid. Did you enter your password correctly?",
+                              @"Payment is not allowed on this device. If you are the one authorized to make purchases on this device, you can turn payments on in Settings.",
+                              @"Sorry, but this product is currently not available in the store.",
+                              @"Unable to make purchase: Cloud service permission denied.",
+                              @"Unable to process transaction: Your internet connection isn't stable! Try again later.",
+                              @"Unable to process transaction: Cloud service revoked."
+                              ];
+    
+    if (0 <= code && code < descriptions.count)
+        return descriptions[code];
+    else
+        return [NSString stringWithFormat:@"%@ (Error code: %d)", descriptions[0], code];
 }
 
 @end

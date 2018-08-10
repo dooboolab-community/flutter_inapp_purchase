@@ -250,8 +250,7 @@ class FlutterInappPurchase {
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<PurchasedItem> buySubscription(String sku,
-      {String oldSku}) async {
+  static Future<PurchasedItem> buySubscription(String sku, {String oldSku}) async {
     if (Platform.isAndroid) {
       dynamic result =
           await _channel.invokeMethod('buyItemByType', <String, dynamic>{

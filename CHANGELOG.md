@@ -1,3 +1,6 @@
+## 0.5.1
+* Give better error message on ios.
+
 ## 0.5.0
 * Code migration.
 * Support subscription period.
