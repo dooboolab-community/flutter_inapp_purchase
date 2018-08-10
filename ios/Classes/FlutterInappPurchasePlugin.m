@@ -224,7 +224,7 @@
                 result([FlutterError
                         errorWithCode:[self standardErrorCode:(int)transaction.error.code]
                         message:[self englishErrorCodeDescription:(int)transaction.error.code]
-                        details:transaction.error
+                        details:nil
                 ]);
                 NSLog(@"\n\n\n\n\n\n Purchase Failed  !! \n\n\n\n\n");
                 break;
