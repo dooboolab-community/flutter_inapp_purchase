@@ -1,5 +1,7 @@
 ## 0.5.2
 * Fix crashing on error.
+## 0.5.3
+* Fixed error parsing purchaseHistory.
 
 ## 0.5.1
 * Give better error message on ios.

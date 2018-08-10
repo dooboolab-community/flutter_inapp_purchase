@@ -139,24 +139,23 @@ class FlutterInappPurchase {
         },
       );
 
-      List<String> decoded1 = json
+      List<PurchasedItem> decoded1 = json
           .decode(result1.toString())
           .map<IAPItem>(
             (dynamic product) =>
-                new IAPItem.fromJSON(product as Map<String, dynamic>),
+                new PurchasedItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
-      List<String> decoded2 = json
+      List<PurchasedItem> decoded2 = json
           .decode(result2.toString())
           .map<PurchasedItem>(
             (dynamic product) =>
-                new IAPItem.fromJSON(product as Map<String, dynamic>),
+                new PurchasedItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
-      List<PurchasedItem> items = new List<dynamic>.from(decoded1)
-        ..addAll(decoded2);
+      var items = new List<PurchasedItem>.from(decoded1)..addAll(decoded2);
       return items;
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
@@ -250,7 +249,8 @@ class FlutterInappPurchase {
     throw new PlatformException(code: Platform.operatingSystem);
   }
 
-  static Future<PurchasedItem> buySubscription(String sku, {String oldSku}) async {
+  static Future<PurchasedItem> buySubscription(String sku,
+      {String oldSku}) async {
     if (Platform.isAndroid) {
       dynamic result =
           await _channel.invokeMethod('buyItemByType', <String, dynamic>{
