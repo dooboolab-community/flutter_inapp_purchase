@@ -141,7 +141,7 @@ class FlutterInappPurchase {
 
       List<PurchasedItem> decoded1 = json
           .decode(result1.toString())
-          .map<IAPItem>(
+          .map<PurchasedItem>(
             (dynamic product) =>
                 new PurchasedItem.fromJSON(product as Map<String, dynamic>),
           )

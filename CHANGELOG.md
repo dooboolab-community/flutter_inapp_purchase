@@ -1,3 +1,6 @@
+## 0.5.4
+* Fixed error parsing IAPItem.
+
 ## 0.5.3
 * Fixed error parsing purchaseHistory.
 
