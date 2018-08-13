@@ -3,9 +3,10 @@
   <a href="https://pub.dartlang.org/packages/flutter_inapp_purchase"><img alt="pub version" src="https://img.shields.io/pub/v/flutter_inapp_purchase.svg?style=flat-square"></a>
 </p>
 
-In App Purchase plugin for flutter. This project has been `forked` from [react-native-iap](https://github.com/dooboolab/react-native-iap). We are trying to have same experience of `in-app-purchase` in `flutter` as in `react-native`.
-Since [dooboolab](https://github.com/dooboolab) is working alone currently, need much improvement with the testing and maintenance.
+In App Purchase plugin for flutter. This project has been `forked` from [react-native-iap](https://github.com/dooboolab/react-native-iap). We are trying to share same experience of `in-app-purchase` in `flutter` as in `react-native`.
 We will keep working on it as time goes by just like we did in `react-native-iap`.
+Please give stars in github repository because we want to share this project in [opencollective](https://opencollective.com/react-native-iap). We need at least 100 stars to be there. Please help us to maintain and get more sponsors and backers.
+
 `PR` is always welcomed.
 
 ## Breaking Changes
