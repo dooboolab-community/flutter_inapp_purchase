@@ -1,3 +1,6 @@
+## 0.5.6
+* Few types fixed.
+
 ## 0.5.4
 * Fixed error parsing IAPItem.
 
