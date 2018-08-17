@@ -1,3 +1,6 @@
+## 0.5.7
+* Avoid possible memory leak in android by deleting static declaration of activity and context.
+
 ## 0.5.6
 * Few types fixed.
 

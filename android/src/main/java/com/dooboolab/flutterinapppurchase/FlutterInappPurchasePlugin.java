@@ -40,8 +40,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** FlutterInappPurchasePlugin */
 public class FlutterInappPurchasePlugin implements MethodCallHandler {
-  private static Activity activity;
-  private static Context context;
+  private static Registrar reg;
   private final String TAG = "InappPurchasePlugin";
   private IInAppBillingService mService;
   private BillingClient mBillingClient;
@@ -61,8 +60,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_inapp");
     channel.setMethodCallHandler(new FlutterInappPurchasePlugin());
-    activity = registrar.activity();
-    context = registrar.activeContext();
+    reg = registrar;
   }
 
   @Override
@@ -85,8 +83,8 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       }
 
       try {
-        context.bindService(intent, mServiceConn, Context.BIND_AUTO_CREATE);
-        mBillingClient = BillingClient.newBuilder(context).setListener(purchasesUpdatedListener).build();
+        reg.context().bindService(intent, mServiceConn, Context.BIND_AUTO_CREATE);
+        mBillingClient = BillingClient.newBuilder(reg.context()).setListener(purchasesUpdatedListener).build();
         mBillingClient.startConnection(new BillingClientStateListener() {
           @Override
           public void onBillingSetupFinished(@BillingClient.BillingResponse int responseCode) {
@@ -129,7 +127,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
      */
     else if (call.method.equals("consumeAllItems")) {
       try {
-        Bundle ownedItems = mService.getPurchases(3, context.getPackageName(), "inapp", null);
+        Bundle ownedItems = mService.getPurchases(3, reg.context().getPackageName(), "inapp", null);
         int response = ownedItems.getInt("RESPONSE_CODE");
         if (response == 0) {
           ArrayList purchaseDataList = ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
@@ -139,7 +137,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
             JSONObject jo = new JSONObject(purchaseData);
             tokens[i] = jo.getString("purchaseToken");
             // Consume all remainingTokens
-            mService.consumePurchase(3, context.getPackageName(), tokens[i]);
+            mService.consumePurchase(3, reg.context().getPackageName(), tokens[i]);
           }
           result.success("All items have been consumed");
         }
@@ -220,7 +218,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       Bundle availableItems;
       String type = call.argument("type");
       try {
-        availableItems = mService.getPurchases(3, context.getPackageName(), type, null);
+        availableItems = mService.getPurchases(3, reg.context().getPackageName(), type, null);
       } catch (RemoteException e) {
         result.error(call.method, e.getMessage(), "");
         return;
@@ -343,7 +341,7 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
           .setType(type)
           .build();
 
-      int responseCode = mBillingClient.launchBillingFlow(activity,flowParams);
+      int responseCode = mBillingClient.launchBillingFlow(reg.activity(),flowParams);
       if (responseCode != BillingClient.BillingResponse.OK) {
         result.error(TAG, "buyItemByType", "billingResponse is not ok: " + responseCode);
       }
