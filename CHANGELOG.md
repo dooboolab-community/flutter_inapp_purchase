@@ -1,3 +1,6 @@
+## 0.5.8
+* Avoid crashing on android caused by IllegalStateException.
+
 ## 0.5.7
 * Avoid possible memory leak in android by deleting static declaration of activity and context.
 

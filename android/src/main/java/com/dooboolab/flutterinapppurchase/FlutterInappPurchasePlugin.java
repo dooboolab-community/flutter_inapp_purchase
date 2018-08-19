@@ -66,7 +66,11 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
     if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
+      try {
+        result.success("Android " + android.os.Build.VERSION.RELEASE);
+      } catch(IllegalStateException e){
+        e.printStackTrace();
+      }
     }
 
     /*
@@ -78,7 +82,11 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
       intent.setPackage("com.android.vending");
 
       if (mBillingClient != null) {
-        result.success("Already started. Call endConnection method if you want to start over.");
+        try{
+          result.success("Already started. Call endConnection method if you want to start over.");
+        } catch(IllegalStateException e){
+          e.printStackTrace();
+        }
         return;
       }
 
@@ -90,9 +98,17 @@ public class FlutterInappPurchasePlugin implements MethodCallHandler {
           public void onBillingSetupFinished(@BillingClient.BillingResponse int responseCode) {
             if (responseCode == BillingClient.BillingResponse.OK) {
               // The billing client is ready.
-              result.success("Billing client ready");
+              try {
+                result.success("Billing client ready");
+              } catch(IllegalStateException e){
+                e.printStackTrace();
+              }
             } else {
-              result.error(call.method, "responseCode: " + responseCode, "");
+              try {
+                result.error(call.method, "responseCode: " + responseCode, "");
+              } catch(IllegalStateException e){
+                e.printStackTrace();
+              }
             }
           }
 
