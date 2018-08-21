@@ -108,8 +108,6 @@ class FlutterInappPurchase {
         },
       );
       result = json.encode(result);
-
-      result = json.encode(result);
       List list = json.decode(result.toString());
       List<IAPItem> products = list
           .map<IAPItem>(

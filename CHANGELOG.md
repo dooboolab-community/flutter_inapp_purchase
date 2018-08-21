@@ -1,3 +1,6 @@
+## 0.5.9
+* Fix getSubscription json encoding problem in `ios`.
+
 ## 0.5.8
 * Avoid crashing on android caused by IllegalStateException.
 
