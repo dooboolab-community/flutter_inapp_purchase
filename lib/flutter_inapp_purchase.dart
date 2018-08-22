@@ -404,7 +404,7 @@ class IAPItem {
 }
 
 class PurchasedItem {
-  final dynamic transactionDate;
+  final DateTime transactionDate;
   final String transactionId;
   final String productId;
   final String transactionReceipt;
@@ -416,11 +416,13 @@ class PurchasedItem {
   final String signatureAndroid;
 
   // iOS only
-  final dynamic originalTransactionDateIOS;
+  final DateTime originalTransactionDateIOS;
   final String originalTransactionIdentifierIOS;
 
   PurchasedItem.fromJSON(Map<String, dynamic> json)
-      : transactionDate = json['transactionDate'] as dynamic,
+      : transactionDate = DateTime.fromMillisecondsSinceEpoch(
+          _toInt(json['transactionDate']),
+        ),
         transactionId = json['transactionId'] as String,
         productId = json['productId'] as String,
         transactionReceipt = json['transactionReceipt'] as String,
@@ -428,14 +430,15 @@ class PurchasedItem {
         autoRenewingAndroid = json['autoRenewingAndroid'] as bool,
         dataAndroid = json['dataAndroid'] as String,
         signatureAndroid = json['signatureAndroid'] as String,
-        originalTransactionDateIOS =
-            json['originalTransactionDateIOS'] as dynamic,
+        originalTransactionDateIOS = DateTime.fromMillisecondsSinceEpoch(
+          _toInt(json['originalTransactionDateIOS']),
+        ),
         originalTransactionIdentifierIOS =
             json['originalTransactionIdentifierIOS'] as String;
 
   @override
   String toString() {
-    return 'transactionDate: $transactionDate, '
+    return 'transactionDate: ${transactionDate.toIso8601String()}, '
         'transactionId: $transactionId, '
         'productId: $productId, '
         'transactionReceipt: $transactionReceipt, '
@@ -443,7 +446,10 @@ class PurchasedItem {
         'autoRenewingAndroid: $autoRenewingAndroid, '
         'dataAndroid: $dataAndroid, '
         'signatureAndroid: $signatureAndroid, '
-        'originalTransactionDateIOS: $originalTransactionDateIOS, '
+        'originalTransactionDateIOS: ${originalTransactionDateIOS.toIso8601String()}, '
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS';
   }
+
+  static int _toInt(dynamic timestamp) =>
+      double.parse(timestamp.toString()).toInt();
 }
