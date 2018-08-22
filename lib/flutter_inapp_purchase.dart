@@ -420,9 +420,7 @@ class PurchasedItem {
   final String originalTransactionIdentifierIOS;
 
   PurchasedItem.fromJSON(Map<String, dynamic> json)
-      : transactionDate = DateTime.fromMillisecondsSinceEpoch(
-          _toInt(json['transactionDate']),
-        ),
+      : transactionDate = _extractDate(json['transactionDate']),
         transactionId = json['transactionId'] as String,
         productId = json['productId'] as String,
         transactionReceipt = json['transactionReceipt'] as String,
@@ -430,9 +428,8 @@ class PurchasedItem {
         autoRenewingAndroid = json['autoRenewingAndroid'] as bool,
         dataAndroid = json['dataAndroid'] as String,
         signatureAndroid = json['signatureAndroid'] as String,
-        originalTransactionDateIOS = DateTime.fromMillisecondsSinceEpoch(
-          _toInt(json['originalTransactionDateIOS']),
-        ),
+        originalTransactionDateIOS =
+            _extractDate(json['originalTransactionDateIOS']),
         originalTransactionIdentifierIOS =
             json['originalTransactionIdentifierIOS'] as String;
 
@@ -450,6 +447,10 @@ class PurchasedItem {
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS';
   }
 
-  static int _toInt(dynamic timestamp) =>
-      double.parse(timestamp.toString()).toInt();
+  static DateTime _extractDate(dynamic timestamp) {
+    if (timestamp == null) return null;
+
+    int _toInt() => double.parse(timestamp.toString()).toInt();
+    return DateTime.fromMillisecondsSinceEpoch(_toInt());
+  }
 }
