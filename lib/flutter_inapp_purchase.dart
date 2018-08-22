@@ -10,11 +10,13 @@ import 'modules.dart';
 export 'modules.dart';
 
 class FlutterInappPurchase {
+  /// A list-based enumeration of in-app purchase types
   static final List<String> _typeInApp = [
     'inapp',
     'subs',
   ];
 
+  /// Defining the [MethodChannel] for Flutter_Inapp_Purchase
   static const MethodChannel _channel = const MethodChannel('flutter_inapp');
 
   /// Returns the platform version on `Android` and `iOS`.
@@ -205,7 +207,7 @@ class FlutterInappPurchase {
 
   /// Purchase a subscription on `Android` or `iOS`.
   ///
-  /// `NOTICE` second paramter is required on `Android`.
+  /// **NOTICE** second parameter is required on `Android`.
   ///
   /// Identical to [buyProduct] on `iOS`.
   static Future<PurchasedItem> buySubscription(String sku,
