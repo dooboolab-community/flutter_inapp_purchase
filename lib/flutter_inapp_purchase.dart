@@ -41,7 +41,7 @@ class FlutterInappPurchase {
 
   /// Prepares `Android` to purchase items.
   ///
-  /// Must be done on `Android` before purchasing.
+  /// Must be called on `Android` before purchasing.
   /// On `iOS` this just checks if the client can make payments.
   static Future<String> get prepare async {
     if (Platform.isAndroid) {
@@ -55,7 +55,7 @@ class FlutterInappPurchase {
         code: Platform.operatingSystem, message: "platform not supported");
   }
 
-  /// Retrieves products from the store on `Android` and `iOS`.
+  /// Retrieves a list of products from the store on `Android` and `iOS`.
   ///
   /// `iOS` also returns subscriptions.
   static Future<List<IAPItem>> getProducts(List<String> skus) async {
@@ -113,7 +113,7 @@ class FlutterInappPurchase {
         code: Platform.operatingSystem, message: "platform not supported");
   }
 
-  /// Retrieves the user's purchase history on `Android` and `iOS`.
+  /// Retrieves the user's purchase history on `Android` and `iOS` regardless of consumption status.
   ///
   /// Purchase history includes all types of products.
   /// Identical to [getAvailablePurchases] on `iOS`.
@@ -143,7 +143,7 @@ class FlutterInappPurchase {
         code: Platform.operatingSystem, message: "platform not supported");
   }
 
-  /// Get all non-consumed purchases made on `Android` and `iOS`
+  /// Get all non-consumed purchases made on `Android` and `iOS`.
   ///
   /// This is identical to [getPurchaseHistory] on `iOS`
   static Future<List<IAPItem>> getAvailablePurchases() async {
@@ -175,13 +175,13 @@ class FlutterInappPurchase {
   /// Purchase a product on `Android` or `iOS`.
   ///
   /// Identical to [buySubscription] on `iOS`.
-  static Future<PurchasedItem> buyProduct(String sku, {String oldSku}) async {
+  static Future<PurchasedItem> buyProduct(String sku) async {
     if (Platform.isAndroid) {
       dynamic result =
           await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': _typeInApp[0],
         'sku': sku,
-        'oldSku': null,
+        'oldSku': null, //TODO can this be removed?
       });
 
       Map<String, dynamic> param = json.decode(result.toString());
@@ -204,6 +204,8 @@ class FlutterInappPurchase {
   }
 
   /// Purchase a subscription on `Android` or `iOS`.
+  ///
+  /// `NOTICE` second paramter is required on `Android`.
   ///
   /// Identical to [buyProduct] on `iOS`.
   static Future<PurchasedItem> buySubscription(String sku,
@@ -236,7 +238,7 @@ class FlutterInappPurchase {
 
   /// Consumes a purchase on `Android`.
   ///
-  /// No effect on `iOS`, whose consumable purchases are automatically consumed.
+  /// No effect on `iOS`, whose consumable purchases are consumed at the time of purchase.
   static Future<String> consumePurchase(String token) async {
     if (Platform.isAndroid) {
       String result =
@@ -255,6 +257,7 @@ class FlutterInappPurchase {
   /// End Play Store connection on `Android`.
   ///
   /// Absolutely necessary to call this when done with the Play Store.
+  ///
   /// No effect on `iOS`, whose store connection is always available.
   static Future<String> get endConnection async {
     if (Platform.isAndroid) {
@@ -269,8 +272,9 @@ class FlutterInappPurchase {
 
   /// Buy a product without finishing the transaction on `iOS`.
   ///
-  /// This may be useful if you are using server side reciept validation.
-  /// TODO: improve this comment
+  /// This allows you to perform server-side validation before finalizing the transaction on screen.
+  ///
+  /// No effect on `Android`, who does not allow this type of functionality.
   static Future<PurchasedItem> buyProductWithoutFinishTransaction(
       String sku) async {
     if (Platform.isAndroid) {
@@ -299,7 +303,9 @@ class FlutterInappPurchase {
 
   /// Finish a transaction on `iOS`.
   ///
-  /// No effect on `Android`.
+  /// Call this after finalizing server-side validation of the reciept.
+  ///
+  /// No effect on `Android`, who does not allow this type of functionality.
   static Future<String> finishTransaction() async {
     if (Platform.isAndroid) {
       return 'no-ops in android.';
@@ -315,6 +321,7 @@ class FlutterInappPurchase {
   ///
   /// This is a quick and dirty way to check if a subscription is active.
   /// It is highly recommended to do server-side validation for all subscriptions.
+  /// This method is NOT secure and untested in production.
   static Future<bool> checkSubscribed({
     String sku,
     Duration duration: const Duration(days: 30),

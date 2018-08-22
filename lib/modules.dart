@@ -1,3 +1,4 @@
+/// An item available for purchase from either the `Google Play Store` or `iOS AppStore`
 class IAPItem {
   final String productId;
   final String price;
@@ -17,6 +18,7 @@ class IAPItem {
   final String introductoryPricePeriodAndroid;
   final String freeTrialPeriodAndroid;
 
+  /// Create [IAPItem] from a Map that was previously JSON formatted
   IAPItem.fromJSON(Map<String, dynamic> json)
       : productId = json['productId'] as String,
         price = json['price'] as String,
@@ -35,6 +37,7 @@ class IAPItem {
             json['introductoryPricePeriodAndroid'] as String,
         freeTrialPeriodAndroid = json['freeTrialPeriodAndroid'] as String;
 
+  /// Return the contents of this class as a string
   @override
   String toString() {
     return 'productId: $productId, '
@@ -53,6 +56,7 @@ class IAPItem {
   }
 }
 
+/// An item which was purchased from either the `Google Play Store` or `iOS AppStore`
 class PurchasedItem {
   final DateTime transactionDate;
   final String transactionId;
@@ -69,6 +73,7 @@ class PurchasedItem {
   final DateTime originalTransactionDateIOS;
   final String originalTransactionIdentifierIOS;
 
+  /// Create [PurchasedItem] from a Map that was previously JSON formatted
   PurchasedItem.fromJSON(Map<String, dynamic> json)
       : transactionDate = _extractDate(json['transactionDate']),
         transactionId = json['transactionId'] as String,
@@ -83,6 +88,7 @@ class PurchasedItem {
         originalTransactionIdentifierIOS =
             json['originalTransactionIdentifierIOS'] as String;
 
+  /// This returns transaction dates in ISO 8601 format.
   @override
   String toString() {
     return 'transactionDate: ${transactionDate.toIso8601String()}, '
@@ -97,6 +103,7 @@ class PurchasedItem {
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS';
   }
 
+  /// Coerce miliseconds since epoch in double, int, or String into DateTime format
   static DateTime _extractDate(dynamic timestamp) {
     if (timestamp == null) return null;
 
