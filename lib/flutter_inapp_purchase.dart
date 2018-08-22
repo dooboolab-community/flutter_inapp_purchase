@@ -5,8 +5,8 @@ import 'dart:io' show Platform;
 import 'package:flutter/services.dart';
 
 import 'utils.dart';
-
 import 'modules.dart';
+
 export 'modules.dart';
 
 class FlutterInappPurchase {
@@ -265,6 +265,40 @@ class FlutterInappPurchase {
     } else if (Platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction');
       return result;
+    }
+    throw PlatformException(
+        code: Platform.operatingSystem, message: "platform not supported");
+  }
+
+  /// helper function
+  static Future<bool> checkSubscribed({
+    String sku,
+    Duration duration: const Duration(days: 30),
+    Duration grace: const Duration(days: 3),
+  }) async {
+    await FlutterInappPurchase.prepare;
+
+    if (Platform.isIOS) {
+      var history = await FlutterInappPurchase.getPurchaseHistory();
+      FlutterInappPurchase.endConnection;
+
+      for (var purchase in history) {
+        Duration difference =
+            DateTime.now().difference(purchase.transactionDate);
+        if (difference.inMinutes <= (duration + grace).inMinutes &&
+            purchase.productId == sku) return true;
+      }
+
+      return false;
+    } else if (Platform.isAndroid) {
+      var purchases = await FlutterInappPurchase.getAvailablePurchases();
+      FlutterInappPurchase.endConnection;
+
+      for (var purchase in purchases) {
+        if (purchase.productId == sku) return true;
+      }
+
+      return false;
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
