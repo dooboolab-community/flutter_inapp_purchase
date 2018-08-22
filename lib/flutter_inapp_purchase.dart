@@ -4,6 +4,8 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 
+import 'utils.dart';
+
 import 'modules.dart';
 export 'modules.dart';
 
@@ -54,15 +56,7 @@ class FlutterInappPurchase {
         },
       );
 
-      List list = json.decode(result.toString());
-      List<IAPItem> products = list
-          .map<IAPItem>(
-            (dynamic product) =>
-                IAPItem.fromJSON(product as Map<String, dynamic>),
-          )
-          .toList();
-
-      return products;
+      return extractItems(result);
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod(
         'getItems',
@@ -71,16 +65,7 @@ class FlutterInappPurchase {
         },
       );
 
-      result = json.encode(result);
-      List list = json.decode(result.toString());
-      List<IAPItem> products = list
-          .map<IAPItem>(
-            (dynamic product) =>
-                IAPItem.fromJSON(product as Map<String, dynamic>),
-          )
-          .toList();
-
-      return products;
+      return extractItems(json.encode(result));
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
@@ -97,15 +82,7 @@ class FlutterInappPurchase {
         },
       );
 
-      List list = json.decode(result.toString());
-      List<IAPItem> products = list
-          .map<IAPItem>(
-            (dynamic product) =>
-                IAPItem.fromJSON(product as Map<String, dynamic>),
-          )
-          .toList();
-
-      return products;
+      return extractItems(result);
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod(
         'getItems',
@@ -113,16 +90,8 @@ class FlutterInappPurchase {
           'skus': skus,
         },
       );
-      result = json.encode(result);
-      List list = json.decode(result.toString());
-      List<IAPItem> products = list
-          .map<IAPItem>(
-            (dynamic product) =>
-                IAPItem.fromJSON(product as Map<String, dynamic>),
-          )
-          .toList();
 
-      return products;
+      return extractItems(json.encode(result));
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
@@ -144,35 +113,11 @@ class FlutterInappPurchase {
         },
       );
 
-      List<PurchasedItem> decoded1 = json
-          .decode(result1.toString())
-          .map<PurchasedItem>(
-            (dynamic product) =>
-                PurchasedItem.fromJSON(product as Map<String, dynamic>),
-          )
-          .toList();
-
-      List<PurchasedItem> decoded2 = json
-          .decode(result2.toString())
-          .map<PurchasedItem>(
-            (dynamic product) =>
-                PurchasedItem.fromJSON(product as Map<String, dynamic>),
-          )
-          .toList();
-
-      var items = List<PurchasedItem>.from(decoded1)..addAll(decoded2);
-      return items;
+      return extractPurchased(result1) + extractPurchased(result2);
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
-      result = json.encode(result);
-      List<PurchasedItem> items = json
-          .decode(result.toString())
-          .map<PurchasedItem>(
-            (dynamic product) =>
-                PurchasedItem.fromJSON(product as Map<String, dynamic>),
-          )
-          .toList();
-      return items;
+
+      return extractPurchased(json.encode(result));
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
@@ -194,36 +139,11 @@ class FlutterInappPurchase {
         },
       );
 
-      List<IAPItem> decoded1 = json
-          .decode(result1.toString())
-          .map<IAPItem>(
-            (dynamic product) =>
-                IAPItem.fromJSON(product as Map<String, dynamic>),
-          )
-          .toList();
-
-      List<IAPItem> decoded2 = json
-          .decode(result2.toString())
-          .map<IAPItem>(
-            (dynamic product) =>
-                IAPItem.fromJSON(product as Map<String, dynamic>),
-          )
-          .toList();
-
-      var items = List<IAPItem>.from(decoded1)..addAll(decoded2);
-      return items;
+      return extractItems(result1) + extractItems(result2);
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
-      result = json.encode(result);
 
-      List<IAPItem> items = json
-          .decode(result.toString())
-          .map<IAPItem>(
-            (dynamic product) =>
-                IAPItem.fromJSON(product as Map<String, dynamic>),
-          )
-          .toList();
-      return items;
+      return extractItems(json.encode(result));
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
