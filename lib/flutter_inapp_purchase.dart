@@ -24,7 +24,7 @@ class FlutterInappPurchase {
     } else if (Platform.isIOS) {
       return 'no-ops in ios';
     }
-    return 'Current platform is not supported';
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   static Future<String> get prepare async {
@@ -35,7 +35,7 @@ class FlutterInappPurchase {
       final String result = await _channel.invokeMethod('canMakePayments');
       return result;
     }
-    return 'Current platform is not supported';
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   static Future<List<IAPItem>> getProducts(List<String> skus) async {
@@ -77,7 +77,7 @@ class FlutterInappPurchase {
 
       return products;
     }
-    throw new PlatformException(code: Platform.operatingSystem);
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   static Future<List<IAPItem>> getSubscriptions(List<String> skus) async {
@@ -118,7 +118,7 @@ class FlutterInappPurchase {
 
       return products;
     }
-    throw new PlatformException(code: Platform.operatingSystem);
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   static Future<List<PurchasedItem>> getPurchaseHistory() async {
@@ -167,7 +167,7 @@ class FlutterInappPurchase {
           .toList();
       return items;
     }
-    throw new PlatformException(code: Platform.operatingSystem);
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   static Future<List<IAPItem>> getAvailablePurchases() async {
@@ -217,7 +217,7 @@ class FlutterInappPurchase {
           .toList();
       return items;
     }
-    throw new PlatformException(code: Platform.operatingSystem);
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   static Future<PurchasedItem> buyProduct(String sku, {String oldSku}) async {
@@ -244,7 +244,7 @@ class FlutterInappPurchase {
       PurchasedItem item = new PurchasedItem.fromJSON(param);
       return item;
     }
-    throw new PlatformException(code: Platform.operatingSystem);
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   static Future<PurchasedItem> buySubscription(String sku,
@@ -271,7 +271,7 @@ class FlutterInappPurchase {
       PurchasedItem item = new PurchasedItem.fromJSON(param);
       return item;
     }
-    throw new PlatformException(code: Platform.operatingSystem);
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   static Future<String> consumePurchase(String token) async {
@@ -285,7 +285,7 @@ class FlutterInappPurchase {
     } else if (Platform.isIOS) {
       return 'no-ops in ios';
     }
-    throw new PlatformException(code: Platform.operatingSystem);
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   /// android specific
@@ -296,7 +296,7 @@ class FlutterInappPurchase {
     } else if (Platform.isIOS) {
       return 'no-ops in ios';
     }
-    return 'Current platform is not supported';
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   /// ios specific
@@ -322,7 +322,7 @@ class FlutterInappPurchase {
       PurchasedItem item = new PurchasedItem.fromJSON(param);
       return item;
     }
-    throw new PlatformException(code: Platform.operatingSystem);
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 
   static Future<String> finishTransaction() async {
@@ -332,7 +332,7 @@ class FlutterInappPurchase {
       String result = await _channel.invokeMethod('finishTransaction');
       return result;
     }
-    throw new PlatformException(code: Platform.operatingSystem);
+    throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
   }
 }
 

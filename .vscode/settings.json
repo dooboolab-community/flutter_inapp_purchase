@@ -1,0 +1,10 @@
+{
+  "dart.lineLength": 120,
+  "[dart]": {
+    "editor.tabSize": 2,
+    // "editor.insertSpaces": true,
+    // "editor.detectIndentation": false,
+    "editor.formatOnSave": false
+    // "editor.rulers": [120]
+  }
+}
