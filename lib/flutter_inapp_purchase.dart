@@ -53,7 +53,7 @@ class FlutterInappPurchase {
       List<IAPItem> products = list
           .map<IAPItem>(
             (dynamic product) =>
-                new IAPItem.fromJSON(product as Map<String, dynamic>),
+              IAPItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
@@ -71,7 +71,7 @@ class FlutterInappPurchase {
       List<IAPItem> products = list
           .map<IAPItem>(
             (dynamic product) =>
-                new IAPItem.fromJSON(product as Map<String, dynamic>),
+                IAPItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
@@ -95,7 +95,7 @@ class FlutterInappPurchase {
       List<IAPItem> products = list
           .map<IAPItem>(
             (dynamic product) =>
-                new IAPItem.fromJSON(product as Map<String, dynamic>),
+                IAPItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
@@ -112,7 +112,7 @@ class FlutterInappPurchase {
       List<IAPItem> products = list
           .map<IAPItem>(
             (dynamic product) =>
-                new IAPItem.fromJSON(product as Map<String, dynamic>),
+                IAPItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
@@ -141,7 +141,7 @@ class FlutterInappPurchase {
           .decode(result1.toString())
           .map<PurchasedItem>(
             (dynamic product) =>
-                new PurchasedItem.fromJSON(product as Map<String, dynamic>),
+                PurchasedItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
@@ -149,11 +149,11 @@ class FlutterInappPurchase {
           .decode(result2.toString())
           .map<PurchasedItem>(
             (dynamic product) =>
-                new PurchasedItem.fromJSON(product as Map<String, dynamic>),
+                PurchasedItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
-      var items = new List<PurchasedItem>.from(decoded1)..addAll(decoded2);
+      var items = List<PurchasedItem>.from(decoded1)..addAll(decoded2);
       return items;
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
@@ -162,7 +162,7 @@ class FlutterInappPurchase {
           .decode(result.toString())
           .map<PurchasedItem>(
             (dynamic product) =>
-                new PurchasedItem.fromJSON(product as Map<String, dynamic>),
+                PurchasedItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
       return items;
@@ -190,7 +190,7 @@ class FlutterInappPurchase {
           .decode(result1.toString())
           .map<IAPItem>(
             (dynamic product) =>
-                new IAPItem.fromJSON(product as Map<String, dynamic>),
+                IAPItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
@@ -198,11 +198,11 @@ class FlutterInappPurchase {
           .decode(result2.toString())
           .map<IAPItem>(
             (dynamic product) =>
-                new IAPItem.fromJSON(product as Map<String, dynamic>),
+                IAPItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
 
-      var items = new List<IAPItem>.from(decoded1)..addAll(decoded2);
+      var items = List<IAPItem>.from(decoded1)..addAll(decoded2);
       return items;
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
@@ -212,7 +212,7 @@ class FlutterInappPurchase {
           .decode(result.toString())
           .map<IAPItem>(
             (dynamic product) =>
-                new IAPItem.fromJSON(product as Map<String, dynamic>),
+                IAPItem.fromJSON(product as Map<String, dynamic>),
           )
           .toList();
       return items;
@@ -230,7 +230,7 @@ class FlutterInappPurchase {
       });
 
       Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = new PurchasedItem.fromJSON(param);
+      PurchasedItem item = PurchasedItem.fromJSON(param);
 
       return item;
     } else if (Platform.isIOS) {
@@ -241,7 +241,7 @@ class FlutterInappPurchase {
       result = json.encode(result);
 
       Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = new PurchasedItem.fromJSON(param);
+      PurchasedItem item = PurchasedItem.fromJSON(param);
       return item;
     }
     throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
@@ -258,7 +258,7 @@ class FlutterInappPurchase {
       });
 
       Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = new PurchasedItem.fromJSON(param);
+      PurchasedItem item = PurchasedItem.fromJSON(param);
       return item;
     } else if (Platform.isIOS) {
       dynamic result = await _channel
@@ -268,7 +268,7 @@ class FlutterInappPurchase {
       result = json.encode(result);
 
       Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = new PurchasedItem.fromJSON(param);
+      PurchasedItem item = PurchasedItem.fromJSON(param);
       return item;
     }
     throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
@@ -311,7 +311,7 @@ class FlutterInappPurchase {
       });
 
       Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = new PurchasedItem.fromJSON(param);
+      PurchasedItem item = PurchasedItem.fromJSON(param);
       return item;
     } else if (Platform.isIOS) {
       dynamic result =
@@ -319,7 +319,7 @@ class FlutterInappPurchase {
       result = json.encode(result);
 
       Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = new PurchasedItem.fromJSON(param);
+      PurchasedItem item = PurchasedItem.fromJSON(param);
       return item;
     }
     throw PlatformException(code: Platform.operatingSystem, message: "platform not supported");
