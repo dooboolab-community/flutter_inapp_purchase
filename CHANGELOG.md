@@ -1,3 +1,6 @@
+## 0.6.0
+* Major code refactoring by  lukepighetti. Unify PlatformException, cleanup new, DateTime instead of string.
+
 ## 0.5.9
 * Fix getSubscription json encoding problem in `ios`.
 
