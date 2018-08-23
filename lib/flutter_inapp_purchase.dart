@@ -329,11 +329,8 @@ class FlutterInappPurchase {
     Duration duration: const Duration(days: 30),
     Duration grace: const Duration(days: 3),
   }) async {
-    await FlutterInappPurchase.prepare;
-
     if (Platform.isIOS) {
       var history = await FlutterInappPurchase.getPurchaseHistory();
-      FlutterInappPurchase.endConnection;
 
       for (var purchase in history) {
         Duration difference =
@@ -345,7 +342,6 @@ class FlutterInappPurchase {
       return false;
     } else if (Platform.isAndroid) {
       var purchases = await FlutterInappPurchase.getAvailablePurchases();
-      FlutterInappPurchase.endConnection;
 
       for (var purchase in purchases) {
         if (purchase.productId == sku) return true;
