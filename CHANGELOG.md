@@ -1,3 +1,9 @@
+## 0.6.2
+* Fixed failing when there is no introductory price in ios.
+
+## 0.6.1
+* Fixed `checkSubscribed` that can interrupt billing lifecycle.
+
 ## 0.6.0
 * Major code refactoring by  lukepighetti. Unify PlatformException, cleanup new, DateTime instead of string.
 
