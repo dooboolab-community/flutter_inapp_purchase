@@ -1,3 +1,9 @@
+## 0.6.3
+* Update readme.
+
+## 0.6.2
+* Fix failing when there is no introductory price ios.
+
 ## 0.6.0
 * Major code refactoring by  lukepighetti. Unify PlatformException, cleanup new, DateTime instead of string.
 
