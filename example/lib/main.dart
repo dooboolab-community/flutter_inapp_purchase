@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     // prepare
-    var result = await FlutterInappPurchase.prepare;
+    var result = await FlutterInappPurchase.initConnection;
     print ('result: $result');
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  List<Widget> _renderInapps() {
+  List<Widget> _renderInApps() {
     List<Widget> widgets = this._items.map((item) => Container(
       margin: EdgeInsets.symmetric(vertical: 10.0),
       child: Container(
@@ -158,7 +158,7 @@ class _MyAppState extends State<MyApp> {
                                 color: Colors.green,
                                 padding: EdgeInsets.all(0.0),
                                 onPressed: () async {
-                                  await FlutterInappPurchase.prepare;
+                                  await FlutterInappPurchase.initConnection;
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -218,7 +218,7 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   Column(
-                    children: this._renderInapps(),
+                    children: this._renderInApps(),
                   ),
                 ],
               ),

@@ -45,7 +45,24 @@ class FlutterInappPurchase {
   ///
   /// Must be called on `Android` before purchasing.
   /// On `iOS` this just checks if the client can make payments.
+  @deprecated
   static Future<String> get prepare async {
+    if (Platform.isAndroid) {
+      final String result = await _channel.invokeMethod('prepare');
+      return result;
+    } else if (Platform.isIOS) {
+      final String result = await _channel.invokeMethod('canMakePayments');
+      return result;
+    }
+    throw PlatformException(
+        code: Platform.operatingSystem, message: "platform not supported");
+  }
+
+  /// InitConnection `Android` to purchase items.
+  ///
+  /// Must be called on `Android` before purchasing.
+  /// On `iOS` this just checks if the client can make payments.
+  static Future<String> get initConnection async {
     if (Platform.isAndroid) {
       final String result = await _channel.invokeMethod('prepare');
       return result;
