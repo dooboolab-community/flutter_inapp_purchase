@@ -165,7 +165,7 @@ class FlutterInappPurchase {
   /// Get all non-consumed purchases made on `Android` and `iOS`.
   ///
   /// This is identical to [getPurchaseHistory] on `iOS`
-  static Future<List<IAPItem>> getAvailablePurchases() async {
+  static Future<List<PurchasedItem>> getAvailablePurchases() async {
     if (Platform.isAndroid) {
       dynamic result1 = await _channel.invokeMethod(
         'getAvailableItemsByType',
