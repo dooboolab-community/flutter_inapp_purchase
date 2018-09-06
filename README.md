@@ -29,7 +29,7 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | getProducts | `List<String>` Product IDs/skus | `List<IAPItem>` | Get a list of products (consumable and non-consumable items, but not subscriptions). Note: On iOS versions earlier than 11.2 this method _will_ return subscriptions if they are included in your list of SKUs. This is because we cannot differentiate between IAP products and subscriptions prior to 11.2.  |
 | getSubscriptions | `List<String>` Subscription IDs/skus | `List<IAPItem>` | Get a list of subscriptions. Note: On iOS  this method has the same output as `getProducts`. Because iOS does not differentiate between IAP products and subscriptions.  |
 | getPurchaseHistory | | `List<IAPItem>` | Gets an invetory of purchases made by the user regardless of consumption status (where possible) |
-| getAvailablePurchases | | `List<IAPItem>` | (aka restore purchase) Get all purchases made by the user (either non-consumable, or haven't been consumed yet)
+| getAvailablePurchases | | `List<PurchasedItem>` | (aka restore purchase) Get all purchases made by the user (either non-consumable, or haven't been consumed yet)
 | buySubscription | `string` Subscription ID/sku, `string` Old Subscription ID/sku (on Android) | `PurchasedItem` | Create (buy) a subscription to a sku. For upgrading/downgrading subscription on Android pass second parameter with current subscription ID, on iOS this is handled automatically by store. |
 | buyProduct | `string` Product ID/sku | `PurchasedItem` | Buy a product |
 | buyProductWithoutFinishTransaction | `string` Product ID/sku | `PurchasedItem` | Buy a product without finish transaction call (iOS only) |

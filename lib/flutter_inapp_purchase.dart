@@ -165,7 +165,7 @@ class FlutterInappPurchase {
   /// Get all non-consumed purchases made on `Android` and `iOS`.
   ///
   /// This is identical to [getPurchaseHistory] on `iOS`
-  static Future<List<IAPItem>> getAvailablePurchases() async {
+  static Future<List<PurchasedItem>> getAvailablePurchases() async {
     if (Platform.isAndroid) {
       dynamic result1 = await _channel.invokeMethod(
         'getAvailableItemsByType',
@@ -181,11 +181,11 @@ class FlutterInappPurchase {
         },
       );
 
-      return extractItems(result1) + extractItems(result2);
+      return extractPurchased(result1) + extractPurchased(result2);
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
 
-      return extractItems(json.encode(result));
+      return extractPurchased(json.encode(result));
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
