@@ -181,11 +181,11 @@ class FlutterInappPurchase {
         },
       );
 
-      return extractItems(result1) + extractItems(result2);
+      return extractPurchased(result1) + extractPurchased(result2);
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
 
-      return extractItems(json.encode(result));
+      return extractPurchased(json.encode(result));
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
