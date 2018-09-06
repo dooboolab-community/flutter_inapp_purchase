@@ -39,7 +39,7 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | consumeAllItems | | `String` | Manually consume all items in android. No-op on iOS. |
 
 
-## Data Type
+## Data Types
 * IAPItem
   ```dart
   final String productId;
