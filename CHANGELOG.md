@@ -1,3 +1,8 @@
+## 0.6.5
+* convert dynamic objects to PurchasedItems.
+* Fix return type for getAvailablePurchases().
+* Fix ios null value if optional operator.
+
 ## 0.6.3
 * Update readme.
 
