@@ -91,7 +91,7 @@ class PurchasedItem {
   /// This returns transaction dates in ISO 8601 format.
   @override
   String toString() {
-    return 'transactionDate: ${transactionDate.toIso8601String()}, '
+    return 'transactionDate: ${transactionDate?.toIso8601String()}, '
         'transactionId: $transactionId, '
         'productId: $productId, '
         'transactionReceipt: $transactionReceipt, '
@@ -99,7 +99,7 @@ class PurchasedItem {
         'autoRenewingAndroid: $autoRenewingAndroid, '
         'dataAndroid: $dataAndroid, '
         'signatureAndroid: $signatureAndroid, '
-        'originalTransactionDateIOS: ${originalTransactionDateIOS.toIso8601String()}, '
+        'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS';
   }
 
