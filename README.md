@@ -24,7 +24,7 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 ## Methods
 | Func  | Param  | Return | Description |
 | :------------ |:---------------:| :---------------:| :-----|
-| prepare |  | `String` | Deprecated. Use initConnection instead. |
+| ~prepare~ |  | `String` | *Deprecated* Use initConnection instead. |
 | initConnection |  | `String` | Prepare IAP module. Must be called on Android before any other purchase flow methods. In ios, it will simply call `canMakePayments` method and return value.|
 | getProducts | `List<String>` Product IDs/skus | `List<IAPItem>` | Get a list of products (consumable and non-consumable items, but not subscriptions). Note: On iOS versions earlier than 11.2 this method _will_ return subscriptions if they are included in your list of SKUs. This is because we cannot differentiate between IAP products and subscriptions prior to 11.2.  |
 | getSubscriptions | `List<String>` Subscription IDs/skus | `List<IAPItem>` | Get a list of subscriptions. Note: On iOS  this method has the same output as `getProducts`. Because iOS does not differentiate between IAP products and subscriptions.  |
@@ -39,7 +39,7 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | consumeAllItems | | `String` | Manually consume all items in android. No-op on iOS. |
 
 
-## Data Type
+## Data Types
 * IAPItem
   ```dart
   final String productId;
@@ -88,13 +88,17 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
 
 ## Usage Guide
 #### Android `connect` and `endConnection`
-* You should start the billing service in android to use its funtionalities. We recommend you to use `prepare` getter method in `initState()`. 
+* You should start the billing service in android to use its funtionalities. We recommend you to use `initConnection` getter method in `initState()`. 
   ```dart
     /// start connection for android
     @override
-    void initState() async{
+    void initState() {
       super.initState();
-      await FlutterInappPurchase.prepare;
+      asyncInitState(); // async is not allowed on initState() directly
+    }
+
+    void asyncInitState() async {
+      await FlutterInappPurchase.initConnection;
     }
   ```
 * You should end the billing service in android when you are done with it. Otherwise it will be keep running in background. We recommend to use this feature in `dispose()`.
@@ -163,8 +167,8 @@ class _MyAppState extends State<MyApp> {
       platformVersion = 'Failed to get platform version.';
     }
 
-    // prepare
-    var result = await FlutterInappPurchase.prepare;
+    // initConnection
+    var result = await FlutterInappPurchase.initConnection;
     print ('result: $result');
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -280,7 +284,7 @@ class _MyAppState extends State<MyApp> {
                                 color: Colors.green,
                                 padding: EdgeInsets.all(0.0),
                                 onPressed: () async {
-                                  await FlutterInappPurchase.prepare;
+                                  await FlutterInappPurchase.initConnection;
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 20.0),
