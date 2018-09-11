@@ -1,0 +1,16 @@
+{
+    "android.test.purchased" : {
+        "itemType" : "ENTITLED",
+        "price" : "0.99",
+        "title": "Test Single Purchase",
+        "description": "One purchase only",
+        "smallIconUrl": "./assets/sample.theme.red.jpg"
+    },
+    "point_1000" : {
+        "itemType" : "ENTITLED",
+        "price" : "0.99",
+        "title": "1000 Points",
+        "description": "1000 Points to spend",
+        "smallIconUrl": "./assets/sample.theme.blue.jpg"
+    }
+}
