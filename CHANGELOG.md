@@ -1,3 +1,6 @@
+## 0.6.6
+* Added missing introductory fields in ios.
+
 ## 0.6.5
 * convert dynamic objects to PurchasedItems.
 * Fix return type for getAvailablePurchases().
