@@ -30,9 +30,12 @@ class IAPItem {
         title = json['title'] as String,
         description = json['description'] as String,
         introductoryPrice = json['introductoryPrice'] as String,
-        introductoryPricePaymentModeIOS = json['introductoryPricePaymentModeIOS'] as String,
-        introductoryPriceNumberOfPeriodsIOS = json['introductoryPriceNumberOfPeriodsIOS'] as String,
-        introductoryPriceSubscriptionPeriodIOS = json['introductoryPriceSubscriptionPeriodIOS'] as String,
+        introductoryPricePaymentModeIOS =
+            json['introductoryPricePaymentModeIOS'] as String,
+        introductoryPriceNumberOfPeriodsIOS =
+            json['introductoryPriceNumberOfPeriodsIOS'] as String,
+        introductoryPriceSubscriptionPeriodIOS =
+            json['introductoryPriceSubscriptionPeriodIOS'] as String,
         subscriptionPeriodNumberIOS =
             json['subscriptionPeriodNumberIOS'] as String,
         subscriptionPeriodUnitIOS = json['subscriptionPeriodUnitIOS'] as String,
