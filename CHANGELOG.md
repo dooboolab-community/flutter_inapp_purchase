@@ -1,3 +1,6 @@
+## 0.6.7
+* Fix broken images on pub.
+
 ## 0.6.6
 * Added missing introductory fields in ios.
 
