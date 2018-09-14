@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.amazon.device.iap.PurchasingListener;
 import com.amazon.device.iap.PurchasingService;
@@ -104,22 +105,22 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
   private PurchasingListener purchasesUpdatedListener = new PurchasingListener() {
     @Override
     public void onUserDataResponse(UserDataResponse userDataResponse) {
-      System.err.println("oudr");
+      Log.d(TAG, "oudr");
     }
 
     @Override
     public void onProductDataResponse(ProductDataResponse productDataResponse) {
-      System.err.println("opdr");
+      Log.d(TAG, "opdr");
     }
 
     @Override
     public void onPurchaseResponse(PurchaseResponse purchaseResponse) {
-      System.err.println("opr");
+      Log.d(TAG, "opr");
     }
 
     @Override
     public void onPurchaseUpdatesResponse(PurchaseUpdatesResponse purchaseUpdatesResponse) {
-      System.err.println("opudr");
+      Log.d(TAG, "opudr");
     }
   };
 
