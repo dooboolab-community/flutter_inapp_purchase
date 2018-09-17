@@ -96,11 +96,18 @@
 }
 
 - (void)fetchProducts:(NSArray<NSString*>*)identifiers result:(FlutterResult)result {
-    SKProductsRequest* request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithArray:identifiers]];
-    [request setDelegate:self];
-    [fetchProducts setObject:result forKey:[NSValue valueWithNonretainedObject:request]];
+    if (identifiers != nil && result != nil) {
+        SKProductsRequest* request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithArray:identifiers]];
+        [request setDelegate:self];
+        [fetchProducts setObject:result forKey:[NSValue valueWithNonretainedObject:request]];
 
-    [request start];
+        [request start];
+    } else if (result != nil){
+        result([FlutterError
+                errorWithCode:@"fetchProducts error"
+                message:@"product identifier is nil"
+                details:nil]);
+    }
 }
 
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {

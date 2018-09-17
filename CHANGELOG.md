@@ -1,3 +1,6 @@
+## 0.6.8
+* Prevent nil exception in ios when fetching products.
+
 ## 0.6.7
 * Fix broken images on pub.
 
