@@ -78,6 +78,7 @@ class FlutterInappPurchase {
   ///
   /// `iOS` also returns subscriptions.
   static Future<List<IAPItem>> getProducts(List<String> skus) async {
+    if (skus == null || skus.contains(null)) return [];
     skus = skus.toList();
     if (Platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(
@@ -107,6 +108,7 @@ class FlutterInappPurchase {
   ///
   /// `iOS` also returns non-subscription products.
   static Future<List<IAPItem>> getSubscriptions(List<String> skus) async {
+    if (skus == null || skus.contains(null)) return [];
     skus = skus.toList();
     if (Platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(

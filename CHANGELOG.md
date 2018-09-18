@@ -1,3 +1,6 @@
+## 0.6.9
+* Prevent nil element exception when getting products.
+
 ## 0.6.8
 * Prevent nil exception in ios when fetching products.
 
