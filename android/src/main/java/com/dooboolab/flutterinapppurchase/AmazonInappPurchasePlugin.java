@@ -14,6 +14,7 @@ import com.amazon.device.iap.model.ProductDataResponse;
 import com.amazon.device.iap.model.ProductType;
 import com.amazon.device.iap.model.PurchaseResponse;
 import com.amazon.device.iap.model.PurchaseUpdatesResponse;
+import com.amazon.device.iap.model.RequestId;
 import com.amazon.device.iap.model.UserDataResponse;
 
 import org.json.JSONArray;
@@ -38,18 +39,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class AmazonInappPurchasePlugin implements MethodCallHandler {
   public static Registrar reg;
   private final String TAG = "InappPurchasePlugin";
-  private PurchasingService mService;
   private Result result = null;
-
-  ServiceConnection mServiceConn = new ServiceConnection() {
-    @Override public void onServiceDisconnected(ComponentName name) {
-      mService = null;
-    }
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-      // DONT KNOW WHAT IS NEEDED HERE
-    }
-  };
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
@@ -60,6 +50,13 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
+    this.result=result;
+    try {
+      PurchasingService.registerListener(reg.context(), purchasesUpdatedListener);
+
+    } catch (Exception e) {
+      result.error(call.method, "Call endConnection method if you want to start over.", e.getMessage());
+    }
     if (call.method.equals("getPlatformVersion")) {
       try {
         result.success("Android " + android.os.Build.VERSION.RELEASE);
@@ -67,46 +64,40 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
         e.printStackTrace();
       }
     } else if (call.method.equals("prepare")) {
-      Intent intent = new Intent("com.amazon.device.iap.PurchasingService.BIND");
-      intent.setPackage("com.amazon.venezia");
-
-      try {
-        reg.context().bindService(intent, mServiceConn, Context.BIND_AUTO_CREATE);
-        PurchasingService.registerListener(reg.context(), purchasesUpdatedListener);
-        result.success("Billing client ready");
-      } catch (Exception e) {
-        result.error(call.method, "Call endConnection method if you want to start over.", e.getMessage());
-      }
+      Log.d(TAG, "prepare");
+      result.success("Billing client ready");
     } else if (call.method.equals("endConnection")) {
-      try {
-        result.success("Billing client has ended.");
-      } catch (Exception e) {
-        result.error(call.method, e.getMessage(), "");
-      }
+      result.success("Billing client has ended.");
     } else if (call.method.equals("consumeAllItems")) {
       result.notImplemented();
     } else if (call.method.equals("getItemsByType")) {
-      System.err.println("getItemsByType");
+      Log.d(TAG, "getItemsByType");
       String type = call.argument("type");
       ArrayList<String> skus = call.argument("skus");
 
       final Set<String> productSkus = new HashSet<>();
       for (int i = 0; i < skus.size(); i++) {
-        System.err.println("Adding "+skus.get(i));
+        Log.d(TAG, "Adding "+skus.get(i));
         productSkus.add(skus.get(i));
       }
       PurchasingService.getProductData(productSkus);
-      PurchasingService.getUserData();
-      PurchasingService.getPurchaseUpdates(true);
+      //PurchasingService.getUserData();
 
     } else if (call.method.equals("getAvailableItemsByType")) {
-      // NEED TO IMPLEMENT
-      result.notImplemented();
+      String type = call.argument("type");
+      Log.d(TAG, "gaibt="+type);
+      PurchasingService.getPurchaseUpdates(true);
+      return;
     } else if (call.method.equals("getPurchaseHistoryByType")) {
       result.notImplemented();
     } else if (call.method.equals("buyItemByType")) {
-      // NEED TO IMPLEMENT
-      result.notImplemented();
+      final String type = call.argument("type");
+      final String sku = call.argument("sku");
+      final String oldSku = call.argument("oldSku");
+      Log.d(TAG, "type="+type+"||sku="+sku+"||oldsku="+oldSku);
+      final RequestId requestId = PurchasingService.purchase(sku);
+      Log.d(TAG, "resid="+requestId.toString());
+      return;
     } else if (call.method.equals("consumeProduct")) {
       result.notImplemented();
     } else {
@@ -152,7 +143,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
               JSONObject item = new JSONObject();
               item.put("productId", product.getSku());
               item.put("price", number.toString());
-              item.put("currency", "CAD");
+              item.put("currency", null);
               ProductType productType = product.getProductType();
               switch (productType) {
                 case ENTITLED:
