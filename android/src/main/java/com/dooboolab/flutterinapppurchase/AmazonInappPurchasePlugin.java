@@ -1,10 +1,5 @@
 package com.dooboolab.flutterinapppurchase;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
 import android.util.Log;
 
 import com.amazon.device.iap.PurchasingListener;
@@ -14,6 +9,7 @@ import com.amazon.device.iap.model.ProductDataResponse;
 import com.amazon.device.iap.model.ProductType;
 import com.amazon.device.iap.model.PurchaseResponse;
 import com.amazon.device.iap.model.PurchaseUpdatesResponse;
+import com.amazon.device.iap.model.Receipt;
 import com.amazon.device.iap.model.RequestId;
 import com.amazon.device.iap.model.UserDataResponse;
 
@@ -24,8 +20,9 @@ import org.json.JSONObject;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -158,7 +155,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
               item.put("freeTrialPeriodAndroid", "");
               item.put("introductoryPriceCyclesAndroid", "");
               item.put("introductoryPricePeriodAndroid", "");
-              System.err.println("opdr Putting "+item.toString());
+              Log.d(TAG, "opdr Putting "+item.toString());
               items.put(item);
             }
             //System.err.println("Sending "+items.toString());
@@ -182,8 +179,39 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
     }
 
     @Override
-    public void onPurchaseUpdatesResponse(PurchaseUpdatesResponse purchaseUpdatesResponse) {
-      Log.d(TAG, "opudr="+purchaseUpdatesResponse.toString());
+    public void onPurchaseUpdatesResponse(PurchaseUpdatesResponse response) {
+      Log.d(TAG, "opudr="+response.toString());
+      final PurchaseUpdatesResponse.RequestStatus status = response.getRequestStatus();
+
+      switch(status) {
+        case SUCCESSFUL:
+          JSONArray items = new JSONArray();
+          try {
+            List<Receipt> receipts = response.getReceipts();
+            for(Receipt receipt : receipts) {
+
+              JSONObject item = new JSONObject();
+              item.put("productId", receipt.getSku());
+              item.put("transactionId", receipt.getReceiptId());
+              item.put("transactionReceipt", receipt.getReceiptId());
+              Date date = receipt.getPurchaseDate();
+              Long l=date.getTime();
+              item.put("transactionDate", Double.toString(l.doubleValue()));
+              Log.d(TAG, "opudr Putting "+item.toString());
+              items.put(item);
+            }
+            result.success(items.toString());
+          } catch (JSONException e) {
+            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
+          }
+          break;
+        case FAILED:
+          result.error(TAG,"FAILED",null);
+        case NOT_SUPPORTED:
+          Log.d(TAG, "onPurchaseUpdatesResponse: failed, should retry request");
+          result.error(TAG,"NOT_SUPPORTED",null);
+          break;
+      }
     }
   };
 }
