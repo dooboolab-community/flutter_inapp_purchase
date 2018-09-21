@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.amazon.device.iap.PurchasingListener;
 import com.amazon.device.iap.PurchasingService;
+import com.amazon.device.iap.model.FulfillmentResult;
 import com.amazon.device.iap.model.Product;
 import com.amazon.device.iap.model.ProductDataResponse;
 import com.amazon.device.iap.model.ProductType;
@@ -62,6 +63,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       }
     } else if (call.method.equals("prepare")) {
       Log.d(TAG, "prepare");
+      PurchasingService.getUserData();
       result.success("Billing client ready");
     } else if (call.method.equals("endConnection")) {
       result.success("Billing client has ended.");
@@ -83,8 +85,14 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
     } else if (call.method.equals("getAvailableItemsByType")) {
       String type = call.argument("type");
       Log.d(TAG, "gaibt="+type);
-      PurchasingService.getPurchaseUpdates(true);
-      return;
+      if(type.equals("inapp")) {
+          PurchasingService.getPurchaseUpdates(true);
+      } else if(type.equals("subs")) {
+        // Subscriptions are retrieved during inapp, so we just return empty list
+        result.success("[]");
+      } else {
+        result.notImplemented();
+      }
     } else if (call.method.equals("getPurchaseHistoryByType")) {
       result.notImplemented();
     } else if (call.method.equals("buyItemByType")) {
@@ -94,7 +102,6 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       Log.d(TAG, "type="+type+"||sku="+sku+"||oldsku="+oldSku);
       final RequestId requestId = PurchasingService.purchase(sku);
       Log.d(TAG, "resid="+requestId.toString());
-      return;
     } else if (call.method.equals("consumeProduct")) {
       result.notImplemented();
     } else {
@@ -144,7 +151,11 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
               ProductType productType = product.getProductType();
               switch (productType) {
                 case ENTITLED:
+                case CONSUMABLE:
                   item.put("type", "inapp");
+                  break;
+                case SUBSCRIPTION:
+                  item.put("type", "subs");
                   break;
               }
               item.put("localizedPrice", product.getPrice());
@@ -174,8 +185,18 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
     }
 
     @Override
-    public void onPurchaseResponse(PurchaseResponse purchaseResponse) {
-      Log.d(TAG, "opr="+purchaseResponse.toString());
+    public void onPurchaseResponse(PurchaseResponse response) {
+      Log.d(TAG, "opr="+response.toString());
+      final PurchaseResponse.RequestStatus status = response.getRequestStatus();
+      switch(status) {
+        case SUCCESSFUL:
+          Receipt receipt = response.getReceipt();
+          PurchasingService.notifyFulfillment(receipt.getReceiptId(), FulfillmentResult.UNAVAILABLE);
+          break;
+        case FAILED:
+          result.error(TAG,"FAILED",null);
+          break;
+      }
     }
 
     @Override
@@ -207,6 +228,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
           break;
         case FAILED:
           result.error(TAG,"FAILED",null);
+          break;
         case NOT_SUPPORTED:
           Log.d(TAG, "onPurchaseUpdatesResponse: failed, should retry request");
           result.error(TAG,"NOT_SUPPORTED",null);

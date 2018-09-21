@@ -78,8 +78,8 @@ class _MyAppState extends State<MyApp> {
     }
 
     setState(() {
-      this._purchases = [];
       this._items = items;
+      this._purchases = [];
     });
   }
 
@@ -95,32 +95,6 @@ class _MyAppState extends State<MyApp> {
       this._items = [];
       this._purchases = items;
     });
-  }
-
-  List<Widget> _renderPurchases() {
-    List<Widget> widgets = this
-        ._purchases
-        .map((item) => Container(
-              margin: EdgeInsets.symmetric(vertical: 10.0),
-              child: Container(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.only(bottom: 5.0),
-                      child: Text(
-                        item.toString(),
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          color: Colors.black,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ))
-        .toList();
-    return widgets;
   }
 
   List<Widget> _renderInApps() {
@@ -163,6 +137,32 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
             ))
+        .toList();
+    return widgets;
+  }
+
+  List<Widget> _renderPurchases() {
+    List<Widget> widgets = this
+        ._purchases
+        .map((item) => Container(
+      margin: EdgeInsets.symmetric(vertical: 10.0),
+      child: Container(
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(bottom: 5.0),
+              child: Text(
+                item.toString(),
+                style: TextStyle(
+                  fontSize: 18.0,
+                  color: Colors.black,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    ))
         .toList();
     return widgets;
   }
@@ -274,6 +274,7 @@ class _MyAppState extends State<MyApp> {
                                   await FlutterInappPurchase.endConnection;
                                   setState(() {
                                     this._items = [];
+                                    this._purchases = [];
                                   });
                                 },
                                 child: Container(
