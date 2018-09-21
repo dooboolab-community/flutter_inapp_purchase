@@ -191,10 +191,22 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       switch(status) {
         case SUCCESSFUL:
           Receipt receipt = response.getReceipt();
-          PurchasingService.notifyFulfillment(receipt.getReceiptId(), FulfillmentResult.UNAVAILABLE);
+          PurchasingService.notifyFulfillment(receipt.getReceiptId(), FulfillmentResult.FULFILLED);
+          Date date = receipt.getPurchaseDate();
+          Long transactionDate=date.getTime();
+          try {
+            JSONObject item = getPurchaseData(receipt.getSku(),
+                  receipt.getReceiptId(),
+                  receipt.getReceiptId(),
+                  transactionDate.doubleValue());
+            Log.d(TAG, "opr Putting "+item.toString());
+            result.success(item.toString());
+          } catch (JSONException e) {
+            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
+          }
           break;
         case FAILED:
-          result.error(TAG,"FAILED",null);
+          result.error(TAG, "buyItemByType", "billingResponse is not ok: " + status);
           break;
       }
     }
@@ -210,14 +222,13 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
           try {
             List<Receipt> receipts = response.getReceipts();
             for(Receipt receipt : receipts) {
-
-              JSONObject item = new JSONObject();
-              item.put("productId", receipt.getSku());
-              item.put("transactionId", receipt.getReceiptId());
-              item.put("transactionReceipt", receipt.getReceiptId());
               Date date = receipt.getPurchaseDate();
-              Long l=date.getTime();
-              item.put("transactionDate", Double.toString(l.doubleValue()));
+              Long transactionDate=date.getTime();
+              JSONObject item = getPurchaseData(receipt.getSku(),
+                      receipt.getReceiptId(),
+                      receipt.getReceiptId(),
+                      transactionDate.doubleValue());
+
               Log.d(TAG, "opudr Putting "+item.toString());
               items.put(item);
             }
@@ -236,4 +247,17 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       }
     }
   };
+
+  JSONObject getPurchaseData(String productId, String transactionId, String transactionReceipt,
+                             Double transactionDate) throws JSONException {
+    JSONObject item = new JSONObject();
+    item.put("productId", productId);
+    item.put("transactionId", transactionId);
+    item.put("transactionReceipt", transactionReceipt);
+    item.put("transactionDate", Double.toString(transactionDate));
+    item.put("dataAndroid",null);
+    item.put("signatureAndroid",null);
+    item.put("purchaseToken",null);
+    return item;
+  }
 }
