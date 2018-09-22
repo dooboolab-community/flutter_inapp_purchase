@@ -206,7 +206,6 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
                     item.put("freeTrialPeriodAndroid", skuDetails.getFreeTrialPeriod());
                     item.put("introductoryPriceCyclesAndroid", skuDetails.getIntroductoryPriceCycles());
                     item.put("introductoryPricePeriodAndroid", skuDetails.getIntroductoryPricePeriod());
-                    System.err.println("gibt Putting "+item.toString());
                     items.put(item);
                   }
                 } catch (JSONException e) {
@@ -268,7 +267,6 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             if (type.equals(BillingClient.SkuType.SUBS)) {
               item.put("autoRenewingAndroid", json.getBoolean("autoRenewing"));
             }
-            System.err.println("gaibt Putting "+item.toString());
             items.put(item);
           } catch (JSONException e) {
             result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
