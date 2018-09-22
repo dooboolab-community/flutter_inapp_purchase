@@ -36,7 +36,7 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | finishTransaction | `void` | `String` | Send finishTransaction call to Apple IAP server. Call this function after receipt validation process |
 | consumePurchase | `String` Purchase token | `String` | Consume a product (on Android.) No-op on iOS. |
 | endConnection | | `String` | End billing connection (on Android.) No-op on iOS. |
-| consumeAllItems | | `String` | Manually consume all items in android. No-op on iOS. |
+| consumeAllItems | | `String` | Manually consume all items in android. Do NOT call if you have any non-consumables (one time purchase items). No-op on iOS. |
 
 
 ## Data Types
