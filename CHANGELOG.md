@@ -1,3 +1,15 @@
+## 0.6.9
+* Prevent nil element exception when getting products.
+
+## 0.6.8
+* Prevent nil exception in ios when fetching products.
+
+## 0.6.7
+* Fix broken images on pub.
+
+## 0.6.6
+* Added missing introductory fields in ios.
+
 ## 0.6.5
 * convert dynamic objects to PurchasedItems.
 * Fix return type for getAvailablePurchases().

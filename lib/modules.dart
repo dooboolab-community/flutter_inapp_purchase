@@ -11,6 +11,9 @@ class IAPItem {
   /// ios only
   final String subscriptionPeriodNumberIOS;
   final String subscriptionPeriodUnitIOS;
+  final String introductoryPricePaymentModeIOS;
+  final String introductoryPriceNumberOfPeriodsIOS;
+  final String introductoryPriceSubscriptionPeriodIOS;
 
   /// android only
   final String subscriptionPeriodAndroid;
@@ -27,6 +30,12 @@ class IAPItem {
         title = json['title'] as String,
         description = json['description'] as String,
         introductoryPrice = json['introductoryPrice'] as String,
+        introductoryPricePaymentModeIOS =
+            json['introductoryPricePaymentModeIOS'] as String,
+        introductoryPriceNumberOfPeriodsIOS =
+            json['introductoryPriceNumberOfPeriodsIOS'] as String,
+        introductoryPriceSubscriptionPeriodIOS =
+            json['introductoryPriceSubscriptionPeriodIOS'] as String,
         subscriptionPeriodNumberIOS =
             json['subscriptionPeriodNumberIOS'] as String,
         subscriptionPeriodUnitIOS = json['subscriptionPeriodUnitIOS'] as String,
@@ -47,9 +56,12 @@ class IAPItem {
         'title: $title, '
         'description: $title, '
         'introductoryPrice: $introductoryPrice, '
+        'introductoryPricePaymentModeIOS: $introductoryPrice, '
+        'introductoryPrice: $introductoryPrice, '
+        'introductoryPrice: $introductoryPrice, '
         'subscriptionPeriodNumberIOS: $subscriptionPeriodNumberIOS, '
-        'subscriptionPeriodUnitIOS: $subscriptionPeriodUnitIOS, '
-        'subscriptionPeriodAndroid: $subscriptionPeriodAndroid, '
+        'introductoryPriceNumberOfPeriodsIOS: $subscriptionPeriodUnitIOS, '
+        'introductoryPriceSubscriptionPeriodIOS: $subscriptionPeriodAndroid, '
         'introductoryPriceCyclesAndroid: $introductoryPriceCyclesAndroid, '
         'introductoryPricePeriodAndroid: $introductoryPricePeriodAndroid, '
         'freeTrialPeriodAndroid: $freeTrialPeriodAndroid, ';

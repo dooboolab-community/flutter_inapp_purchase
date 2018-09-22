@@ -49,7 +49,11 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
   final String localizedPrice;
   final String title;
   final String description;
+  final String introductoryPrice;
   /// ios only
+  final String introductoryPricePaymentModeIOS;
+  final String introductoryPriceNumberOfPeriodsIOS;
+  final String introductoryPriceSubscriptionPeriodIOS;
   final String subscriptionPeriodNumberIOS;
   final String subscriptionPeriodUnitIOS;
   /// android only
