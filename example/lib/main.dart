@@ -7,12 +7,26 @@ import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 
 void main() => runApp(new MyApp());
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      home: Scaffold(
+          appBar: AppBar(
+            title: Text('Flutter Inapp Plugin by dooboolab'),
+          ),
+          body: InApp()),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
+class InApp extends StatefulWidget {
+  @override
+  _InAppState createState() => new _InAppState();
+}
+
+class _InAppState extends State<InApp> {
   final List<String> _productLists = Platform.isAndroid
       ? [
           'android.test.purchased',
@@ -97,6 +111,19 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<Null> _getPurchaseHistory() async {
+    List<PurchasedItem> items = await FlutterInappPurchase.getPurchaseHistory();
+    for (var item in items) {
+      print('${item.toString()}');
+      this._purchases.add(item);
+    }
+
+    setState(() {
+      this._items = [];
+      this._purchases = items;
+    });
+  }
+
   List<Widget> _renderInApps() {
     List<Widget> widgets = this
         ._items
@@ -145,167 +172,187 @@ class _MyAppState extends State<MyApp> {
     List<Widget> widgets = this
         ._purchases
         .map((item) => Container(
-      margin: EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        child: Column(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(bottom: 5.0),
-              child: Text(
-                item.toString(),
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: Colors.black,
+              margin: EdgeInsets.symmetric(vertical: 10.0),
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(bottom: 5.0),
+                      child: Text(
+                        item.toString(),
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
-            )
-          ],
-        ),
-      ),
-    ))
+            ))
         .toList();
     return widgets;
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Inapp Plugin by dooboolab'),
-        ),
-        body: Container(
-          padding: EdgeInsets.all(10.0),
-          child: ListView(
+    double screenWidth = MediaQuery.of(context).size.width-20;
+    double buttonWidth=(screenWidth/3)-20;
+
+    return Container(
+      padding: EdgeInsets.all(10.0),
+      child: ListView(
+        children: <Widget>[
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              Container(
+                child: Text(
+                  'Running on: $_platformVersion\n',
+                  style: TextStyle(fontSize: 18.0),
+                ),
+              ),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    child: Text(
-                      'Running on: $_platformVersion\n',
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                  ),
-                  Container(
-                    height: 60.0,
-                    margin: EdgeInsets.only(bottom: 10.0),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.only(left: 15.0),
-                              child: FlatButton(
-                                color: Colors.green,
-                                padding: EdgeInsets.all(0.0),
-                                onPressed: () async {
-                                  print(
-                                      "---------- Connect Billing Button Pressed");
-                                  await FlutterInappPurchase.initConnection;
-                                },
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 20.0),
-                                  alignment: Alignment(0.0, 0.0),
-                                  child: Text(
-                                    'Connect\nBilling',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Container(
+                        width: buttonWidth,
+                        height: 60.0,
+                        margin: EdgeInsets.all(7.0),
+                        child: FlatButton(
+                          color: Colors.amber,
+                          padding: EdgeInsets.all(0.0),
+                          onPressed: () async {
+                            print("---------- Connect Billing Button Pressed");
+                            await FlutterInappPurchase.initConnection;
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20.0),
+                            alignment: Alignment(0.0, 0.0),
+                            child: Text(
+                              'Connect Billing',
+                              style: TextStyle(
+                                fontSize: 16.0,
                               ),
                             ),
-                            Container(
-                                margin: EdgeInsets.only(left: 15.0),
-                                child: FlatButton(
-                                  color: Colors.green,
-                                  padding: EdgeInsets.all(0.0),
-                                  onPressed: () {
-                                    print(
-                                        "---------- Get Items Button Pressed");
-                                    this._getProduct();
-                                  },
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 20.0),
-                                    alignment: Alignment(0.0, 0.0),
-                                    child: Text(
-                                      'Get\nItems',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                      ),
-                                    ),
-                                  ),
-                                )),
-                            Container(
-                                margin: EdgeInsets.only(left: 15.0),
-                                child: FlatButton(
-                                  color: Colors.green,
-                                  padding: EdgeInsets.all(0.0),
-                                  onPressed: () {
-                                    print(
-                                        "---------- Get Purchases Button Pressed");
-                                    this._getPurchases();
-                                  },
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 20.0),
-                                    alignment: Alignment(0.0, 0.0),
-                                    child: Text(
-                                      'Get\nPurchases',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                      ),
-                                    ),
-                                  ),
-                                )),
-                            Container(
-                              margin: EdgeInsets.only(left: 15.0),
-                              child: FlatButton(
-                                color: Colors.green,
-                                padding: EdgeInsets.all(0.0),
-                                onPressed: () async {
-                                  print(
-                                      "---------- End Connection Button Pressed");
-                                  await FlutterInappPurchase.endConnection;
-                                  setState(() {
-                                    this._items = [];
-                                    this._purchases = [];
-                                  });
-                                },
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 20.0),
-                                  alignment: Alignment(0.0, 0.0),
-                                  child: Text(
-                                    'End\nConnection',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Container(
+                        width: buttonWidth,
+                        height: 60.0,
+                        margin: EdgeInsets.all(7.0),
+                        child: FlatButton(
+                          color: Colors.amber,
+                          padding: EdgeInsets.all(0.0),
+                          onPressed: () async {
+                            print("---------- End Connection Button Pressed");
+                            await FlutterInappPurchase.endConnection;
+                            setState(() {
+                              this._items = [];
+                              this._purchases = [];
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20.0),
+                            alignment: Alignment(0.0, 0.0),
+                            child: Text(
+                              'End Connection',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Column(
-                    children: this._renderInApps(),
-                  ),
-                  Column(
-                    children: this._renderPurchases(),
-                  ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Container(
+                            width: buttonWidth,
+                            height: 60.0,
+                            margin: EdgeInsets.all(7.0),
+                            child: FlatButton(
+                              color: Colors.green,
+                              padding: EdgeInsets.all(0.0),
+                              onPressed: () {
+                                print("---------- Get Items Button Pressed");
+                                this._getProduct();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                alignment: Alignment(0.0, 0.0),
+                                child: Text(
+                                  'Get Items',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                              ),
+                            )),
+                        Container(
+                            width: buttonWidth,
+                            height: 60.0,
+                            margin: EdgeInsets.all(7.0),
+                            child: FlatButton(
+                              color: Colors.green,
+                              padding: EdgeInsets.all(0.0),
+                              onPressed: () {
+                                print(
+                                    "---------- Get Purchases Button Pressed");
+                                this._getPurchases();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                alignment: Alignment(0.0, 0.0),
+                                child: Text(
+                                  'Get Purchases',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                              ),
+                            )),
+                        Container(
+                            width: buttonWidth,
+                            height: 60.0,
+                            margin: EdgeInsets.all(7.0),
+                            child: FlatButton(
+                              color: Colors.green,
+                              padding: EdgeInsets.all(0.0),
+                              onPressed: () {
+                                print(
+                                    "---------- Get Purchase History Button Pressed");
+                                this._getPurchaseHistory();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                alignment: Alignment(0.0, 0.0),
+                                child: Text(
+                                  'Get Purchase History',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                              ),
+                            )),
+                      ]),
                 ],
+              ),
+              Column(
+                children: this._renderInApps(),
+              ),
+              Column(
+                children: this._renderPurchases(),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }

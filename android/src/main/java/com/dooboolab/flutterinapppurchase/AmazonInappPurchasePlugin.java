@@ -68,7 +68,8 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
     } else if (call.method.equals("endConnection")) {
       result.success("Billing client has ended.");
     } else if (call.method.equals("consumeAllItems")) {
-      result.notImplemented();
+      // consumable is a separate type in amazon
+      result.success("no-ops in amazon");
     } else if (call.method.equals("getItemsByType")) {
       Log.d(TAG, "getItemsByType");
       String type = call.argument("type");
@@ -80,11 +81,11 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
         productSkus.add(skus.get(i));
       }
       PurchasingService.getProductData(productSkus);
-      //PurchasingService.getUserData();
 
     } else if (call.method.equals("getAvailableItemsByType")) {
       String type = call.argument("type");
       Log.d(TAG, "gaibt="+type);
+      // NOTE: getPurchaseUpdates doesnt return Consumables which are FULFILLED
       if(type.equals("inapp")) {
           PurchasingService.getPurchaseUpdates(true);
       } else if(type.equals("subs")) {
@@ -94,7 +95,8 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
         result.notImplemented();
       }
     } else if (call.method.equals("getPurchaseHistoryByType")) {
-      result.notImplemented();
+      // No equivalent
+      result.success("[]");
     } else if (call.method.equals("buyItemByType")) {
       final String type = call.argument("type");
       final String sku = call.argument("sku");
@@ -103,7 +105,8 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       final RequestId requestId = PurchasingService.purchase(sku);
       Log.d(TAG, "resid="+requestId.toString());
     } else if (call.method.equals("consumeProduct")) {
-      result.notImplemented();
+      // consumable is a separate type in amazon
+      result.success("no-ops in amazon");
     } else {
       result.notImplemented();
     }
@@ -115,6 +118,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       Log.d(TAG, "oudr="+userDataResponse.toString());
     }
 
+    // getItemsByType
     @Override
     public void onProductDataResponse(ProductDataResponse response) {
       Log.d(TAG, "opdr="+response.toString());
@@ -184,6 +188,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       }
     }
 
+    // buyItemByType
     @Override
     public void onPurchaseResponse(PurchaseResponse response) {
       Log.d(TAG, "opr="+response.toString());
@@ -211,6 +216,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       }
     }
 
+    // getAvailableItemsByType
     @Override
     public void onPurchaseUpdatesResponse(PurchaseUpdatesResponse response) {
       Log.d(TAG, "opudr="+response.toString());
