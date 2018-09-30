@@ -1,0 +1,30 @@
+{
+    "android.test.purchased" : {
+        "itemType" : "ENTITLED",
+        "price" : "4.99",
+        "title": "Test Single Purchase",
+        "description": "One purchase only",
+        "smallIconUrl": "./assets/sample.theme.red.jpg"
+    },
+    "android.test.canceled" : {
+        "itemType" : "ENTITLED",
+        "price" : "0.99",
+        "title": "Test Single Purchase",
+        "description": "One purchase only",
+        "smallIconUrl": "./assets/sample.theme.green.jpg"
+    },
+    "point_1000" : {
+        "itemType" : "SUBSCRIPTION",
+        "price" : "0.99",
+        "title": "1000 Points",
+        "description": "1000 Points to spend",
+        "smallIconUrl": "./assets/sample.theme.blue.jpg"
+    },
+    "5000_point" : {
+        "itemType": "CONSUMABLE",
+        "price": "10.00",
+        "title": "Orange",
+        "description": "An orange",
+        "smallIconUrl": "http://www.amazon.com/orange.jpg"
+    }
+}
