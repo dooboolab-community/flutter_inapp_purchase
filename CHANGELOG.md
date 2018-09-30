@@ -1,3 +1,6 @@
+## 0.7.0
+* Addition of Amazon In-App Purchases.
+
 ## 0.6.9
 * Prevent nil element exception when getting products.
 
