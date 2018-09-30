@@ -9,9 +9,12 @@ To test your purchases, you do not need to create an Amazon developer account.
 Install the Amazon App Tester (AAT) :
 [Amazon App Tester](https://www.amazon.com/Amazon-App-Tester/dp/B00BN3YZM2)
 
-You need to create an amazon.sdktester.json file. Example :
-[amazon.sdktester.json](https://github.com/dooboolab/flutter_inapp_purchase/blob/master/ancillary/amazon.sdktester.json)
-Edit this to add your own Product Ids. Put this file into the kindle sdcard with :
+You need to create an amazon.sdktester.json file. 
+
+Example : [amazon.sdktester.json](https://github.com/dooboolab/flutter_inapp_purchase/blob/master/ancillary/amazon.sdktester.json)
+Edit this to add your own Product Ids. 
+
+Put this file into the kindle sdcard with :
 
     adb push amazon.sdktester.json /sdcard/
     
@@ -25,5 +28,7 @@ Now your testers will be sent a link to the test version of your app. They can m
 
 ## Submitting to the Amazon store
 Amazon developer accounts are free. I found the Amazon store the easiest to submit to (compared with Googles play & Apple store). Required screenshots are the same size as a Nexus 7 so that is what I used.
+
 I found the staff who checked my app very helpful (such as providing logcat output on request for example). Text is the same as other stores, except there is an additional up-to 10 bullet point summary of your app you can add.
+
 When you submit your app to the store there will be a warning that google billing is detected in your code. When you submit your app for approval you can mention in the testing instructions for the Amazon reviewer that you are using a cross-platform tool and the google IAP code is not used. I dont know if this is necessary but my app was approved anyway.
