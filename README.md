@@ -89,6 +89,7 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
 
 ## Configuring in app purchase
 - Please refer to [Blog](https://medium.com/@dooboolab/react-native-in-app-purchase-121622d26b67).
+- [Amazon Kindle Fire](KINDLE.md)
 
 
 ## Usage Guide
