@@ -1,3 +1,7 @@
+## 0.7.1
+* Implemented receiptValidation for both android and ios.
+  - In Android, you need own backend to get your `accessToken`.
+
 ## 0.7.0
 * Addition of Amazon In-App Purchases.
 

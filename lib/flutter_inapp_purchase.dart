@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/services.dart';
 
@@ -370,5 +371,72 @@ class FlutterInappPurchase {
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
+  }
+
+  /// Validate receipt in ios
+  ///
+  /// Example:
+  /// ```
+  /// const receiptBody = {
+  /// 'receipt-data': purchased.transactionReceipt,
+  /// 'password': '******'
+  /// };
+  /// const result = await validateReceiptIos(receiptBody, false);
+  /// console.log(result);
+  /// ```
+  static Future<http.Response> validateReceiptIos({
+    Map<String, String> receiptBody,
+    bool isTest = true,
+  }) async {
+    assert(receiptBody != null);
+    assert(isTest != null);
+
+    final String url = isTest ? 'https://sandbox.itunes.apple.com/verifyReceipt' : 'https://buy.itunes.apple.com/verifyReceipt';
+    return await http.post(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(receiptBody),
+    );
+  }
+
+  /// Validate receipt in android
+  ///
+  /// For Android, you need separate json file from the service account to get the access_token from google-apis, therefore it is impossible to implement serverless. You should have your own backend and get access_token.
+  /// Read: https://stackoverflow.com/questions/35127086/android-inapp-purchase-receipt-validation-google-play?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+  ///
+  /// Example:
+  /// ```
+  /// const result = await validateReceiptAndroid(
+  ///   packageName: 'com.dooboolab.iap',
+  ///   productId: 'product_1',
+  ///   productToken: 'some_token_string',
+  ///   accessToken: 'play_console_access_token',
+  ///   isSubscription: false,
+  /// );
+  /// console.log(result);
+  /// ```
+  static Future<http.Response> validateReceiptAndroid({
+    String packageName,
+    String productId,
+    String productToken,
+    String accessToken,
+    bool isSubscription = false,
+  }) async {
+    assert(packageName != null);
+    assert(productId != null);
+    assert(productToken != null);
+    assert(accessToken != null);
+
+    final String type = isSubscription ? 'subscriptions' : 'products';
+    final String url = 'https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
+    return await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+      },
+    );
   }
 }

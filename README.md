@@ -5,7 +5,6 @@
 
 In App Purchase plugin for flutter. This project has been `forked` from [react-native-iap](https://github.com/dooboolab/react-native-iap). We are trying to share same experience of `in-app-purchase` in `flutter` as in `react-native`.
 We will keep working on it as time goes by just like we did in `react-native-iap`.
-Please give stars in github repository because we want to share this project in [opencollective](https://opencollective.com/react-native-iap). We need at least 100 stars to be there. Please help us to maintain and get more sponsors and backers.
 
 `PR` is always welcomed.
 
@@ -37,6 +36,8 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | consumePurchase | `String` Purchase token | `String` | Consume a product (on Android.) No-op on iOS. |
 | endConnection | | `String` | End billing connection (on Android.) No-op on iOS. |
 | consumeAllItems | | `String` | Manually consume all items in android. Do NOT call if you have any non-consumables (one time purchase items). No-op on iOS. |
+| validateReceiptIos | `Map<String,String>` receiptBody, `bool` isTest | `http.Response` | Validate receipt for ios. |
+| validateReceiptAndroid | `String` packageName, `String` productId, `String` productToken, `String` accessToken, `bool` isSubscription | `http.Response` | Validate receipt for android. |
 
 
 ## Data Types
@@ -133,6 +134,21 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
   }
   ```
 
+#### Receipt validation
+From `0.7.1`, we support receipt validation. For Android, you need separate json file from the service account to get the `access_token` from `google-apis`, therefore it is impossible to implement serverless. You should have your own backend and get `access_token`. With `access_token` you can simply call `validateReceiptAndroid` method we implemented. Further reading is [here](https://stackoverflow.com/questions/35127086/android-inapp-purchase-receipt-validation-google-play?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa).
+Currently, serverless receipt validation is possible using `validateReceiptIos` method. The first parameter, you should pass `transactionReceipt` which returns after `buyProduct`. The second parameter, you should pass whether this is `test` environment. If `true`, it will request to `sandbox` and `false` it will request to `production`.
+
+  ```dart
+  validateReceipt() async {
+    var receiptBody = {
+      'receipt-data': purchased.transactionReceipt,
+      'password': '******'
+    };
+    const result = await validateReceiptIos(receiptBody, false);
+    console.log(result);
+  }
+  ```
+For further information, please refer to [guide](https://developer.apple.com/library/content/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html).
 
 ## Example
 Below code is just a `cp` from example project. You can test this in real example project.
