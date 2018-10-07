@@ -9,6 +9,7 @@
 @property (atomic, retain) NSMutableDictionary<NSValue*, FlutterResult>* fetchProducts;
 @property (atomic, retain) NSMutableDictionary<SKPayment*, FlutterResult>* requestedPayments;
 @property (atomic, retain) NSArray<SKProduct*>* products;
+@property (atomic, retain) NSMutableArray<SKProduct*>* appStoreInitiatedProducts;
 @property (atomic, retain) NSMutableSet<NSString*>* purchases;
 @property (nonatomic, retain) FlutterMethodChannel* channel;
 
@@ -19,6 +20,7 @@
 @synthesize fetchProducts;
 @synthesize requestedPayments;
 @synthesize products;
+@synthesize appStoreInitiatedProducts;
 @synthesize purchases;
 @synthesize channel;
 
@@ -36,6 +38,7 @@
     self.fetchProducts = [[NSMutableDictionary alloc] init];
     self.requestedPayments = [[NSMutableDictionary alloc] init];
     self.products = [[NSArray alloc] init];
+    self.appStoreInitiatedProducts = [[NSMutableArray alloc] init];
     self.purchases = [[NSMutableSet alloc] init];
 
     return self;
@@ -84,6 +87,8 @@
         result(@"Finished current transaction");
     } else if ([@"getAvailableItems" isEqualToString:call.method]) {
         [self getAvailableItems:result];
+    } else if ([@"getAppStoreInitiatedProducts" isEqualToString:call.method]) {
+        result([self.appStoreInitiatedProducts]);
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -374,7 +379,10 @@
 
 #if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
 - (BOOL)paymentQueue:(SKPaymentQueue *)queue shouldAddStorePayment:(SKPayment *)payment forProduct:(SKProduct *)product {
-    return YES;
+    // Save any purchases initiated through the App Store
+    // Get the products by calling getAppStoreInitiatedProducts and handle the purchase in dart
+    [appStoreInitiatedProducts addObject:product];
+    return NO;
 }
 #endif
 
