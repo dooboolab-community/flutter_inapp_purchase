@@ -345,7 +345,7 @@ class FlutterInappPurchase {
   ///
   static Future<List<IAPItem>> getAppStoreInitiatedProducts() async {
     if (Platform.isAndroid) {
-      return 'no-ops in ios';
+      return List<IAPItem>();
       
     } else if (Platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAppStoreInitiatedProducts');
