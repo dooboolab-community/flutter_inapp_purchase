@@ -142,7 +142,7 @@
     result(allValues);
 }
 
--(NSDictionary *)getProductAsDictionary:(SKProduct*) product{
+-(NSDictionary *)getProductAsDictionary:(SKProduct*)product{
     NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
     formatter.numberStyle = NSNumberFormatterCurrencyStyle;
     formatter.locale = product.priceLocale;
