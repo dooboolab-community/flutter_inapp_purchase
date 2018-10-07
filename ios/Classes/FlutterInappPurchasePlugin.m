@@ -381,7 +381,9 @@
 }
 
 - (void)getAppStoreInitiatedProducts:(FlutterResult)result {
-    [getAppStoreInitiatedProducts setObject:result forKey:[NSValue valueWithNonretainedObject:appStoreInitiatedProducts]];
+    flutterResult = result;
+    flutterResult(appStoreInitiatedProducts);
+//    [getAppStoreInitiatedProducts setObject:result forKey:[NSValue valueWithNonretainedObject:appStoreInitiatedProducts]];
 }
 
 #if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
