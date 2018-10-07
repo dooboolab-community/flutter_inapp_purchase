@@ -372,6 +372,12 @@
     flutterResult = nil;
 }
 
+#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
+- (BOOL)paymentQueue:(SKPaymentQueue *)queue shouldAddStorePayment:(SKPayment *)payment forProduct:(SKProduct *)product {
+    return YES;
+}
+#endif
+
 -(NSString *)standardErrorCode:(int)code {
     NSArray *descriptions = @[
                               @"E_UNKNOWN",
