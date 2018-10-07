@@ -341,6 +341,21 @@ class FlutterInappPurchase {
         code: Platform.operatingSystem, message: "platform not supported");
   }
 
+  /// Retrieves a list of products that have been attempted to purchase through the App Store `iOS` only.
+  ///
+  static Future<List<IAPItem>> getAppStoreInitiatedProducts() async {
+    if (Platform.isAndroid) {
+      return 'no-ops in ios';
+      
+    } else if (Platform.isIOS) {
+      dynamic result = await _channel.invokeMethod('getAppStoreInitiatedProducts');
+
+      return extractItems(json.encode(result));
+    }
+    throw PlatformException(
+        code: Platform.operatingSystem, message: "platform not supported");
+  }
+  
   /// Check if a subscription is active on `Android` and `iOS`.
   ///
   /// This is a quick and dirty way to check if a subscription is active.
