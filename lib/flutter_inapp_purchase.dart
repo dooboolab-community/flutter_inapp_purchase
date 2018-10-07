@@ -312,7 +312,9 @@ class FlutterInappPurchase {
       return item;
     } else if (Platform.isIOS) {
       dynamic result =
-          await _channel.invokeMethod('buyProductWithoutFinishTransaction');
+          await _channel.invokeMethod('buyProductWithoutFinishTransaction', <String, dynamic>{
+        'sku': sku,
+      });
       result = json.encode(result);
 
       Map<String, dynamic> param = json.decode(result.toString());
