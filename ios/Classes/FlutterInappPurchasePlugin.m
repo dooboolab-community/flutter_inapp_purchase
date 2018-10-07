@@ -88,7 +88,7 @@
     } else if ([@"getAvailableItems" isEqualToString:call.method]) {
         [self getAvailableItems:result];
     } else if ([@"getAppStoreInitiatedProducts" isEqualToString:call.method]) {
-        result([self.appStoreInitiatedProducts]);
+        result([self appStoreInitiatedProducts]);
     } else {
         result(FlutterMethodNotImplemented);
     }
