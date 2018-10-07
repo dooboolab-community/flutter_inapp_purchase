@@ -88,7 +88,7 @@
     } else if ([@"getAvailableItems" isEqualToString:call.method]) {
         [self getAvailableItems:result];
     } else if ([@"getAppStoreInitiatedProducts" isEqualToString:call.method]) {
-        result([self appStoreInitiatedProducts]);
+        [self getAppStoreInitiatedProducts:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -375,6 +375,10 @@
         flutterResult(items);
     }
     flutterResult = nil;
+}
+
+- (void)getAppStoreInitiatedProducts:(FlutterResult)result {
+    [getAppStoreInitiatedProducts setObject:result forKey:[NSValue valueWithNonretainedObject:appStoreInitiatedProducts]];
 }
 
 #if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
