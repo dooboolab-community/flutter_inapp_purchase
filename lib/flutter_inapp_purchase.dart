@@ -323,7 +323,7 @@ class FlutterInappPurchase {
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
-  }
+  } 
 
   /// Finish a transaction on `iOS`.
   ///
