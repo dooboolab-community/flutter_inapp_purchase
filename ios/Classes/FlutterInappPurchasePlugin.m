@@ -136,7 +136,7 @@
 
     NSMutableArray<NSDictionary*>* allValues = [[NSMutableArray alloc] init];
     [[response products] enumerateObjectsUsingBlock:^(SKProduct* product, NSUInteger idx, BOOL* stop) {
-        [allValues addObject:[getProductAsDictionary:product]];
+        [allValues addObject:[self getProductAsDictionary:product]];
     }];
 
     result(allValues);
@@ -382,7 +382,7 @@
 - (void)getAppStoreInitiatedProducts:(FlutterResult)result {
     NSMutableArray<NSDictionary*>* initiatedProducts = [[NSMutableArray alloc] init];
     for (SKProduct* p in appStoreInitiatedProducts) {
-        [initiatedProducts addObject:[getProductAsDictionary:p]];
+        [initiatedProducts addObject:[self getProductAsDictionary:p]];
     }
     result(initiatedProducts);
 }
