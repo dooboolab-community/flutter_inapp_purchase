@@ -7,6 +7,7 @@
 }
 
 @property (atomic, retain) NSMutableDictionary<NSValue*, FlutterResult>* fetchProducts;
+@property (atomic, retain) NSMutableDictionary<NSValue*, FlutterResult>* getAppStoreInitiatedProducts;
 @property (atomic, retain) NSMutableDictionary<SKPayment*, FlutterResult>* requestedPayments;
 @property (atomic, retain) NSArray<SKProduct*>* products;
 @property (atomic, retain) NSMutableArray<SKProduct*>* appStoreInitiatedProducts;
@@ -18,6 +19,7 @@
 @implementation FlutterInappPurchasePlugin
 
 @synthesize fetchProducts;
+@synthesize getAppStoreInitiatedProducts;
 @synthesize requestedPayments;
 @synthesize products;
 @synthesize appStoreInitiatedProducts;
@@ -36,6 +38,7 @@
 - (instancetype)init {
     self = [super init];
     self.fetchProducts = [[NSMutableDictionary alloc] init];
+    self.getAppStoreInitiatedProducts = [[NSMutableDictionary alloc] init];
     self.requestedPayments = [[NSMutableDictionary alloc] init];
     self.products = [[NSArray alloc] init];
     self.appStoreInitiatedProducts = [[NSMutableArray alloc] init];
