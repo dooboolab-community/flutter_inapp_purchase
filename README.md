@@ -394,6 +394,31 @@ class _MyAppState extends State<MyApp> {
 }
 ```
 
+## Q & A
+
+#### Can I buy product right away skipping fetching products if I already know productId?
+- You can in `Android` but not in `ios`. In `ios` you should always `fetchProducts` first. You can see more info [here](https://medium.com/ios-development-tips-and-tricks/working-with-ios-in-app-purchases-e4b55491479b).
+
+#### How do I validate receipt in ios?
+- Official doc is [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html).
+
+#### How do I validate receipt in android?
+- Offical doc is [here](https://developer.android.com/google/play/billing/billing_library_overview).
+- I've developed this feature for other developers to contribute easily who are aware of these things. The doc says you can also get the `accessToken` via play console without any of your backend server. You can get this by following process.
+  * Select your app > Services & APIs > "YOUR LICENSE KEY FOR THIS APPLICATION Base64-encoded RSA public key to include in your binary". [reference](https://stackoverflow.com/questions/27132443/how-to-find-my-google-play-services-android-base64-public-key).
+
+#### Invalid productId in ios.
+- Please try below and make sure you've done belows.
+  - Steps
+    1. Completed an effective "Agreements, Tax, and Banking."
+    2. Setup sandbox testing account in "Users and Roles."
+    3. Signed into iOS device with sandbox account.
+    3. Set up three In-App Purchases with the following status:
+       i. Ready to Submit
+       ii. Missing Metadata
+       iii. Waiting for Review
+    4. Enable "In-App Purchase" in Xcode "Capabilities" and in Apple Developer -> "App ID" setting. Delete app / Restart device / Quit "store" related processes in Activity Monitor / Xcode Development Provisioning Profile -> Clean -> Build.
+
 ## Help Maintenance
 I've been maintaining quite many repos these days and burning out slowly. If you could help me cheer up, buying me a cup of coffee will make my life really happy and get much energy out of it.
 <br/><a href="https://www.buymeacoffee.com/dooboolab" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
