@@ -1,4 +1,6 @@
-## 0.7.2
+## 0.8.0
+* Fixed receipt validation param for `android`.
+* Updated `http` package.
 * Implemented new method `getAppStoreInitiatedProducts`.
   - Handling of iOS method `paymentQueue:shouldAddStorePayment:forProduct:`
   - Has no effect on Android.
