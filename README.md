@@ -29,6 +29,7 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | getSubscriptions | `List<String>` Subscription IDs/skus | `List<IAPItem>` | Get a list of subscriptions. Note: On iOS  this method has the same output as `getProducts`. Because iOS does not differentiate between IAP products and subscriptions.  |
 | getPurchaseHistory | | `List<IAPItem>` | Gets an invetory of purchases made by the user regardless of consumption status (where possible) |
 | getAvailablePurchases | | `List<PurchasedItem>` | (aka restore purchase) Get all purchases made by the user (either non-consumable, or haven't been consumed yet)
+| getAppStoreInitiatedProducts | | `List<IAPItem>` | If the user has initiated a purchase directly on the App Store, the products that the user is attempting to purchase will be returned here. (iOS only) Note: On iOS versions earlier than 11.0 this method will always return an empty list, as the functionality was introduced in v11.0. [See Apple Docs for more info](https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver/2877502-paymentqueue) Always returns an empty list on Android.
 | buySubscription | `string` Subscription ID/sku, `string` Old Subscription ID/sku (on Android) | `PurchasedItem` | Create (buy) a subscription to a sku. For upgrading/downgrading subscription on Android pass second parameter with current subscription ID, on iOS this is handled automatically by store. |
 | buyProduct | `string` Product ID/sku | `PurchasedItem` | Buy a product |
 | buyProductWithoutFinishTransaction | `string` Product ID/sku | `PurchasedItem` | Buy a product without finish transaction call (iOS only) |
@@ -150,6 +151,21 @@ Currently, serverless receipt validation is possible using `validateReceiptIos` 
   }
   ```
 For further information, please refer to [guide](https://developer.apple.com/library/content/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html).
+
+
+#### App Store initiated purchases
+When the user starts an in-app purchase in the App Store, the transaction continues in your app, the product will then be added to a list that you can access through the method `getAppStoreInitiatedProducts`. This means you can decide how and when to continue the transaction.
+To continue the transaction simple use the standard purchase flow from this plugin.
+
+```dart
+void checkForAppStoreInitiatedProducts() async {
+  List<IAPItem> appStoreProducts = await FlutterInappPurchase.getAppStoreInitiatedProducts(); // Get list of products
+  if (appStoreProducts.length > 0) {
+    _buyProduct(appStoreProducts.last); // Buy last product in the list
+  }
+}
+```
+
 
 ## Example
 Below code is just a `cp` from example project. You can test this in real example project.

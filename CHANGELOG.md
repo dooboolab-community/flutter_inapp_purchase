@@ -1,3 +1,10 @@
+## 0.7.2
+* Implemented new method `getAppStoreInitiatedProducts`.
+  - Handling of iOS method `paymentQueue:shouldAddStorePayment:forProduct:`
+  - Has no effect on Android.
+* Fixed issue with method `buyProductWithoutFinishTransaction` for iOS, was not getting the productId.
+* Fixed issue with `toString` method of class `IAPItem`, was printing incorrect values.
+
 ## 0.7.1
 * Implemented receiptValidation for both android and ios.
   - In Android, you need own backend to get your `accessToken`.

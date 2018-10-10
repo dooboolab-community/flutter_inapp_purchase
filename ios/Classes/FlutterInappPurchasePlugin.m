@@ -9,6 +9,7 @@
 @property (atomic, retain) NSMutableDictionary<NSValue*, FlutterResult>* fetchProducts;
 @property (atomic, retain) NSMutableDictionary<SKPayment*, FlutterResult>* requestedPayments;
 @property (atomic, retain) NSArray<SKProduct*>* products;
+@property (atomic, retain) NSMutableArray<SKProduct*>* appStoreInitiatedProducts;
 @property (atomic, retain) NSMutableSet<NSString*>* purchases;
 @property (nonatomic, retain) FlutterMethodChannel* channel;
 
@@ -19,6 +20,7 @@
 @synthesize fetchProducts;
 @synthesize requestedPayments;
 @synthesize products;
+@synthesize appStoreInitiatedProducts;
 @synthesize purchases;
 @synthesize channel;
 
@@ -36,6 +38,7 @@
     self.fetchProducts = [[NSMutableDictionary alloc] init];
     self.requestedPayments = [[NSMutableDictionary alloc] init];
     self.products = [[NSArray alloc] init];
+    self.appStoreInitiatedProducts = [[NSMutableArray alloc] init];
     self.purchases = [[NSMutableSet alloc] init];
 
     return self;
@@ -84,6 +87,8 @@
         result(@"Finished current transaction");
     } else if ([@"getAvailableItems" isEqualToString:call.method]) {
         [self getAvailableItems:result];
+    } else if ([@"getAppStoreInitiatedProducts" isEqualToString:call.method]) {
+        [self getAppStoreInitiatedProducts:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -131,111 +136,113 @@
 
     NSMutableArray<NSDictionary*>* allValues = [[NSMutableArray alloc] init];
     [[response products] enumerateObjectsUsingBlock:^(SKProduct* product, NSUInteger idx, BOOL* stop) {
-        NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-        formatter.numberStyle = NSNumberFormatterCurrencyStyle;
-        formatter.locale = product.priceLocale;
-        NSString* localizedPrice = [formatter stringFromNumber:product.price];
-        NSString* introductoryPrice;
-        NSString* introductoryPricePaymentMode = @"";
-        NSString* introductoryPriceNumberOfPeriods = @"";
-        NSString* introductoryPriceSubscriptionPeriod = @"";
-
-        // NSString* itemType = @"Do not use this. It returned sub only before";
-
-        NSString* currencyCode = @"";
-        NSString* periodNumberIOS = @"0";
-        NSString* periodUnitIOS = @"";
-        
-
-        if (@available(iOS 11.2, *)) {
-            formatter.locale = product.introductoryPrice.priceLocale;
-            introductoryPrice = [formatter stringFromNumber:product.introductoryPrice.price];
-
-            // itemType = product.subscriptionPeriod ? @"sub" : @"iap";
-            unsigned long numOfUnits = (unsigned long) product.subscriptionPeriod.numberOfUnits;
-            SKProductPeriodUnit unit = product.subscriptionPeriod.unit;
-
-            if (unit == SKProductPeriodUnitYear) {
-                periodUnitIOS = @"YEAR";
-            } else if (unit == SKProductPeriodUnitMonth) {
-                periodUnitIOS = @"MONTH";
-            } else if (unit == SKProductPeriodUnitWeek) {
-                periodUnitIOS = @"WEEK";
-            } else if (unit == SKProductPeriodUnitDay) {
-                periodUnitIOS = @"DAY";
-            }
-
-            periodNumberIOS = [NSString stringWithFormat:@"%lu", numOfUnits];
-
-            // subscriptionPeriod = product.subscriptionPeriod ? [product.subscriptionPeriod stringValue] : @"";
-            // introductoryPrice = product.introductoryPrice != nil ? [NSString stringWithFormat:@"%@", product.introductoryPrice] : @"";
-            if (product.introductoryPrice != nil) {
-              //SKProductDiscount introductoryPriceObj = product.introductoryPrice;
-              formatter.locale = product.introductoryPrice.priceLocale;
-              introductoryPrice = [formatter stringFromNumber:product.introductoryPrice.price];
-
-              switch (product.introductoryPrice.paymentMode) {
-                  case SKProductDiscountPaymentModeFreeTrial:
-                      introductoryPricePaymentMode = @"FREETRIAL";
-                      break;
-                  case SKProductDiscountPaymentModePayAsYouGo:
-                      introductoryPricePaymentMode = @"PAYASYOUGO";
-                      break;
-                  case SKProductDiscountPaymentModePayUpFront:
-                      introductoryPricePaymentMode = @"PAYUPFRONT";
-                      break;
-                  default:
-                      introductoryPricePaymentMode = @"";
-                      break;
-              }
-
-              introductoryPriceNumberOfPeriods = [@(product.introductoryPrice.numberOfPeriods) stringValue];
-
-              if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitDay) {
-                  introductoryPriceSubscriptionPeriod = @"DAY";
-              }	else if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitWeek) {
-                  introductoryPriceSubscriptionPeriod = @"WEEK";
-              }	else if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitMonth) {
-                  introductoryPriceSubscriptionPeriod = @"MONTH";
-              } else if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitYear) {
-                  introductoryPriceSubscriptionPeriod = @"YEAR";
-              } else {
-                  introductoryPriceSubscriptionPeriod = @"";
-              }
-
-            } else {
-              introductoryPrice = @"";
-              introductoryPricePaymentMode = @"";
-              introductoryPriceNumberOfPeriods = @"";
-              introductoryPriceSubscriptionPeriod = @"";
-            }
-        }
-
-        if (@available(iOS 10.0, *)) {
-          currencyCode = product.priceLocale.currencyCode;
-        }
-
-        NSDictionary* obj = @{
-          @"productId" : product.productIdentifier,
-          @"price" : [product.price stringValue],
-          @"currency" : currencyCode,
-          // @"type": itemType,
-          @"title" : product.localizedTitle ? product.localizedTitle : @"",
-          @"description" : product.localizedDescription ? product.localizedDescription : @"",
-          @"localizedPrice" : localizedPrice,
-          @"subscriptionPeriodNumberIOS" : periodNumberIOS,
-          @"subscriptionPeriodUnitIOS" : periodUnitIOS,
-          @"introductoryPrice" : introductoryPrice,
-          @"introductoryPricePaymentModeIOS" : introductoryPricePaymentMode,
-          @"introductoryPriceNumberOfPeriodsIOS" : introductoryPriceNumberOfPeriods,
-          @"introductoryPriceSubscriptionPeriodIOS" : introductoryPriceSubscriptionPeriod
-        };
-
-
-        [allValues addObject:obj];
+        [allValues addObject:[self getProductAsDictionary:product]];
     }];
 
     result(allValues);
+}
+
+-(NSDictionary *)getProductAsDictionary:(SKProduct*)product{
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    formatter.numberStyle = NSNumberFormatterCurrencyStyle;
+    formatter.locale = product.priceLocale;
+    NSString* localizedPrice = [formatter stringFromNumber:product.price];
+    NSString* introductoryPrice;
+    NSString* introductoryPricePaymentMode = @"";
+    NSString* introductoryPriceNumberOfPeriods = @"";
+    NSString* introductoryPriceSubscriptionPeriod = @"";
+
+    // NSString* itemType = @"Do not use this. It returned sub only before";
+
+    NSString* currencyCode = @"";
+    NSString* periodNumberIOS = @"0";
+    NSString* periodUnitIOS = @"";
+
+
+    if (@available(iOS 11.2, *)) {
+        formatter.locale = product.introductoryPrice.priceLocale;
+        introductoryPrice = [formatter stringFromNumber:product.introductoryPrice.price];
+
+        // itemType = product.subscriptionPeriod ? @"sub" : @"iap";
+        unsigned long numOfUnits = (unsigned long) product.subscriptionPeriod.numberOfUnits;
+        SKProductPeriodUnit unit = product.subscriptionPeriod.unit;
+
+        if (unit == SKProductPeriodUnitYear) {
+            periodUnitIOS = @"YEAR";
+        } else if (unit == SKProductPeriodUnitMonth) {
+            periodUnitIOS = @"MONTH";
+        } else if (unit == SKProductPeriodUnitWeek) {
+            periodUnitIOS = @"WEEK";
+        } else if (unit == SKProductPeriodUnitDay) {
+            periodUnitIOS = @"DAY";
+        }
+
+        periodNumberIOS = [NSString stringWithFormat:@"%lu", numOfUnits];
+
+        // subscriptionPeriod = product.subscriptionPeriod ? [product.subscriptionPeriod stringValue] : @"";
+        // introductoryPrice = product.introductoryPrice != nil ? [NSString stringWithFormat:@"%@", product.introductoryPrice] : @"";
+        if (product.introductoryPrice != nil) {
+          //SKProductDiscount introductoryPriceObj = product.introductoryPrice;
+          formatter.locale = product.introductoryPrice.priceLocale;
+          introductoryPrice = [formatter stringFromNumber:product.introductoryPrice.price];
+
+          switch (product.introductoryPrice.paymentMode) {
+              case SKProductDiscountPaymentModeFreeTrial:
+                  introductoryPricePaymentMode = @"FREETRIAL";
+                  break;
+              case SKProductDiscountPaymentModePayAsYouGo:
+                  introductoryPricePaymentMode = @"PAYASYOUGO";
+                  break;
+              case SKProductDiscountPaymentModePayUpFront:
+                  introductoryPricePaymentMode = @"PAYUPFRONT";
+                  break;
+              default:
+                  introductoryPricePaymentMode = @"";
+                  break;
+          }
+
+          introductoryPriceNumberOfPeriods = [@(product.introductoryPrice.numberOfPeriods) stringValue];
+
+          if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitDay) {
+              introductoryPriceSubscriptionPeriod = @"DAY";
+          }	else if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitWeek) {
+              introductoryPriceSubscriptionPeriod = @"WEEK";
+          }	else if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitMonth) {
+              introductoryPriceSubscriptionPeriod = @"MONTH";
+          } else if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitYear) {
+              introductoryPriceSubscriptionPeriod = @"YEAR";
+          } else {
+              introductoryPriceSubscriptionPeriod = @"";
+          }
+
+        } else {
+          introductoryPrice = @"";
+          introductoryPricePaymentMode = @"";
+          introductoryPriceNumberOfPeriods = @"";
+          introductoryPriceSubscriptionPeriod = @"";
+        }
+    }
+
+    if (@available(iOS 10.0, *)) {
+      currencyCode = product.priceLocale.currencyCode;
+    }
+
+    NSDictionary* obj = @{
+      @"productId" : product.productIdentifier,
+      @"price" : [product.price stringValue],
+      @"currency" : currencyCode,
+      // @"type": itemType,
+      @"title" : product.localizedTitle ? product.localizedTitle : @"",
+      @"description" : product.localizedDescription ? product.localizedDescription : @"",
+      @"localizedPrice" : localizedPrice,
+      @"subscriptionPeriodNumberIOS" : periodNumberIOS,
+      @"subscriptionPeriodUnitIOS" : periodUnitIOS,
+      @"introductoryPrice" : introductoryPrice,
+      @"introductoryPricePaymentModeIOS" : introductoryPricePaymentMode,
+      @"introductoryPriceNumberOfPeriodsIOS" : introductoryPriceNumberOfPeriods,
+      @"introductoryPriceSubscriptionPeriodIOS" : introductoryPriceSubscriptionPeriod
+    };
+    return obj;
 }
 
 - (void)purchase:(NSString*)identifier result:(FlutterResult)result {
@@ -371,6 +378,23 @@
     }
     flutterResult = nil;
 }
+
+- (void)getAppStoreInitiatedProducts:(FlutterResult)result {
+    NSMutableArray<NSDictionary*>* initiatedProducts = [[NSMutableArray alloc] init];
+    for (SKProduct* p in appStoreInitiatedProducts) {
+        [initiatedProducts addObject:[self getProductAsDictionary:p]];
+    }
+    result(initiatedProducts);
+}
+
+#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
+- (BOOL)paymentQueue:(SKPaymentQueue *)queue shouldAddStorePayment:(SKPayment *)payment forProduct:(SKProduct *)product {
+    // Save any purchases initiated through the App Store
+    // Get the products by calling getAppStoreInitiatedProducts and handle the purchase in dart
+    [appStoreInitiatedProducts addObject:product];
+    return NO;
+}
+#endif
 
 -(NSString *)standardErrorCode:(int)code {
     NSArray *descriptions = @[
