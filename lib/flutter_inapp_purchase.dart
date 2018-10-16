@@ -311,8 +311,8 @@ class FlutterInappPurchase {
       PurchasedItem item = PurchasedItem.fromJSON(param);
       return item;
     } else if (Platform.isIOS) {
-      dynamic result =
-          await _channel.invokeMethod('buyProductWithoutFinishTransaction', <String, dynamic>{
+      dynamic result = await _channel
+          .invokeMethod('buyProductWithoutFinishTransaction', <String, dynamic>{
         'sku': sku,
       });
       result = json.encode(result);
@@ -323,7 +323,7 @@ class FlutterInappPurchase {
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
-  } 
+  }
 
   /// Finish a transaction on `iOS`.
   ///
@@ -346,16 +346,16 @@ class FlutterInappPurchase {
   static Future<List<IAPItem>> getAppStoreInitiatedProducts() async {
     if (Platform.isAndroid) {
       return List<IAPItem>();
-      
     } else if (Platform.isIOS) {
-      dynamic result = await _channel.invokeMethod('getAppStoreInitiatedProducts');
+      dynamic result =
+          await _channel.invokeMethod('getAppStoreInitiatedProducts');
 
       return extractItems(json.encode(result));
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
   }
-  
+
   /// Check if a subscription is active on `Android` and `iOS`.
   ///
   /// This is a quick and dirty way to check if a subscription is active.
@@ -408,7 +408,9 @@ class FlutterInappPurchase {
     assert(receiptBody != null);
     assert(isTest != null);
 
-    final String url = isTest ? 'https://sandbox.itunes.apple.com/verifyReceipt' : 'https://buy.itunes.apple.com/verifyReceipt';
+    final String url = isTest
+        ? 'https://sandbox.itunes.apple.com/verifyReceipt'
+        : 'https://buy.itunes.apple.com/verifyReceipt';
     return await http.post(
       url,
       headers: {
@@ -448,7 +450,8 @@ class FlutterInappPurchase {
     assert(accessToken != null);
 
     final String type = isSubscription ? 'subscriptions' : 'products';
-    final String url = 'https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
+    final String url =
+        'https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
     return await http.get(
       url,
       headers: {
