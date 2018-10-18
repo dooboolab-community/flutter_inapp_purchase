@@ -1,4 +1,4 @@
-## 0.8.0
+## 0.8.+
 * Fixed receipt validation param for `android`.
 * Updated `http` package.
 * Implemented new method `getAppStoreInitiatedProducts`.
@@ -6,6 +6,7 @@
   - Has no effect on Android.
 * Fixed issue with method `buyProductWithoutFinishTransaction` for iOS, was not getting the productId.
 * Fixed issue with `toString` method of class `IAPItem`, was printing incorrect values.
+* Fixes for #44. Unsafe getting `originalJson` when restoring item and `Android`.
 
 ## 0.7.1
 * Implemented receiptValidation for both android and ios.
