@@ -7,6 +7,7 @@
 * Fixed issue with method `buyProductWithoutFinishTransaction` for iOS, was not getting the productId.
 * Fixed issue with `toString` method of class `IAPItem`, was printing incorrect values.
 * Fixes for #44. Unsafe getting `originalJson` when restoring item and `Android`.
+* Use dictionaryWithObjectsAndKeys in NSDictionary to fetch product values. This will prevent from NSInvalidArgumentException in ios which rarely occurs.
 
 ## 0.7.1
 * Implemented receiptValidation for both android and ios.

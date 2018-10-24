@@ -227,6 +227,22 @@
       currencyCode = product.priceLocale.currencyCode;
     }
 
+    NSDictionary *obj = [NSDictionary dictionaryWithObjectsAndKeys:
+        product.productIdentifier, @"productId",
+        [product.price stringValue], @"price",
+        currencyCode, @"currency",
+        product.localizedTitle ? product.localizedTitle : @"", @"title",
+        product.localizedDescription ? product.localizedDescription : @"", @"description",
+        localizedPrice, @"localizedPrice",
+        periodNumberIOS, @"subscriptionPeriodNumberIOS",
+        periodUnitIOS, @"subscriptionPeriodUnitIOS",
+        introductoryPrice, @"introductoryPrice",
+        introductoryPricePaymentMode, @"introductoryPricePaymentModeIOS",
+        introductoryPriceNumberOfPeriods, @"introductoryPriceNumberOfPeriodsIOS",
+        introductoryPriceSubscriptionPeriod, @"introductoryPriceSubscriptionPeriodIOS",
+        nil
+    ];
+/*
     NSDictionary* obj = @{
       @"productId" : product.productIdentifier,
       @"price" : [product.price stringValue],
@@ -242,6 +258,7 @@
       @"introductoryPriceNumberOfPeriodsIOS" : introductoryPriceNumberOfPeriods,
       @"introductoryPriceSubscriptionPeriodIOS" : introductoryPriceSubscriptionPeriod
     };
+*/
     return obj;
 }
 
