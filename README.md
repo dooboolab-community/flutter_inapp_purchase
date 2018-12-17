@@ -71,8 +71,8 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
   final String transactionId;
   final String productId;
   final String transactionReceipt;
-  final String purchaseToken;
   // Android only
+  final String purchaseToken;
   final bool autoRenewingAndroid;
   final String dataAndroid;
   final String signatureAndroid;
