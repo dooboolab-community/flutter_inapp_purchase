@@ -394,6 +394,18 @@ class _MyAppState extends State<MyApp> {
 }
 ```
 
+## ProGuard
+If you have eneabled proguard you will need to add the following rules to your `proguard-rules.pro`
+
+```
+#In app Purchase
+-keep class com.amazon.** {*;}
+-keep class com.dooboolab.** { *; }
+-keep class com.android.vending.billing.**
+-dontwarn com.amazon.**
+-keepattributes *Annotation*
+```
+
 ## Q & A
 
 #### Can I buy product right away skipping fetching products if I already know productId?
