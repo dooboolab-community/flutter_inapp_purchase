@@ -9,6 +9,7 @@
 * Fixes for #44. Unsafe getting `originalJson` when restoring item and `Android`.
 * Use dictionaryWithObjectsAndKeys in NSDictionary to fetch product values. This will prevent from NSInvalidArgumentException in ios which rarely occurs.
 * Fixed wrong npe in `android` when `getAvailablePurchases`.
++ Only parse `orderId` when exists in `Android` to prevent crashing.
 
 ## 0.7.1
 * Implemented receiptValidation for both android and ios.
