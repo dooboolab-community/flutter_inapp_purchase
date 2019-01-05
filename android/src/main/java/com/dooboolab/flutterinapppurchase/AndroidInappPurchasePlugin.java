@@ -257,7 +257,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             JSONObject json = new JSONObject(data);
             JSONObject item = new JSONObject();
             item.put("productId", json.getString("productId"));
-            item.put("transactionId", json.getString("orderId"));
+            if (json.has("orderId")) {
+              item.put("transactionId", json.getString("orderId"));
+            }
             item.put("transactionDate", json.getString("purchaseTime"));
             if (json.has("originalJson")) {
               item.put("transactionReceipt", json.getString("originalJson"));
