@@ -17,6 +17,10 @@ class FlutterInappPurchase {
     'subs',
   ];
 
+  static StreamController<PurchasedItem> _purchaseController;
+  static StreamSubscription _purchaseSub;
+  static Stream<PurchasedItem> get onAdditionalSuccessPurchaseIOS => _purchaseController.stream;
+
   /// Defining the [MethodChannel] for Flutter_Inapp_Purchase
   static const MethodChannel _channel = const MethodChannel('flutter_inapp');
 
@@ -213,15 +217,27 @@ class FlutterInappPurchase {
 
       return item;
     } else if (Platform.isIOS) {
-      dynamic result = await _channel.invokeMethod<dynamic>(
-          'buyProductWithFinishTransaction', <String, dynamic>{
-        'sku': sku,
-      });
-      result = json.encode(result);
+      try {
+        dynamic result = await _channel.invokeMethod<dynamic>(
+            'buyProductWithFinishTransaction', <String, dynamic>{
+          'sku': sku,
+        });
+        result = json.encode(result);
 
-      Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = PurchasedItem.fromJSON(param);
-      return item;
+        Map<String, dynamic> param = json.decode(result.toString());
+        PurchasedItem item = PurchasedItem.fromJSON(param);
+        return item;
+      } catch (err) {
+        print('Caused err. Set additionalSuccessPurchaseListenerIOS.');
+        print(err);
+        await _addAdditionalSuccessPurchaseListenerIOS();
+        _purchaseSub = onAdditionalSuccessPurchaseIOS.listen((data) {
+          _removePurchaseListener();
+          Map<String, dynamic> param = json.decode(data.toString());
+          PurchasedItem item = PurchasedItem.fromJSON(param);
+          return item;
+        });
+      }
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
@@ -460,5 +476,41 @@ class FlutterInappPurchase {
         'Accept': 'application/json',
       },
     );
+  }
+
+  /// Add additional success purchase listener to iOS when purchase failed
+  ///
+  /// In iOS, purchase could be failed randomly. See the reference: https://github.com/dooboolab/react-native-iap/issues/307
+  /// To make your purchase flow confidential, use below method. Checkout how this is used in `example` project.
+  static Future<void> _addAdditionalSuccessPurchaseListenerIOS() async {
+    if (Platform.isIOS) {
+      if (_purchaseController == null) {
+        _purchaseController = new StreamController.broadcast();
+      }
+      _channel.setMethodCallHandler((MethodCall call) {
+        switch (call.method) {
+          case "iap-purchase-event":
+            Map<String, dynamic> result = jsonDecode(call.arguments);
+            _purchaseController.add(new PurchasedItem.fromJSON(result));
+            _removePurchaseListener();
+            break;
+          default:
+            throw new ArgumentError('Unknown method ${call.method}');
+        }
+      });
+    }
+  }
+
+  static Future<void> _removePurchaseListener() async {
+    if (_purchaseSub != null) {
+      _purchaseSub.cancel();
+      _purchaseSub = null;
+    }
+    if (_purchaseController != null) {
+      _purchaseController
+        ..add(null)
+        ..close();
+      _purchaseController = null;
+    }
   }
 }
