@@ -262,15 +262,27 @@ class FlutterInappPurchase {
       PurchasedItem item = PurchasedItem.fromJSON(param);
       return item;
     } else if (Platform.isIOS) {
-      dynamic result = await _channel.invokeMethod<dynamic>(
-          'buyProductWithFinishTransaction', <String, dynamic>{
-        'sku': sku,
-      });
-      result = json.encode(result);
+      try {
+        dynamic result = await _channel.invokeMethod<dynamic>(
+            'buyProductWithFinishTransaction', <String, dynamic>{
+          'sku': sku,
+        });
+        result = json.encode(result);
 
-      Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = PurchasedItem.fromJSON(param);
-      return item;
+        Map<String, dynamic> param = json.decode(result.toString());
+        PurchasedItem item = PurchasedItem.fromJSON(param);
+        return item;
+      } catch (err) {
+        print('Caused err. Set additionalSuccessPurchaseListenerIOS.');
+        print(err);
+        await _addAdditionalSuccessPurchaseListenerIOS();
+        _purchaseSub = onAdditionalSuccessPurchaseIOS.listen((data) {
+          _removePurchaseListener();
+          Map<String, dynamic> param = json.decode(data.toString());
+          PurchasedItem item = PurchasedItem.fromJSON(param);
+          return item;
+        });
+      }
     }
     throw PlatformException(
         code: Platform.operatingSystem, message: "platform not supported");
