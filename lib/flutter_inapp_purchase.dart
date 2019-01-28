@@ -327,6 +327,7 @@ class FlutterInappPurchase {
   /// This allows you to perform server-side validation before finalizing the transaction on screen.
   ///
   /// No effect on `Android`, who does not allow this type of functionality.
+  @deprecated
   static Future<PurchasedItem> buyProductWithoutFinishTransaction(
       String sku) async {
     if (Platform.isAndroid) {
