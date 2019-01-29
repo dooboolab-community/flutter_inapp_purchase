@@ -328,6 +328,9 @@
         [requestedPayments removeObjectForKey:transaction.payment];
     }
     [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+
+    // additionally send event
+    [self.channel invokeMethod:@"iap-purchase-event" arguments: purchase];
 }
 
 - (NSDictionary *)getPurchaseData:(SKPaymentTransaction *)transaction {
