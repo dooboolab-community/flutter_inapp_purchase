@@ -1,4 +1,4 @@
 analyzer:
   strong-mode:
     implicit-casts: true
-    implicit-dynamic: false
+    implicit-dynamic: true

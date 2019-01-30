@@ -86,7 +86,7 @@ class FlutterInappPurchase {
     if (skus == null || skus.contains(null)) return [];
     skus = skus.toList();
     if (Platform.isAndroid) {
-      dynamic result = await _channel.invokeMethod<dynamic>(
+      dynamic result = await _channel.invokeMethod(
         'getItemsByType',
         <String, dynamic>{
           'type': _typeInApp[0],
@@ -96,7 +96,7 @@ class FlutterInappPurchase {
 
       return extractItems(result);
     } else if (Platform.isIOS) {
-      dynamic result = await _channel.invokeMethod<dynamic>(
+      dynamic result = await _channel.invokeMethod(
         'getItems',
         {
           'skus': skus,
@@ -116,7 +116,7 @@ class FlutterInappPurchase {
     if (skus == null || skus.contains(null)) return [];
     skus = skus.toList();
     if (Platform.isAndroid) {
-      dynamic result = await _channel.invokeMethod<dynamic>(
+      dynamic result = await _channel.invokeMethod(
         'getItemsByType',
         <String, dynamic>{
           'type': _typeInApp[1],
@@ -126,7 +126,7 @@ class FlutterInappPurchase {
 
       return extractItems(result);
     } else if (Platform.isIOS) {
-      dynamic result = await _channel.invokeMethod<dynamic>(
+      dynamic result = await _channel.invokeMethod(
         'getItems',
         {
           'skus': skus,
@@ -145,14 +145,14 @@ class FlutterInappPurchase {
   /// Identical to [getAvailablePurchases] on `iOS`.
   static Future<List<PurchasedItem>> getPurchaseHistory() async {
     if (Platform.isAndroid) {
-      dynamic result1 = await _channel.invokeMethod<dynamic>(
+      dynamic result1 = await _channel.invokeMethod(
         'getPurchaseHistoryByType',
         <String, dynamic>{
           'type': _typeInApp[0],
         },
       );
 
-      dynamic result2 = await _channel.invokeMethod<dynamic>(
+      dynamic result2 = await _channel.invokeMethod(
         'getPurchaseHistoryByType',
         <String, dynamic>{
           'type': _typeInApp[1],
@@ -162,7 +162,7 @@ class FlutterInappPurchase {
       return extractPurchased(result1) + extractPurchased(result2);
     } else if (Platform.isIOS) {
       dynamic result =
-          await _channel.invokeMethod<dynamic>('getAvailableItems');
+          await _channel.invokeMethod('getAvailableItems');
 
       return extractPurchased(json.encode(result));
     }
@@ -175,14 +175,14 @@ class FlutterInappPurchase {
   /// This is identical to [getPurchaseHistory] on `iOS`
   static Future<List<PurchasedItem>> getAvailablePurchases() async {
     if (Platform.isAndroid) {
-      dynamic result1 = await _channel.invokeMethod<dynamic>(
+      dynamic result1 = await _channel.invokeMethod(
         'getAvailableItemsByType',
         <String, dynamic>{
           'type': _typeInApp[0],
         },
       );
 
-      dynamic result2 = await _channel.invokeMethod<dynamic>(
+      dynamic result2 = await _channel.invokeMethod(
         'getAvailableItemsByType',
         <String, dynamic>{
           'type': _typeInApp[1],
@@ -192,7 +192,7 @@ class FlutterInappPurchase {
       return extractPurchased(result1) + extractPurchased(result2);
     } else if (Platform.isIOS) {
       dynamic result =
-          await _channel.invokeMethod<dynamic>('getAvailableItems');
+          await _channel.invokeMethod('getAvailableItems');
 
       return extractPurchased(json.encode(result));
     }
@@ -206,7 +206,7 @@ class FlutterInappPurchase {
   static Future<PurchasedItem> buyProduct(String sku) async {
     if (Platform.isAndroid) {
       dynamic result = await _channel
-          .invokeMethod<dynamic>('buyItemByType', <String, dynamic>{
+          .invokeMethod('buyItemByType', <String, dynamic>{
         'type': _typeInApp[0],
         'sku': sku,
         'oldSku': null, //TODO can this be removed?
@@ -218,7 +218,7 @@ class FlutterInappPurchase {
       return item;
     } else if (Platform.isIOS) {
       try {
-        dynamic result = await _channel.invokeMethod<dynamic>(
+        dynamic result = await _channel.invokeMethod(
             'buyProductWithFinishTransaction', <String, dynamic>{
           'sku': sku,
         });
@@ -252,7 +252,7 @@ class FlutterInappPurchase {
       {String oldSku}) async {
     if (Platform.isAndroid) {
       dynamic result = await _channel
-          .invokeMethod<dynamic>('buyItemByType', <String, dynamic>{
+          .invokeMethod('buyItemByType', <String, dynamic>{
         'type': _typeInApp[1],
         'sku': sku,
         'oldSku': oldSku,
@@ -263,7 +263,7 @@ class FlutterInappPurchase {
       return item;
     } else if (Platform.isIOS) {
       try {
-        dynamic result = await _channel.invokeMethod<dynamic>(
+        dynamic result = await _channel.invokeMethod(
             'buyProductWithFinishTransaction', <String, dynamic>{
           'sku': sku,
         });
@@ -332,7 +332,7 @@ class FlutterInappPurchase {
       String sku) async {
     if (Platform.isAndroid) {
       dynamic result = await _channel
-          .invokeMethod<dynamic>('buyItemByType', <String, dynamic>{
+          .invokeMethod('buyItemByType', <String, dynamic>{
         'type': _typeInApp[0],
         'sku': sku,
         'oldSku': null,
@@ -342,7 +342,7 @@ class FlutterInappPurchase {
       PurchasedItem item = PurchasedItem.fromJSON(param);
       return item;
     } else if (Platform.isIOS) {
-      dynamic result = await _channel.invokeMethod<dynamic>(
+      dynamic result = await _channel.invokeMethod(
           'buyProductWithoutFinishTransaction', <String, dynamic>{
         'sku': sku,
       });
@@ -379,7 +379,7 @@ class FlutterInappPurchase {
       return List<IAPItem>();
     } else if (Platform.isIOS) {
       dynamic result =
-          await _channel.invokeMethod<dynamic>('getAppStoreInitiatedProducts');
+          await _channel.invokeMethod('getAppStoreInitiatedProducts');
 
       return extractItems(json.encode(result));
     }
