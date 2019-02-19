@@ -9,7 +9,11 @@ We will keep working on it as time goes by just like we did in `react-native-iap
 `PR` is always welcomed.
 
 ## Breaking Changes
+* Migrated to Android X in `0.9.0`. Please check the [Migration Guide](#migration-guide).
 * There was parameter renaming in `0.5.0` to identify different parameters sent from the device. Please check the readme.
+
+## Migration Guide
+To migrate to `0.9.0` you must migrate your Android app to Android X by following the [Migrating to AndroidX Guide](https://developer.android.com/jetpack/androidx/migrate).
 
 ## Getting Started
 Follow the [Medium Blog](https://medium.com/@dooboolab/flutter-in-app-purchase-7a3fb9345e2a) for the configuration.
