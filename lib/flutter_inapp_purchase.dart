@@ -146,21 +146,25 @@ class FlutterInappPurchase {
   /// Identical to [getAvailablePurchases] on `iOS`.
   static Future<List<PurchasedItem>> getPurchaseHistory() async {
     if (Platform.isAndroid) {
-      dynamic result1 = await _channel.invokeMethod(
+      Future<dynamic> getInappPurchaseHistory = _channel.invokeMethod(
         'getPurchaseHistoryByType',
         <String, dynamic>{
           'type': EnumUtil.getValueString(_TypeInApp.inapp),
         },
       );
 
-      dynamic result2 = await _channel.invokeMethod(
+      Future<dynamic> getSubsPurchaseHistory = _channel.invokeMethod(
         'getPurchaseHistoryByType',
         <String, dynamic>{
           'type': EnumUtil.getValueString(_TypeInApp.subs),
         },
       );
 
-      return extractPurchased(result1) + extractPurchased(result2);
+      List<dynamic> results = await Future.wait(
+          [getInappPurchaseHistory, getSubsPurchaseHistory]);
+
+      return results.reduce((result1, result2) =>
+      extractPurchased(result1) + extractPurchased(result2));
     } else if (Platform.isIOS) {
       dynamic result =
           await _channel.invokeMethod('getAvailableItems');
