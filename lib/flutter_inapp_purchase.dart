@@ -10,12 +10,13 @@ import 'modules.dart';
 
 export 'modules.dart';
 
+/// A enumeration of in-app purchase types for Android
+/// https://developer.android.com/reference/com/android/billingclient/api/BillingClient.SkuType.html#constants_2
+enum _TypeInApp {
+  inapp, subs
+}
+
 class FlutterInappPurchase {
-  /// A list-based enumeration of in-app purchase types
-  static final List<String> _typeInApp = [
-    'inapp',
-    'subs',
-  ];
 
   static StreamController<PurchasedItem> _purchaseController;
   static StreamSubscription _purchaseSub;
@@ -89,7 +90,7 @@ class FlutterInappPurchase {
       dynamic result = await _channel.invokeMethod(
         'getItemsByType',
         <String, dynamic>{
-          'type': _typeInApp[0],
+          'type': EnumUtil.getValueString(_TypeInApp.inapp),
           'skus': skus,
         },
       );
@@ -119,7 +120,7 @@ class FlutterInappPurchase {
       dynamic result = await _channel.invokeMethod(
         'getItemsByType',
         <String, dynamic>{
-          'type': _typeInApp[1],
+          'type': EnumUtil.getValueString(_TypeInApp.subs),
           'skus': skus,
         },
       );
@@ -148,14 +149,14 @@ class FlutterInappPurchase {
       dynamic result1 = await _channel.invokeMethod(
         'getPurchaseHistoryByType',
         <String, dynamic>{
-          'type': _typeInApp[0],
+          'type': EnumUtil.getValueString(_TypeInApp.inapp),
         },
       );
 
       dynamic result2 = await _channel.invokeMethod(
         'getPurchaseHistoryByType',
         <String, dynamic>{
-          'type': _typeInApp[1],
+          'type': EnumUtil.getValueString(_TypeInApp.subs),
         },
       );
 
@@ -178,14 +179,14 @@ class FlutterInappPurchase {
       dynamic result1 = await _channel.invokeMethod(
         'getAvailableItemsByType',
         <String, dynamic>{
-          'type': _typeInApp[0],
+          'type': EnumUtil.getValueString(_TypeInApp.inapp),
         },
       );
 
       dynamic result2 = await _channel.invokeMethod(
         'getAvailableItemsByType',
         <String, dynamic>{
-          'type': _typeInApp[1],
+          'type': EnumUtil.getValueString(_TypeInApp.subs),
         },
       );
 
@@ -207,7 +208,7 @@ class FlutterInappPurchase {
     if (Platform.isAndroid) {
       dynamic result = await _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
-        'type': _typeInApp[0],
+        'type': EnumUtil.getValueString(_TypeInApp.inapp),
         'sku': sku,
         'oldSku': null, //TODO can this be removed?
       });
@@ -253,7 +254,7 @@ class FlutterInappPurchase {
     if (Platform.isAndroid) {
       dynamic result = await _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
-        'type': _typeInApp[1],
+        'type': EnumUtil.getValueString(_TypeInApp.subs),
         'sku': sku,
         'oldSku': oldSku,
       });
@@ -333,7 +334,7 @@ class FlutterInappPurchase {
     if (Platform.isAndroid) {
       dynamic result = await _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
-        'type': _typeInApp[0],
+        'type': EnumUtil.getValueString(_TypeInApp.inapp),
         'sku': sku,
         'oldSku': null,
       });
