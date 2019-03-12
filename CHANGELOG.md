@@ -1,5 +1,6 @@
-## 0.9.0
+## 0.9.+
 * Breaking change. Migrate from the deprecated original Android Support Library to AndroidX. This shouldn't result in any functional changes, but it requires any Android apps using this plugin to also migrate to Android X if they're using the original support library. [Android's Migrating to Android X Guide](https://developer.android.com/jetpack/androidx/migrate).
++ Improved getPurchaseHistory's speed 44% faster [#68](https://github.com/dooboolab/flutter_inapp_purchase/pull/68).
 
 ## 0.8.+
 * Fixed receipt validation param for `android`.
