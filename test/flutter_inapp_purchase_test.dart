@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
 import 'package:platform/platform.dart';
+import 'package:http/testing.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   group('FlutterInappPurchase', () {
@@ -940,6 +943,55 @@ void main() {
       // FIXME
       // This method can't be tested, because this method calls static methods internally.
       // To test, it needs to change static method to non-static method.
+    });
+
+    group('validateReceiptAndroid', () {
+      setUp(() {
+        http.Client mockClient = MockClient((request) async {
+          return Response(null, 200);
+        });
+
+        FlutterInappPurchase(FlutterInappPurchase.private(
+            FakePlatform(operatingSystem: "ios"),
+            client: mockClient));
+      });
+
+      tearDown(() {
+        FlutterInappPurchase.channel.setMethodCallHandler(null);
+      });
+
+      test('returns correct http request url, isSubscription is true',
+          () async {
+        final String packageName = "testpackege";
+        final String productId = "testProductId";
+        final String productToken = "testProductToken";
+        final String accessToken = "testAccessToken";
+        final String type = "subscriptions";
+        final response = await FlutterInappPurchase.validateReceiptAndroid(
+            packageName: packageName,
+            productId: productId,
+            productToken: productToken,
+            accessToken: accessToken,
+            isSubscription: true);
+        expect(response.request.url.toString(),
+            "https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
+      });
+      test('returns correct http request url, isSubscription is false',
+          () async {
+        final String packageName = "testpackege";
+        final String productId = "testProductId";
+        final String productToken = "testProductToken";
+        final String accessToken = "testAccessToken";
+        final String type = "products";
+        final response = await FlutterInappPurchase.validateReceiptAndroid(
+            packageName: packageName,
+            productId: productId,
+            productToken: productToken,
+            accessToken: accessToken,
+            isSubscription: false);
+        expect(response.request.url.toString(),
+            "https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
+      });
     });
   });
 }
