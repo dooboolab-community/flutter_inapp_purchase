@@ -27,8 +27,11 @@ class FlutterInappPurchase {
   static MethodChannel get channel => _channel;
 
   final Platform _pf;
+  final http.Client _httpClient;
 
   static Platform get _platform => _instance._pf;
+  static http.Client get _client => _instance._httpClient;
+
 
   static FlutterInappPurchase _instance = FlutterInappPurchase(
       FlutterInappPurchase.private(const LocalPlatform()));
@@ -38,8 +41,9 @@ class FlutterInappPurchase {
     return instance;
   }
 
-  FlutterInappPurchase.private(Platform platform)
-      : _pf = platform;
+  FlutterInappPurchase.private(Platform platform, {http.Client client})
+      : _pf = platform,
+        _httpClient = client;
 
   /// Returns the platform version on `Android` and `iOS`.
   ///
@@ -504,7 +508,7 @@ class FlutterInappPurchase {
     final String type = isSubscription ? 'subscriptions' : 'products';
     final String url =
         'https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
-    return await http.get(
+    return await _client.get(
       url,
       headers: {
         'Accept': 'application/json',
