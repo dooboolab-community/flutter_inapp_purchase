@@ -948,7 +948,7 @@ void main() {
     group('validateReceiptAndroid', () {
       setUp(() {
         http.Client mockClient = MockClient((request) async {
-          return Response(null, 200);
+          return Response(json.encode({}), 200);
         });
 
         FlutterInappPurchase(FlutterInappPurchase.private(
