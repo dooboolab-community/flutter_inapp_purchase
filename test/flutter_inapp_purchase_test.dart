@@ -678,5 +678,57 @@ void main() {
         });
       });
     });
+
+    group('consumePurchase', () {
+      group('for Android', () {
+        final List<MethodCall> log = <MethodCall>[];
+        final String token = "testToken";
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "android")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return "Consumed: 0";
+          });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.consumePurchase(token);
+          expect(log, <Matcher>[
+            isMethodCall('consumeProduct', arguments: <String, dynamic>{
+              'token': token,
+            }),
+          ]);
+        });
+
+        test('returns correct result', () async {
+          expect(await FlutterInappPurchase.consumePurchase(token),
+              "Consumed: 0");
+        });
+      });
+
+      group('for iOS', () {
+        final String token = "testToken";
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "ios")));
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('returns correct result', () async {
+          expect(await FlutterInappPurchase.consumePurchase(token), "no-ops in ios");
+        });
+      });
+    });
+
   });
 }
