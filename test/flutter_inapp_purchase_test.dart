@@ -835,5 +835,106 @@ void main() {
         });
       });
     });
+    group('getAppStoreInitiatedProducts', () {
+      group('for Android', () {
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "android")));
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('returns correct result', () async {
+          expect(await FlutterInappPurchase.getAppStoreInitiatedProducts(),
+              List<IAPItem>());
+        });
+      });
+
+      group('for iOS', () {
+        final List<MethodCall> log = <MethodCall>[];
+
+        final dynamic result = [
+          {
+            "productId": "com.cooni.point1000",
+            "price": "120",
+            "currency": "JPY",
+            "localizedPrice": "¥120",
+            "title": "1,000",
+            "description": "1000 points 1000P",
+            "introductoryPrice": "1001",
+            "introductoryPricePaymentModeIOS": "1002",
+            "introductoryPriceNumberOfPeriodsIOS": "1003",
+            "introductoryPriceSubscriptionPeriodIOS": "1004",
+            "subscriptionPeriodUnitIOS": "1",
+            "subscriptionPeriodAndroid": "2",
+            "subscriptionPeriodNumberIOS": "3",
+            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPricePeriodAndroid": "5",
+            "freeTrialPeriodAndroid": "6"
+          }
+        ];
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "ios")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return result;
+          });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.getAppStoreInitiatedProducts();
+          expect(log, <Matcher>[
+            isMethodCall('getAppStoreInitiatedProducts', arguments: null),
+          ]);
+        });
+
+        test('returns correct result', () async {
+          List<IAPItem> products =
+              await FlutterInappPurchase.getAppStoreInitiatedProducts();
+          List<IAPItem> expected = result
+              .map<IAPItem>(
+                (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
+              )
+              .toList();
+          for (var i = 0; i < products.length; ++i) {
+            var product = products[i];
+            var expectedProduct = expected[i];
+            expect(product.productId, expectedProduct.productId);
+            expect(product.price, expectedProduct.price);
+            expect(product.currency, expectedProduct.currency);
+            expect(product.localizedPrice, expectedProduct.localizedPrice);
+            expect(product.title, expectedProduct.title);
+            expect(product.description, expectedProduct.description);
+            expect(
+                product.introductoryPrice, expectedProduct.introductoryPrice);
+            expect(product.subscriptionPeriodNumberIOS,
+                expectedProduct.subscriptionPeriodNumberIOS);
+            expect(product.introductoryPricePaymentModeIOS,
+                expectedProduct.introductoryPricePaymentModeIOS);
+            expect(product.introductoryPriceNumberOfPeriodsIOS,
+                expectedProduct.introductoryPriceNumberOfPeriodsIOS);
+            expect(product.introductoryPriceSubscriptionPeriodIOS,
+                expectedProduct.introductoryPriceSubscriptionPeriodIOS);
+            expect(product.subscriptionPeriodAndroid,
+                expectedProduct.subscriptionPeriodAndroid);
+            expect(product.introductoryPriceCyclesAndroid,
+                expectedProduct.introductoryPriceCyclesAndroid);
+            expect(product.introductoryPricePeriodAndroid,
+                expectedProduct.introductoryPricePeriodAndroid);
+            expect(product.freeTrialPeriodAndroid,
+                expectedProduct.freeTrialPeriodAndroid);
+          }
+        });
+      });
+    });
   });
 }
