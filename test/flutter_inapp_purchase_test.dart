@@ -730,5 +730,54 @@ void main() {
       });
     });
 
+    group('endConnection', () {
+      group('for Android', () {
+        final List<MethodCall> log = <MethodCall>[];
+        final String token = "testToken";
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "android")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return "Billing client has ended.";
+          });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.endConnection;
+          expect(log, <Matcher>[
+            isMethodCall('endConnection', arguments: null),
+          ]);
+        });
+
+        test('returns correct result', () async {
+          expect(await FlutterInappPurchase.endConnection,
+              "Billing client has ended.");
+        });
+      });
+
+      group('for iOS', () {
+        final String token = "testToken";
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "ios")));
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('returns correct result', () async {
+          expect(await FlutterInappPurchase.endConnection, "no-ops in ios");
+        });
+      });
+    });
+
   });
 }
