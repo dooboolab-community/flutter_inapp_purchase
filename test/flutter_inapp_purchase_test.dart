@@ -26,7 +26,7 @@ void main() {
         FlutterInappPurchase.channel.setMethodCallHandler(null);
       });
 
-      test('invoke correct method', () async {
+      test('invokes correct method', () async {
         await FlutterInappPurchase.platformVersion;
         expect(log, <Matcher>[
           isMethodCall(
@@ -42,7 +42,7 @@ void main() {
     });
 
     group('consumeAllItems', () {
-      group('For Android', () {
+      group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
@@ -72,7 +72,7 @@ void main() {
         });
       });
 
-      group('For iOS', () {
+      group('for iOS', () {
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
@@ -89,7 +89,7 @@ void main() {
     });
 
     group('initConnection', () {
-      group('For Android', () {
+      group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
@@ -119,7 +119,7 @@ void main() {
         });
       });
 
-      group('For iOS', () {
+      group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
@@ -150,7 +150,7 @@ void main() {
     });
 
     group('getProducts', () {
-      group('For Android', () {
+      group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
         List<String> skus = List()..add("testsku");
 
@@ -185,7 +185,7 @@ void main() {
         });
       });
 
-      group('For iOS', () {
+      group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
         List<String> skus = List()..add("testsku");
 
@@ -221,7 +221,7 @@ void main() {
     });
 
     group('getSubscriptions', () {
-      group('For Android', () {
+      group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
         List<String> skus = List()..add("testsku");
 
@@ -256,7 +256,7 @@ void main() {
         });
       });
 
-      group('For iOS', () {
+      group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
         List<String> skus = List()..add("testsku");
 
@@ -292,7 +292,7 @@ void main() {
     });
 
     group('getPurchaseHistory', () {
-      group('For Android', () {
+      group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
 
         List<PurchasedItem> result = List();
@@ -331,7 +331,7 @@ void main() {
         });
       });
 
-      group('For iOS', () {
+      group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
 
         List<PurchasedItem> result = List();
@@ -364,7 +364,7 @@ void main() {
     });
 
     group('getAvailablePurchases', () {
-      group('For Android', () {
+      group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
 
         List<PurchasedItem> result = List();
@@ -403,7 +403,7 @@ void main() {
         });
       });
 
-      group('For iOS', () {
+      group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
 
         List<PurchasedItem> result = List();
