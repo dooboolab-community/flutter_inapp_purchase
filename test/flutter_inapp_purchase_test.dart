@@ -5,6 +5,35 @@ import 'package:platform/platform.dart';
 
 void main() {
   group('FlutterInappPurchase', () {
+    group('platformVersion', () {
+      final List<MethodCall> log = <MethodCall>[];
+      setUp(() {
+        FlutterInappPurchase(FlutterInappPurchase.private(FakePlatform()));
+
+        FlutterInappPurchase.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return "Android 5.1.1";
+        });
+      });
+
+      tearDown(() {
+        FlutterInappPurchase.channel.setMethodCallHandler(null);
+      });
+
+      test('invoke correct method', () async {
+        await FlutterInappPurchase.platformVersion;
+        expect(log, <Matcher>[
+          isMethodCall(
+            'getPlatformVersion',
+          ),
+        ]);
+      });
+
+      test('returns correct result', () async {
+        expect(await FlutterInappPurchase.platformVersion, "Android 5.1.1");
+      });
+    });
     group('getProducts', () {
       group('For Android', () {
         final List<MethodCall> log = <MethodCall>[];
@@ -21,6 +50,10 @@ void main() {
             log.add(methodCall);
             return result;
           });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
         });
 
         test('invokes correct method', () async {
@@ -52,6 +85,10 @@ void main() {
             log.add(methodCall);
             return result;
           });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
         });
 
         test('invokes correct method', () async {
