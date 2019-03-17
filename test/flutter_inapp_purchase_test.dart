@@ -5,63 +5,66 @@ import 'package:platform/platform.dart';
 
 void main() {
   group('FlutterInappPurchase', () {
-    group('getProducts for Android', () {
-      final List<MethodCall> log = <MethodCall>[];
-      List<String> skus = List()..add("testsku");
+    group('getProducts', () {
+      group('For Android', () {
+        final List<MethodCall> log = <MethodCall>[];
+        List<String> skus = List()..add("testsku");
 
-      List<IAPItem> result = List();
+        List<IAPItem> result = List();
 
-      setUp(() {
-        FlutterInappPurchase(FlutterInappPurchase.private(
-            FakePlatform(operatingSystem: "android")));
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "android")));
 
-        FlutterInappPurchase.channel
-            .setMockMethodCallHandler((MethodCall methodCall) async {
-          log.add(methodCall);
-          return result;
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return result;
+          });
+        });
+
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.getProducts(skus);
+          expect(log, <Matcher>[
+            isMethodCall(
+              'getItemsByType',
+              arguments: <String, dynamic>{
+                'type': 'inapp',
+                'skus': skus,
+              },
+            ),
+          ]);
         });
       });
 
-      test('invokes correct method', () async {
-        await FlutterInappPurchase.getProducts(skus);
-        expect(log, <Matcher>[
-          isMethodCall(
-            'getItemsByType',
-            arguments: <String, dynamic>{
-              'type': 'inapp',
-              'skus': skus,
-            },
-          ),
-        ]);
-      });
-    });
-    group('getProducts for iOS', () {
-      final List<MethodCall> log = <MethodCall>[];
-      List<String> skus = List()..add("testsku");
+      group('For iOS', () {
+        final List<MethodCall> log = <MethodCall>[];
+        List<String> skus = List()..add("testsku");
 
-      List<IAPItem> result = List();
+        List<IAPItem> result = List();
 
-      setUp(() {
-        FlutterInappPurchase(
-            FlutterInappPurchase.private(FakePlatform(operatingSystem: "ios")));
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "ios")));
 
-        FlutterInappPurchase.channel
-            .setMockMethodCallHandler((MethodCall methodCall) async {
-          log.add(methodCall);
-          return result;
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return result;
+          });
         });
-      });
 
-      test('invokes correct method', () async {
-        await FlutterInappPurchase.getProducts(skus);
-        expect(log, <Matcher>[
-          isMethodCall(
-            'getItems',
-            arguments: <String, dynamic>{
-              'skus': skus,
-            },
-          ),
-        ]);
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.getProducts(skus);
+          expect(log, <Matcher>[
+            isMethodCall(
+              'getItems',
+              arguments: <String, dynamic>{
+                'skus': skus,
+              },
+            ),
+          ]);
+        });
       });
     });
   });
