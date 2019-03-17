@@ -490,8 +490,10 @@ void main() {
           expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
           expect(actual.dataAndroid, expected.dataAndroid);
           expect(actual.signatureAndroid, expected.signatureAndroid);
-          expect(actual.originalTransactionDateIOS, expected.originalTransactionDateIOS);
-          expect(actual.originalTransactionIdentifierIOS, expected.originalTransactionIdentifierIOS);
+          expect(actual.originalTransactionDateIOS,
+              expected.originalTransactionDateIOS);
+          expect(actual.originalTransactionIdentifierIOS,
+              expected.originalTransactionIdentifierIOS);
         });
       });
 
@@ -499,16 +501,17 @@ void main() {
         final List<MethodCall> log = <MethodCall>[];
         final String sku = "testsku";
         final dynamic result = {
-          "transactionDate":"1552824902000",
-          "transactionId":"testTransactionId",
-          "productId":"com.cooni.point1000",
-          "transactionReceipt":"testTransactionReciept",
-          "purchaseToken":"testPurchaseToken",
-          "autoRenewingAndroid":true,
-          "dataAndroid":"testDataAndroid",
-          "signatureAndroid":"testSignatureAndroid",
-          "originalTransactionDateIOS":"1552831136000",
-          "originalTransactionIdentifierIOS":"testOriginalTransactionIdentifierIOS"
+          "transactionDate": "1552824902000",
+          "transactionId": "testTransactionId",
+          "productId": "com.cooni.point1000",
+          "transactionReceipt": "testTransactionReciept",
+          "purchaseToken": "testPurchaseToken",
+          "autoRenewingAndroid": true,
+          "dataAndroid": "testDataAndroid",
+          "signatureAndroid": "testSignatureAndroid",
+          "originalTransactionDateIOS": "1552831136000",
+          "originalTransactionIdentifierIOS":
+              "testOriginalTransactionIdentifierIOS"
         };
 
         setUp(() {
@@ -549,8 +552,10 @@ void main() {
           expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
           expect(actual.dataAndroid, expected.dataAndroid);
           expect(actual.signatureAndroid, expected.signatureAndroid);
-          expect(actual.originalTransactionDateIOS, expected.originalTransactionDateIOS);
-          expect(actual.originalTransactionIdentifierIOS, expected.originalTransactionIdentifierIOS);
+          expect(actual.originalTransactionDateIOS,
+              expected.originalTransactionDateIOS);
+          expect(actual.originalTransactionIdentifierIOS,
+              expected.originalTransactionIdentifierIOS);
         });
       });
     });
@@ -614,8 +619,10 @@ void main() {
           expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
           expect(actual.dataAndroid, expected.dataAndroid);
           expect(actual.signatureAndroid, expected.signatureAndroid);
-          expect(actual.originalTransactionDateIOS, expected.originalTransactionDateIOS);
-          expect(actual.originalTransactionIdentifierIOS, expected.originalTransactionIdentifierIOS);
+          expect(actual.originalTransactionDateIOS,
+              expected.originalTransactionDateIOS);
+          expect(actual.originalTransactionIdentifierIOS,
+              expected.originalTransactionIdentifierIOS);
         });
       });
 
@@ -623,16 +630,17 @@ void main() {
         final List<MethodCall> log = <MethodCall>[];
         final String sku = "testsku";
         final dynamic result = {
-          "transactionDate":"1552824902000",
-          "transactionId":"testTransactionId",
-          "productId":"com.cooni.point1000",
-          "transactionReceipt":"testTransactionReciept",
-          "purchaseToken":"testPurchaseToken",
-          "autoRenewingAndroid":true,
-          "dataAndroid":"testDataAndroid",
-          "signatureAndroid":"testSignatureAndroid",
-          "originalTransactionDateIOS":"1552831136000",
-          "originalTransactionIdentifierIOS":"testOriginalTransactionIdentifierIOS"
+          "transactionDate": "1552824902000",
+          "transactionId": "testTransactionId",
+          "productId": "com.cooni.point1000",
+          "transactionReceipt": "testTransactionReciept",
+          "purchaseToken": "testPurchaseToken",
+          "autoRenewingAndroid": true,
+          "dataAndroid": "testDataAndroid",
+          "signatureAndroid": "testSignatureAndroid",
+          "originalTransactionDateIOS": "1552831136000",
+          "originalTransactionIdentifierIOS":
+              "testOriginalTransactionIdentifierIOS"
         };
 
         setUp(() {
@@ -673,8 +681,10 @@ void main() {
           expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
           expect(actual.dataAndroid, expected.dataAndroid);
           expect(actual.signatureAndroid, expected.signatureAndroid);
-          expect(actual.originalTransactionDateIOS, expected.originalTransactionDateIOS);
-          expect(actual.originalTransactionIdentifierIOS, expected.originalTransactionIdentifierIOS);
+          expect(actual.originalTransactionDateIOS,
+              expected.originalTransactionDateIOS);
+          expect(actual.originalTransactionIdentifierIOS,
+              expected.originalTransactionIdentifierIOS);
         });
       });
     });
@@ -708,8 +718,8 @@ void main() {
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.consumePurchase(token),
-              "Consumed: 0");
+          expect(
+              await FlutterInappPurchase.consumePurchase(token), "Consumed: 0");
         });
       });
 
@@ -725,7 +735,8 @@ void main() {
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.consumePurchase(token), "no-ops in ios");
+          expect(await FlutterInappPurchase.consumePurchase(token),
+              "no-ops in ios");
         });
       });
     });
@@ -733,7 +744,6 @@ void main() {
     group('endConnection', () {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
-        final String token = "testToken";
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
@@ -763,7 +773,6 @@ void main() {
       });
 
       group('for iOS', () {
-        final String token = "testToken";
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
@@ -779,5 +788,52 @@ void main() {
       });
     });
 
+    group('finishTransaction', () {
+      group('for Android', () {
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "android")));
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('returns correct result', () async {
+          expect(await FlutterInappPurchase.finishTransaction(),
+              "no-ops in android.");
+        });
+      });
+
+      group('for iOS', () {
+        final List<MethodCall> log = <MethodCall>[];
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "ios")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return "Finished current transaction";
+          });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.finishTransaction();
+          expect(log, <Matcher>[
+            isMethodCall('finishTransaction', arguments: null),
+          ]);
+        });
+
+        test('returns correct result', () async {
+          expect(await FlutterInappPurchase.finishTransaction(),
+              "Finished current transaction");
+        });
+      });
+    });
   });
 }
