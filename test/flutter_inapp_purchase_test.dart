@@ -26,6 +26,7 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'getPlatformVersion',
+            arguments: null,
           ),
         ]);
       });
@@ -101,6 +102,53 @@ void main() {
               },
             ),
           ]);
+        });
+      });
+    });
+
+    group('consumeAllItems', () {
+      group('For Android', () {
+        final List<MethodCall> log = <MethodCall>[];
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "android")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return "All items have been consumed";
+          });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.consumeAllItems;
+          expect(log, <Matcher>[
+            isMethodCall('consumeAllItems', arguments: null),
+          ]);
+        });
+
+        test('returns correct result', () async {
+          expect(await FlutterInappPurchase.consumeAllItems,
+              "All items have been consumed");
+        });
+      });
+
+      group('For iOS', () {
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "ios")));
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('returns correct result', () async {
+          expect(await FlutterInappPurchase.consumeAllItems, "no-ops in ios");
         });
       });
     });
