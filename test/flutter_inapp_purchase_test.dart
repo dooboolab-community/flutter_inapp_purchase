@@ -153,7 +153,7 @@ void main() {
       });
     });
 
-    group('prepare', () {
+    group('initConnection', () {
       group('For Android', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
@@ -163,7 +163,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return "All items have been consumed";
+            return "Billing client ready";
           });
         });
 
@@ -172,30 +172,45 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.consumeAllItems;
+          await FlutterInappPurchase.initConnection;
           expect(log, <Matcher>[
             isMethodCall('prepare', arguments: null),
           ]);
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.consumeAllItems,
-              "All items have been consumed");
+          expect(await FlutterInappPurchase.initConnection,
+              "Billing client ready");
         });
       });
 
       group('For iOS', () {
+        final List<MethodCall> log = <MethodCall>[];
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return "true";
+          });
         });
 
         tearDown(() {
           FlutterInappPurchase.channel.setMethodCallHandler(null);
         });
 
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.initConnection;
+          expect(log, <Matcher>[
+            isMethodCall('canMakePayments', arguments: null),
+          ]);
+        });
+
+
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.consumeAllItems, "no-ops in ios");
+          expect(await FlutterInappPurchase.initConnection, "true");
         });
       });
     });
