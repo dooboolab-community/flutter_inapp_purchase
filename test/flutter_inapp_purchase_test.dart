@@ -285,5 +285,77 @@ void main() {
         });
       });
     });
+
+    group('getPurchaseHistory', () {
+      group('For Android', () {
+        final List<MethodCall> log = <MethodCall>[];
+
+        List<PurchasedItem> result = List();
+
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "android")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return result;
+          });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.getPurchaseHistory();
+          expect(log, <Matcher>[
+            isMethodCall(
+              'getPurchaseHistoryByType',
+              arguments: <String, dynamic>{
+                'type': 'inapp',
+              },
+            ),
+            isMethodCall(
+              'getPurchaseHistoryByType',
+              arguments: <String, dynamic>{
+                'type': 'subs',
+              },
+            ),
+          ]);
+        });
+      });
+
+      group('For iOS', () {
+        final List<MethodCall> log = <MethodCall>[];
+
+        List<PurchasedItem> result = List();
+
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "ios")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return result;
+          });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.getPurchaseHistory();
+          expect(log, <Matcher>[
+            isMethodCall(
+              'getAvailableItems',
+              arguments: null,
+            ),
+          ]);
+        });
+      });
+    });
   });
 }
