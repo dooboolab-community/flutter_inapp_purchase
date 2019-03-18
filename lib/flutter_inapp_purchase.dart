@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
 import 'package:http/http.dart' as http;
 
@@ -41,6 +42,7 @@ class FlutterInappPurchase {
     return instance;
   }
 
+  @visibleForTesting
   FlutterInappPurchase.private(Platform platform, {http.Client client})
       : _pf = platform,
         _httpClient = client;
