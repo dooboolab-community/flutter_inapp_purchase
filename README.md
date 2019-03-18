@@ -1,7 +1,9 @@
 # flutter_inapp_purchase
-<p align="left">
-  <a href="https://pub.dartlang.org/packages/flutter_inapp_purchase"><img alt="pub version" src="https://img.shields.io/pub/v/flutter_inapp_purchase.svg?style=flat-square"></a>
-</p>
+[![Pub Version](https://img.shields.io/pub/v/flutter_inapp_purchase.svg?style=flat-square)](https://pub.dartlang.org/packages/flutter_inapp_purchase)
+[![Build Status](https://travis-ci.com/dooboolab/flutter_inapp_purchase.svg?branch=master)](https://travis-ci.com/dooboolab/flutter_inapp_purchase)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![Coverage Status](https://coveralls.io/repos/github/dooboolab/flutter_inapp_purchase/badge.svg?branch=master)](https://coveralls.io/github/dooboolab/flutter_inapp_purchase?branch=master)
+
 
 In App Purchase plugin for flutter. This project has been `forked` from [react-native-iap](https://github.com/dooboolab/react-native-iap). We are trying to share same experience of `in-app-purchase` in `flutter` as in `react-native`.
 We will keep working on it as time goes by just like we did in `react-native-iap`.
