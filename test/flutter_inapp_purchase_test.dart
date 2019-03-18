@@ -1040,7 +1040,7 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.buySubscription(sku, oldSku: oldSku);
+          await FlutterInappPurchase.buySubscription(sku, oldSku: oldSku, developerPayload: "dp");
           expect(log, <Matcher>[
             isMethodCall(
               'buyItemByType',
@@ -1048,6 +1048,7 @@ void main() {
                 'type': 'subs',
                 'sku': sku,
                 'oldSku': oldSku,
+                'developerPayload': 'dp'
               },
             ),
           ]);
