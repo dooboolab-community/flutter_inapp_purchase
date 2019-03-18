@@ -346,12 +346,16 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       final String type = call.argument("type");
       final String sku = call.argument("sku");
       final String oldSku = call.argument("oldSku");
+      final String developerPayload = call.argument("developerPayload");
 
       BillingFlowParams.Builder builder = BillingFlowParams.newBuilder();
 
-      if (type.equals(BillingClient.SkuType.SUBS) && oldSku != null && !oldSku.isEmpty()) {
-        // Subscription upgrade/downgrade
-        builder.addOldSku(oldSku);
+      if (type.equals(BillingClient.SkuType.SUBS)) {
+        if (oldSku != null && !oldSku.isEmpty())
+          // Subscription upgrade/downgrade
+          builder.addOldSku(oldSku);
+        if (developerPayload != null)
+          builder.setDeveloperPayload(developerPayload);
       }
 
       BillingFlowParams flowParams = builder.setSku(sku)

@@ -276,13 +276,14 @@ class FlutterInappPurchase {
   ///
   /// Identical to [buyProduct] on `iOS`.
   static Future<PurchasedItem> buySubscription(String sku,
-      {String oldSku}) async {
+      {String oldSku, String developerPayload}) async {
     if (_platform.isAndroid) {
       dynamic result = await _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.subs),
         'sku': sku,
         'oldSku': oldSku,
+        'developerPayload': developerPayload,
       });
 
       Map<String, dynamic> param = json.decode(result.toString());
