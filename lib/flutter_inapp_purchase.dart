@@ -229,14 +229,16 @@ class FlutterInappPurchase {
 
   /// Purchase a product on `Android` or `iOS`.
   ///
+  /// **NOTICE** developer payload is only available on `Android`.
+  ///
   /// Identical to [buySubscription] on `iOS`.
-  static Future<PurchasedItem> buyProduct(String sku) async {
+  static Future<PurchasedItem> buyProduct(String sku, { String developerPayload }) async {
     if (_platform.isAndroid) {
       dynamic result = await _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.inapp),
         'sku': sku,
-        'oldSku': null, //TODO can this be removed?
+        'developerPayload': developerPayload,
       });
 
       Map<String, dynamic> param = json.decode(result.toString());
@@ -274,15 +276,18 @@ class FlutterInappPurchase {
   ///
   /// **NOTICE** second parameter is required on `Android`.
   ///
+  /// **NOTICE** developer payload is only available on `Android`.
+  ///
   /// Identical to [buyProduct] on `iOS`.
   static Future<PurchasedItem> buySubscription(String sku,
-      {String oldSku}) async {
+      {String oldSku, String developerPayload}) async {
     if (_platform.isAndroid) {
       dynamic result = await _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.subs),
         'sku': sku,
         'oldSku': oldSku,
+        'developerPayload': developerPayload,
       });
 
       Map<String, dynamic> param = json.decode(result.toString());
