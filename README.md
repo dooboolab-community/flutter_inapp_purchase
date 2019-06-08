@@ -102,6 +102,7 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
 ## Usage Guide
 #### Android `connect` and `endConnection`
 * You should start the billing service in android to use its funtionalities. We recommend you to use `initConnection` getter method in `initState()`. 
+
   ```dart
     /// start connection for android
     @override
@@ -115,7 +116,8 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
     }
   ```
 * You should end the billing service in android when you are done with it. Otherwise it will be keep running in background. We recommend to use this feature in `dispose()`.
-  ```
+
+  ```dart
     /// start connection for android
     @override
     void dispose() async{
@@ -138,7 +140,7 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
   ```dart
   void purchase() async {
     PurchasedItem purchased = await FlutterInappPurchase.buyProduct(item.productId);
-    print('purcuased - ${purchased.toString()}');
+    print('purchased - ${purchased.toString()}');
   }
   ```
 
@@ -231,7 +233,7 @@ class _MyAppState extends State<MyApp> {
   Future<Null> _buyProduct(IAPItem item) async {
     try {
       PurchasedItem purchased= await FlutterInappPurchase.buyProduct(item.productId);
-      print('purcuased - ${purchased.toString()}');
+      print('purchased - ${purchased.toString()}');
     } catch (error) {
       print('$error');
     }
