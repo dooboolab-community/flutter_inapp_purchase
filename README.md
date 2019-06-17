@@ -5,13 +5,11 @@
 [![Coverage Status](https://coveralls.io/repos/github/dooboolab/flutter_inapp_purchase/badge.svg?branch=master)](https://coveralls.io/github/dooboolab/flutter_inapp_purchase?branch=master)
 
 
-# Deprecated
-----------------------------------------------------------------
+## Deprecated
 I've been maintaining this plugin since there wasn't an official plugin out when I implemented it. I saw in `flutter` github [issue #9591](https://github.com/flutter/flutter/issues/9591) that many people have been waiting for this plugin for more than a year before I've thought of building one. However, there has been an official `Google` plugin rised today which is [in_app_purchase](https://pub.dev/packages/in_app_purchase). Please try to use an official one because you might want to get much prompt support from giant `Google`.
 Also, thanks for all your supports that made me stubborn to work hard on this plugin. I've had great experience with all of you and hope we can meet someday with other projects.
-----------------------------------------------------------------
 
-
+---------
 In App Purchase plugin for flutter. This project has been `forked` from [react-native-iap](https://github.com/dooboolab/react-native-iap). We are trying to share same experience of `in-app-purchase` in `flutter` as in `react-native`.
 We will keep working on it as time goes by just like we did in `react-native-iap`.
 
