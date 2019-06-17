@@ -5,6 +5,13 @@
 [![Coverage Status](https://coveralls.io/repos/github/dooboolab/flutter_inapp_purchase/badge.svg?branch=master)](https://coveralls.io/github/dooboolab/flutter_inapp_purchase?branch=master)
 
 
+# Deprecated
+----------------------------------------------------------------
+I've been maintaining this plugin since there wasn't an official plugin out when I implemented it. I saw in `flutter` github [issue #9591](https://github.com/flutter/flutter/issues/9591) that many people have been waiting for this plugin for more than a year before I've thought of building one. However, there has been an official `Google` plugin rised today which is [in_app_purchase](https://pub.dev/packages/in_app_purchase). Please try to use an official one because you might want to get much prompt support from giant `Google`.
+Also, thanks for all your supports that made me stubborn to work hard on this plugin. I've had great experience with all of you and hope we can meet someday with other projects.
+----------------------------------------------------------------
+
+
 In App Purchase plugin for flutter. This project has been `forked` from [react-native-iap](https://github.com/dooboolab/react-native-iap). We are trying to share same experience of `in-app-purchase` in `flutter` as in `react-native`.
 We will keep working on it as time goes by just like we did in `react-native-iap`.
 
@@ -433,11 +440,11 @@ If you have eneabled proguard you will need to add the following rules to your `
     1. Completed an effective "Agreements, Tax, and Banking."
     2. Setup sandbox testing account in "Users and Roles."
     3. Signed into iOS device with sandbox account.
-    3. Set up three In-App Purchases with the following status:
+    4. Set up three In-App Purchases with the following status:
        i. Ready to Submit
        ii. Missing Metadata
        iii. Waiting for Review
-    4. Enable "In-App Purchase" in Xcode "Capabilities" and in Apple Developer -> "App ID" setting. Delete app / Restart device / Quit "store" related processes in Activity Monitor / Xcode Development Provisioning Profile -> Clean -> Build.
+    5. Enable "In-App Purchase" in Xcode "Capabilities" and in Apple Developer -> "App ID" setting. Delete app / Restart device / Quit "store" related processes in Activity Monitor / Xcode Development Provisioning Profile -> Clean -> Build.
 
 ## Help Maintenance
 I've been maintaining quite many repos these days and burning out slowly. If you could help me cheer up, buying me a cup of coffee will make my life really happy and get much energy out of it.
