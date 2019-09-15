@@ -269,7 +269,7 @@ class FlutterInappPurchase {
   /// Add Store Payment (iOS only)
   /// Indicates that the App Store purchase should continue from the app instead of the App Store.
   ///
-  /// @returns {void}
+  /// @returns {Future<String>}
   Future<String> getPromotedProductIOS() async {
     if (_platform.isIOS) {
       String result = await _channel.invokeMethod('getPromotedProduct');
@@ -282,13 +282,55 @@ class FlutterInappPurchase {
   /// Add Store Payment (iOS only)
   /// Indicates that the App Store purchase should continue from the app instead of the App Store.
   ///
-  /// @returns {void}
+  /// @returns {Future<void>} will receive result from `purchasePromoted` listener.
   Future<void> requestPromotedProductIOS() async {
     if (_platform.isIOS) {
       await _channel.invokeMethod('requestPromotedProduct');
     }
   }
 
+  /// Buy product with offer
+  ///
+  /// @returns {Future<void>} will receive result from `purchaseUpdated` listener.
+  Future<void> requestProductWithOfferIOS(
+    String sku, String forUser, String withOffer,
+  ) async {
+    if (_platform.isIOS) {
+      await _channel.invokeMethod('requestProductWithOfferIOS', <String, dynamic>{
+        'sku': sku,
+        'forUser': forUser,
+        'withOffer': withOffer,
+      });
+    }
+  }
+
+  /// Buy product with quantity
+  ///
+  /// @returns {Future<void>} will receive result from `purchaseUpdated` listener.
+  Future<void> requestPurchaseWithQuantityIOS(
+    String sku, int quantity,
+  ) async {
+    if (_platform.isIOS) {
+      await _channel.invokeMethod('requestPurchaseWithQuantity', <String, dynamic>{
+        'sku': sku,
+        'quantity': quantity,
+      });
+    }
+  }
+
+  /// Get the pending purchases in IOS.
+  ///
+  /// @returns {Future<List<PurchasedItem>>}
+  Future<List<PurchasedItem>> getPendingTransactionsIOS() async {
+    if (_platform.isIOS) {
+      dynamic result = await _channel.invokeMethod(
+        'getPendingTransactions',
+      );
+
+      return extractPurchased(json.encode(result));
+    }
+    return [];
+  }
 
   /// Acknowledge a purchase on `Android`.
   ///
@@ -352,7 +394,7 @@ class FlutterInappPurchase {
   /// Call this after finalizing server-side validation of the reciept.
   ///
   /// No effect on `Android`, who does not allow this type of functionality.
-  Future<String> finishTransaction() async {
+  Future<String> finishTransactionIOS() async {
     if (_platform.isAndroid) {
       return 'no-ops in android.';
     } else if (_platform.isIOS) {
