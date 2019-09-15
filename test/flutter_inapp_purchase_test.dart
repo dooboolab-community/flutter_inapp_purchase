@@ -1301,7 +1301,7 @@ void main() {
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.finishTransaction(),
+          expect(await FlutterInappPurchase.instance.finishTransactionIOS(),
               "no-ops in android.");
         });
       });
@@ -1324,14 +1324,14 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.finishTransaction();
+          await FlutterInappPurchase.instance.finishTransactionIOS();
           expect(log, <Matcher>[
             isMethodCall('finishTransaction', arguments: null),
           ]);
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.finishTransaction(),
+          expect(await FlutterInappPurchase.instance.finishTransactionIOS(),
               "Finished current transaction");
         });
       });
