@@ -97,19 +97,21 @@ class IAPItem {
 
 /// An item which was purchased from either the `Google Play Store` or `iOS AppStore`
 class PurchasedItem {
-  final DateTime transactionDate;
-  final String transactionId;
   final String productId;
+  final String transactionId;
+  final DateTime transactionDate;
   final String transactionReceipt;
   final String purchaseToken;
   final String orderId;
 
   // Android only
-  final bool autoRenewingAndroid;
   final String dataAndroid;
   final String signatureAndroid;
-  final String developerPayloadAndroid;
+  final bool autoRenewingAndroid;
+  final bool isAcknowledgedAndroid;
   final int purchaseStateAndroid;
+  final String developerPayloadAndroid;
+  final String originalJsonAndroid;
 
   // iOS only
   final DateTime originalTransactionDateIOS;
@@ -117,17 +119,21 @@ class PurchasedItem {
 
   /// Create [PurchasedItem] from a Map that was previously JSON formatted
   PurchasedItem.fromJSON(Map<String, dynamic> json)
-      : transactionDate = _extractDate(json['transactionDate']),
+      : productId = json['productId'] as String,
         transactionId = json['transactionId'] as String,
-        productId = json['productId'] as String,
+        transactionDate = _extractDate(json['transactionDate']),
         transactionReceipt = json['transactionReceipt'] as String,
         purchaseToken = json['purchaseToken'] as String,
         orderId = json['orderId'] as String,
-        developerPayloadAndroid = json['developerPayloadAndroid'] as String,
-        purchaseStateAndroid = json['purchaseStateAndroid'] as int,
-        autoRenewingAndroid = json['autoRenewingAndroid'] as bool,
+
         dataAndroid = json['dataAndroid'] as String,
         signatureAndroid = json['signatureAndroid'] as String,
+        isAcknowledgedAndroid = json['isAcknowledgedAndroid'] as bool,
+        autoRenewingAndroid = json['autoRenewingAndroid'] as bool,
+        purchaseStateAndroid = json['purchaseStateAndroid'] as int,
+        developerPayloadAndroid = json['developerPayloadAndroid'] as String,
+        originalJsonAndroid = json['originalJsonAndroid'] as String,
+
         originalTransactionDateIOS =
             _extractDate(json['originalTransactionDateIOS']),
         originalTransactionIdentifierIOS =
@@ -136,16 +142,21 @@ class PurchasedItem {
   /// This returns transaction dates in ISO 8601 format.
   @override
   String toString() {
-    return 'transactionDate: ${transactionDate?.toIso8601String()}, '
+    return 'productId: $productId, '
         'transactionId: $transactionId, '
-        'productId: $productId, '
+        'transactionDate: ${transactionDate?.toIso8601String()}, '
         'transactionReceipt: $transactionReceipt, '
         'purchaseToken: $purchaseToken, '
         'orderId: $orderId, '
-        'developerPayloadAndroid: $developerPayloadAndroid, '
-        'purchaseStateAndroid: $purchaseStateAndroid, '
-        'autoRenewingAndroid: $autoRenewingAndroid, '
+        /// android specific
+        'dataAndroid: $dataAndroid, '
         'signatureAndroid: $signatureAndroid, '
+        'isAcknowledgedAndroid: $isAcknowledgedAndroid, '
+        'autoRenewingAndroid: $autoRenewingAndroid, '
+        'purchaseStateAndroid: $purchaseStateAndroid, '
+        'developerPayloadAndroid: $developerPayloadAndroid, '
+        'oreiginalJsonAndroid: $originalJsonAndroid, '
+        /// ios specific
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS';
   }

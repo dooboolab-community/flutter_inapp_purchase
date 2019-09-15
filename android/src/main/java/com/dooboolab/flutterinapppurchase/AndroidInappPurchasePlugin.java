@@ -259,7 +259,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             item.put("signatureAndroid", purchase.getSignature());
             item.put("purchaseStateAndroid", purchase.getPurchaseState());
 
-            if (type.equals(BillingClient.SkuType.SUBS)) {
+            if (type.equals(BillingClient.SkuType.INAPP)) {
+              item.put("isAcknowledgedAndroid", purchase.isAcknowledged());
+            } else if (type.equals(BillingClient.SkuType.SUBS)) {
               item.put("autoRenewingAndroid", purchase.isAutoRenewing());
             }
             items.put(item);
@@ -440,11 +442,16 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             item.put("transactionDate", purchase.getPurchaseTime());
             item.put("transactionReceipt", purchase.getOriginalJson());
             item.put("purchaseToken", purchase.getPurchaseToken());
+            item.put("orderId", purchase.getOrderId());
+
             item.put("dataAndroid", purchase.getOriginalJson());
             item.put("signatureAndroid", purchase.getSignature());
             item.put("autoRenewingAndroid", purchase.isAutoRenewing());
             item.put("isAcknowledgedAndroid", purchase.isAcknowledged());
             item.put("purchaseStateAndroid", purchase.getPurchaseState());
+            item.put("developerPayloadAndroid", purchase.getDeveloperPayload());
+            item.put("originalJsonAndroid", purchase.getOriginalJson());
+
 
             channel.invokeMethod("purchase-updated", item.toString());
           }
