@@ -977,14 +977,14 @@ void main() {
 
         test('invokes correct method', () async {
           await FlutterInappPurchase.instance.requestPurchase(sku);
-          // expect(log, <Matcher>[
-          //   isMethodCall(
-          //     'buyProduct',
-          //     arguments: <String, dynamic>{
-          //       'sku': sku,
-          //     },
-          //   ),
-          // ]);
+          expect(log, <Matcher>[
+            isMethodCall(
+              'buyProduct',
+              arguments: <String, dynamic>{
+                'sku': sku,
+              },
+            ),
+          ]);
         });
 
         test('returns correct result', () async {
@@ -1042,17 +1042,17 @@ void main() {
 
         test('invokes correct method', () async {
           await FlutterInappPurchase.instance.requestSubscription(sku, oldSku: oldSku);
-          // expect(log, <Matcher>[
-          //   isMethodCall(
-          //     'buyItemByType',
-          //     arguments: <String, dynamic>{
-          //       'type': 'subs',
-          //       'sku': sku,
-          //       'oldSku': oldSku,
-          //       'prorationMode': -1,
-          //     },
-          //   ),
-          // ]);
+          expect(log, <Matcher>[
+            isMethodCall(
+              'buyItemByType',
+              arguments: <String, dynamic>{
+                'type': 'subs',
+                'sku': sku,
+                'oldSku': oldSku,
+                'prorationMode': -1,
+              },
+            ),
+          ]);
         });
 
         test('returns correct result', () async {
@@ -1107,14 +1107,14 @@ void main() {
 
         test('invokes correct method', () async {
           await FlutterInappPurchase.instance.requestPurchase(sku);
-          // expect(log, <Matcher>[
-          //   isMethodCall(
-          //     'buyProduct',
-          //     arguments: <String, dynamic>{
-          //       'sku': sku,
-          //     },
-          //   ),
-          // ]);
+          expect(log, <Matcher>[
+            isMethodCall(
+              'buyProduct',
+              arguments: <String, dynamic>{
+                'sku': sku,
+              },
+            ),
+          ]);
         });
 
         test('returns correct result', () async {
