@@ -1,16 +1,21 @@
-//
-//  IAPPromotionObserver.h
-//  flutter_inapp_purchase
-//
-//  Created by dooboolab on 15/09/2019.
-//
+#import <StoreKit/StoreKit.h>
 
-#import <Foundation/Foundation.h>
+@protocol IAPPromotionObserverDelegate;
 
-NS_ASSUME_NONNULL_BEGIN
+@interface IAPPromotionObserver: NSObject <SKPaymentTransactionObserver>
 
-@interface IAPPromotionObserver : NSObject
+@property (strong, nonatomic, readonly) SKPayment *payment;
+@property (strong, nonatomic, readonly) SKProduct *product;
+@property (weak, nonatomic) id<IAPPromotionObserverDelegate> delegate;
+
++ (instancetype)sharedObserver;
++ (void)startObserving;
 
 @end
 
-NS_ASSUME_NONNULL_END
+@protocol IAPPromotionObserverDelegate <NSObject>
+
+@required
+- (BOOL)shouldAddStorePayment:(SKPayment *)payment forProduct:(SKProduct *)product;
+
+@end

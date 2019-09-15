@@ -78,11 +78,11 @@ class FlutterInappPurchase {
   /// On `iOS` this just checks if the client can make payments.
   Future<String> get initConnection async {
     if (_platform.isAndroid) {
-      _setPurchaseListener();
+      await _setPurchaseListener();
       final String result = await _channel.invokeMethod('initConnection');
       return result;
     } else if (_platform.isIOS) {
-      _setPurchaseListener();
+      await _setPurchaseListener();
       final String result = await _channel.invokeMethod('canMakePayments');
       return result;
     }
@@ -473,6 +473,9 @@ class FlutterInappPurchase {
         case "purchase-error":
           Map<String, dynamic> result = jsonDecode(call.arguments);
           _purchaseErrorController.add(new PurchaseErrorItem.fromJSON(result));
+          break;
+        case "iap-promoted-product":
+          // TODO
           break;
         default:
           throw new ArgumentError('Unknown method ${call.method}');

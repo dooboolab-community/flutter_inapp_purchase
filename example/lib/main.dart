@@ -79,13 +79,12 @@ class _InAppState extends State<InApp> {
       print('consumeAllItems error: $err');
     }
 
-    _purchaseUpdatedSubscription = FlutterInappPurchase.purchaseUpdated.listen((e) {
-        print('purchase-updated: $e');
+    _purchaseUpdatedSubscription = FlutterInappPurchase.purchaseUpdated.listen((productItem) {
+      print('purchase-updated: $productItem');
     });
 
-    _purchaseErrorSubscription = FlutterInappPurchase.purchaseError.listen((e) {
-      // print(ResponseCodeAndroid.values[e.responseCode ?? 9]);
-      print('purchase-error: $e');
+    _purchaseErrorSubscription = FlutterInappPurchase.purchaseError.listen((purchaseError) {
+      print('purchase-error: $purchaseError');
     });
   }
 
