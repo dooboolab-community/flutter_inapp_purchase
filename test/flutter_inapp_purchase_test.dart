@@ -13,7 +13,7 @@ void main() {
     group('platformVersion', () {
       final List<MethodCall> log = <MethodCall>[];
       setUp(() {
-        FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(FakePlatform()));
+        FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(FakePlatform()));
 
         FlutterInappPurchase.channel
             .setMockMethodCallHandler((MethodCall methodCall) async {
@@ -45,7 +45,7 @@ void main() {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -74,7 +74,7 @@ void main() {
 
       group('for iOS', () {
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
         });
 
@@ -92,7 +92,7 @@ void main() {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -122,7 +122,7 @@ void main() {
       group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
           FlutterInappPurchase.channel
@@ -176,7 +176,7 @@ void main() {
         ]""";
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -267,7 +267,7 @@ void main() {
         ];
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
           FlutterInappPurchase.channel
@@ -359,7 +359,7 @@ void main() {
         ]""";
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -450,7 +450,7 @@ void main() {
         ];
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
           FlutterInappPurchase.channel
@@ -546,7 +546,7 @@ void main() {
           }]""";
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -644,7 +644,7 @@ void main() {
         ];
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
           FlutterInappPurchase.channel
@@ -726,7 +726,7 @@ void main() {
           }]""";
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -824,7 +824,7 @@ void main() {
         ];
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
           FlutterInappPurchase.channel
@@ -896,7 +896,7 @@ void main() {
           }""";
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -961,7 +961,7 @@ void main() {
         };
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
           FlutterInappPurchase.channel
@@ -1026,7 +1026,7 @@ void main() {
           }""";
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -1091,7 +1091,7 @@ void main() {
         };
 
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
           FlutterInappPurchase.channel
@@ -1141,7 +1141,7 @@ void main() {
         final List<MethodCall> log = <MethodCall>[];
         final String token = "testToken";
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -1174,7 +1174,7 @@ void main() {
       group('for iOS', () {
         final String token = "testToken";
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
         });
 
@@ -1194,7 +1194,7 @@ void main() {
         final List<MethodCall> log = <MethodCall>[];
         final String token = "testToken";
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -1227,7 +1227,7 @@ void main() {
       group('for iOS', () {
         final String token = "testToken";
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
         });
 
@@ -1246,7 +1246,7 @@ void main() {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
           FlutterInappPurchase.channel
@@ -1275,7 +1275,7 @@ void main() {
 
       group('for iOS', () {
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
         });
 
@@ -1292,7 +1292,7 @@ void main() {
     group('finishTransaction', () {
       group('for Android', () {
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
         });
 
@@ -1309,7 +1309,7 @@ void main() {
       group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
           FlutterInappPurchase.channel
@@ -1339,7 +1339,7 @@ void main() {
     group('getAppStoreInitiatedProducts', () {
       group('for Android', () {
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
         });
 
@@ -1377,7 +1377,7 @@ void main() {
           }
         ];
         setUp(() {
-          FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+          FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
           FlutterInappPurchase.channel
@@ -1449,7 +1449,7 @@ void main() {
           return Response(json.encode({}), 200);
         });
 
-        FlutterInappPurchase.setTestInstance(FlutterInappPurchase.private(
+        FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(
             FakePlatform(operatingSystem: "ios"),
             client: mockClient));
       });

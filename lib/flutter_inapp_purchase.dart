@@ -39,13 +39,11 @@ class FlutterInappPurchase {
   static Platform get _platform => instance._pf;
   static http.Client get _client => instance._httpClient;
 
-  factory FlutterInappPurchase() {
+  factory FlutterInappPurchase({
+    FlutterInappPurchase assignInstance,
+  }) {
+    if (assignInstance != null) return assignInstance;
     return FlutterInappPurchase.private(const LocalPlatform());
-  }
-
-  /// Currently, only used in testing.
-  static setTestInstance(FlutterInappPurchase _instance) {
-    instance = _instance;
   }
 
   @visibleForTesting
