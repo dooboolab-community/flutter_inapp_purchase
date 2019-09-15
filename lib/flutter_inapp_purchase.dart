@@ -26,6 +26,9 @@ class FlutterInappPurchase {
   static StreamController<PurchaseErrorItem> _purchaseErrorController;
   static Stream<PurchaseErrorItem> get purchaseError => _purchaseErrorController.stream;
 
+  static StreamController<String> _purchasePromotedController;
+  static Stream<String> get purchasePromoted => _purchasePromotedController.stream;
+
   /// Defining the [MethodChannel] for Flutter_Inapp_Purchase
   static final MethodChannel _channel = const MethodChannel('flutter_inapp');
   static MethodChannel get channel => _channel;
@@ -263,6 +266,30 @@ class FlutterInappPurchase {
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
+  /// Add Store Payment (iOS only)
+  /// Indicates that the App Store purchase should continue from the app instead of the App Store.
+  ///
+  /// @returns {void}
+  Future<String> getPromotedProductIOS() async {
+    if (_platform.isIOS) {
+      String result = await _channel.invokeMethod('getPromotedProduct');
+      return result;
+    }
+    return null;
+  }
+
+
+  /// Add Store Payment (iOS only)
+  /// Indicates that the App Store purchase should continue from the app instead of the App Store.
+  ///
+  /// @returns {void}
+  Future<void> requestPromotedProductIOS() async {
+    if (_platform.isIOS) {
+      await _channel.invokeMethod('requestPromotedProduct');
+    }
+  }
+
+
   /// Acknowledge a purchase on `Android`.
   ///
   /// No effect on `iOS`, whose iap purchases are consumed at the time of purchase.
@@ -475,7 +502,8 @@ class FlutterInappPurchase {
           _purchaseErrorController.add(new PurchaseErrorItem.fromJSON(result));
           break;
         case "iap-promoted-product":
-          // TODO
+          String productId = call.arguments;
+          _purchasePromotedController.add(productId);
           break;
         default:
           throw new ArgumentError('Unknown method ${call.method}');

@@ -150,13 +150,13 @@
             NSString* result = [self convertDicToJsonString:err];
             [self.channel invokeMethod:@"purchase-error" arguments:result];
         }
-    } else if ([@"promotedProduct" isEqualToString:call.method]) {
+    } else if ([@"getPromotedProduct" isEqualToString:call.method]) {
         SKProduct *promotedProduct = [IAPPromotionObserver sharedObserver].product;
         result(promotedProduct ? promotedProduct.productIdentifier : [NSNull null]);
-    } else if ([@"buyPromotedProduct" isEqualToString:call.method]) {
+    } else if ([@"requestPromotedProduct" isEqualToString:call.method]) {
         SKPayment *promotedPayment = [IAPPromotionObserver sharedObserver].payment;
         if (promotedPayment) {
-            NSLog(@"\n\n\n  ***  buy promoted product. \n\n.");
+            NSLog(@"\n\n\n  ***  request promoted product. \n\n.");
             [[SKPaymentQueue defaultQueue] addPayment:promotedPayment];
             result(promotedPayment.productIdentifier);
         } else {
