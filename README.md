@@ -5,10 +5,13 @@
 [![Coverage Status](https://coveralls.io/repos/github/dooboolab/flutter_inapp_purchase/badge.svg?branch=master)](https://coveralls.io/github/dooboolab/flutter_inapp_purchase?branch=master)
 
 
-## Deprecated
+## Sun Rise :sunrise:
+Since many one of you wanted me to keep working on this plugin in [#93](https://github.com/dooboolab/flutter_inapp_purchase/issues/93), I've decided to keep working on current project. I hope many one of you can help me maintain this. Thank you for all your supports in advance :tada:.
+
+~~## Deprecated
 I've been maintaining this plugin since there wasn't an official plugin out when I implemented it. I saw in `flutter` github [issue #9591](https://github.com/flutter/flutter/issues/9591) that many people have been waiting for this plugin for more than a year before I've thought of building one. However, there has been an official `Google` plugin rised today which is [in_app_purchase](https://pub.dev/packages/in_app_purchase). Please try to use an official one because you might want to get much prompt support from giant `Google`.
 Also, thanks for all your supports that made me stubborn to work hard on this plugin. I've had great experience with all of you and hope we can meet someday with other projects.
-I'll leave this project as live for those who need time. I'll also try to merge the new `PR`'s and publish to `pub` if there's any further work given to this repo.
+I'll leave this project as live for those who need time. I'll also try to merge the new `PR`'s and publish to `pub` if there's any further work given to this repo.~~
 
 # Last Readme
 In App Purchase plugin for flutter. This project has been `forked` from [react-native-iap](https://github.com/dooboolab/react-native-iap). We are trying to share same experience of `in-app-purchase` in `flutter` as in `react-native`.
@@ -41,8 +44,8 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | getPurchaseHistory | | `List<IAPItem>` | Gets an invetory of purchases made by the user regardless of consumption status (where possible) |
 | getAvailablePurchases | | `List<PurchasedItem>` | (aka restore purchase) Get all purchases made by the user (either non-consumable, or haven't been consumed yet)
 | getAppStoreInitiatedProducts | | `List<IAPItem>` | If the user has initiated a purchase directly on the App Store, the products that the user is attempting to purchase will be returned here. (iOS only) Note: On iOS versions earlier than 11.0 this method will always return an empty list, as the functionality was introduced in v11.0. [See Apple Docs for more info](https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver/2877502-paymentqueue) Always returns an empty list on Android.
-| buySubscription | `string` Subscription ID/sku, `string` Old Subscription ID/sku (on Android) | `PurchasedItem` | Create (buy) a subscription to a sku. For upgrading/downgrading subscription on Android pass second parameter with current subscription ID, on iOS this is handled automatically by store. |
-| buyProduct | `string` Product ID/sku | `PurchasedItem` | Buy a product |
+| requestSubscription | `string` Subscription ID/sku, `string` Old Subscription ID/sku (on Android) | `PurchasedItem` | Create (request) a subscription to a sku. For upgrading/downgrading subscription on Android pass second parameter with current subscription ID, on iOS this is handled automatically by store. `purchaseUpdatedListener` will receive the result. |
+| requestPurchase | `string` Product ID/sku | `PurchasedItem` | Request a purchase. `purchaseUpdatedListener` will receive the result. |
 | finishTransaction | `void` | `String` | Send finishTransaction call to Apple IAP server. Call this function after receipt validation process |
 | acknowledgePurchaseAndroid | `String` Purchase token, `String` developerPayload? | `String` | Consume a product (on Android.) No-op on iOS. |
 | consumePurchaseAndroid | `String` Purchase token, `String` developerPayload? | `String` | Consume a product (on Android.) No-op on iOS. |
