@@ -1160,6 +1160,7 @@ void main() {
           expect(log, <Matcher>[
             isMethodCall('acknowledgePurchaseAndroid', arguments: <String, dynamic>{
               'token': token,
+              'developerPayload': null,
             }),
           ]);
         });
@@ -1212,6 +1213,7 @@ void main() {
           expect(log, <Matcher>[
             isMethodCall('consumeProduct', arguments: <String, dynamic>{
               'token': token,
+              'developerPayload': null,
             }),
           ]);
         });
