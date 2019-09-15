@@ -13,7 +13,9 @@ void main() {
     group('platformVersion', () {
       final List<MethodCall> log = <MethodCall>[];
       setUp(() {
-        FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(FakePlatform()));
+        FlutterInappPurchase(assignInstance: FlutterInappPurchase.private(FakePlatform(
+          operatingSystem: 'android',
+        )));
 
         FlutterInappPurchase.channel
             .setMockMethodCallHandler((MethodCall methodCall) async {
@@ -558,6 +560,7 @@ void main() {
             } else if (m['type'] == 'subs') {
               return resultSubs;
             }
+            return null;
           });
         });
 

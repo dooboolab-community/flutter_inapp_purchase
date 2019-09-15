@@ -40,7 +40,7 @@ class FlutterInappPurchase {
   static http.Client get _client => instance._httpClient;
 
   factory FlutterInappPurchase({
-    FlutterInappPurchase assignInstance,
+    FlutterInappPurchase assignInstance = null,
   }) {
     if (assignInstance != null) return assignInstance;
     return FlutterInappPurchase.private(const LocalPlatform());
