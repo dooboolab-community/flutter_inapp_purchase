@@ -405,6 +405,21 @@ class FlutterInappPurchase {
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
+
+  /// Clear all remaining transaction on `iOS`.
+  ///
+  /// No effect on `Android`, who does not allow this type of functionality.
+  Future<String> clearTransactionIOS() async {
+    if (_platform.isAndroid) {
+      return 'no-ops in android.';
+    } else if (_platform.isIOS) {
+      String result = await _channel.invokeMethod('clearTransaction');
+      return result;
+    }
+    throw PlatformException(
+        code: _platform.operatingSystem, message: "platform not supported");
+  }
+
   /// Retrieves a list of products that have been attempted to purchase through the App Store `iOS` only.
   ///
   Future<List<IAPItem>> getAppStoreInitiatedProducts() async {

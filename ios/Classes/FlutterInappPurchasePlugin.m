@@ -206,6 +206,13 @@
         }
         currentTransaction = nil;
         result(@"Finished current transaction");
+    } else if ([@"clearTransaction" isEqualToString:call.method]) {
+        NSArray *pendingTrans = [[SKPaymentQueue defaultQueue] transactions];
+        NSLog(@"\n\n\n  ***  clear remaining Transactions. Call this before make a new transaction   \n\n.");
+        for (int k = 0; k < pendingTrans.count; k++) {
+            [[SKPaymentQueue defaultQueue] finishTransaction:pendingTrans[k]];
+        }
+        result(@"Cleared transactions");
     } else if ([@"getAvailableItems" isEqualToString:call.method]) {
         [self getAvailableItems:result];
     } else if ([@"getAppStoreInitiatedProducts" isEqualToString:call.method]) {
