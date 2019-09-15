@@ -1158,7 +1158,7 @@ void main() {
         test('invokes correct method', () async {
           await FlutterInappPurchase.instance.acknowledgePurchaseAndroid(token);
           expect(log, <Matcher>[
-            isMethodCall('acknowledgePurchaseAndroid', arguments: <String, dynamic>{
+            isMethodCall('acknowledgePurchase', arguments: <String, dynamic>{
               'token': token,
               'developerPayload': null,
             }),
