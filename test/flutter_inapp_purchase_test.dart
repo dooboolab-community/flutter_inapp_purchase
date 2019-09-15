@@ -1147,7 +1147,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return "Consumed: 0";
+            return "Acknowledged: 0";
           });
         });
 
@@ -1158,7 +1158,7 @@ void main() {
         test('invokes correct method', () async {
           await FlutterInappPurchase.instance.acknowledgePurchaseAndroid(token);
           expect(log, <Matcher>[
-            isMethodCall('consumeProduct', arguments: <String, dynamic>{
+            isMethodCall('acknowledgePurchaseAndroid', arguments: <String, dynamic>{
               'token': token,
             }),
           ]);
@@ -1166,7 +1166,7 @@ void main() {
 
         test('returns correct result', () async {
           expect(
-              await FlutterInappPurchase.instance.acknowledgePurchaseAndroid(token), "Acknowledge: 0");
+              await FlutterInappPurchase.instance.acknowledgePurchaseAndroid(token), "Acknowledged: 0");
         });
       });
 
