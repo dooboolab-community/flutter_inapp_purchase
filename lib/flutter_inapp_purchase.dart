@@ -107,7 +107,6 @@ class FlutterInappPurchase {
           'skus': skus,
         },
       );
-      print('result $result');
       return extractItems(result);
     } else if (_platform.isIOS) {
       dynamic result = await _channel.invokeMethod(
