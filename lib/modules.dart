@@ -1,3 +1,16 @@
+enum ResponseCodeAndroid {
+  BILLING_RESPONSE_RESULT_OK,
+  BILLING_RESPONSE_RESULT_USER_CANCELED,
+  BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE,
+  BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE,
+  BILLING_RESPONSE_RESULT_ITEM_UNAVAILABLE,
+  BILLING_RESPONSE_RESULT_DEVELOPER_ERROR,
+  BILLING_RESPONSE_RESULT_ERROR,
+  BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED,
+  BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED,
+  UNKNOWN,
+}
+
 /// An item available for purchase from either the `Google Play Store` or `iOS AppStore`
 class IAPItem {
   final String productId;
@@ -20,6 +33,11 @@ class IAPItem {
   final String introductoryPriceCyclesAndroid;
   final String introductoryPricePeriodAndroid;
   final String freeTrialPeriodAndroid;
+  final String signatureAndroid;
+
+  final String iconUrl;
+  final String originalJson;
+  final String originalPrice;
 
   /// Create [IAPItem] from a Map that was previously JSON formatted
   IAPItem.fromJSON(Map<String, dynamic> json)
@@ -44,7 +62,11 @@ class IAPItem {
             json['introductoryPriceCyclesAndroid'] as String,
         introductoryPricePeriodAndroid =
             json['introductoryPricePeriodAndroid'] as String,
-        freeTrialPeriodAndroid = json['freeTrialPeriodAndroid'] as String;
+        freeTrialPeriodAndroid = json['freeTrialPeriodAndroid'] as String,
+        signatureAndroid = json['signatureAndroid'] as String,
+        iconUrl = json['iconUrl'] as String,
+        originalJson = json['originalJson'] as String,
+        originalPrice = json['originalJson'] as String;
 
   /// Return the contents of this class as a string
   @override
@@ -65,7 +87,11 @@ class IAPItem {
         'subscriptionPeriodAndroid: $subscriptionPeriodAndroid, '
         'introductoryPriceCyclesAndroid: $introductoryPriceCyclesAndroid, '
         'introductoryPricePeriodAndroid: $introductoryPricePeriodAndroid, '
-        'freeTrialPeriodAndroid: $freeTrialPeriodAndroid, ';
+        'freeTrialPeriodAndroid: $freeTrialPeriodAndroid, '
+        'iconUrl: $iconUrl, '
+        'originalJson: $originalJson, '
+        'originalPrice: $originalPrice, '
+    ;
   }
 }
 
@@ -76,11 +102,14 @@ class PurchasedItem {
   final String productId;
   final String transactionReceipt;
   final String purchaseToken;
+  final String orderId;
 
   // Android only
   final bool autoRenewingAndroid;
   final String dataAndroid;
   final String signatureAndroid;
+  final String developerPayloadAndroid;
+  final int purchaseStateAndroid;
 
   // iOS only
   final DateTime originalTransactionDateIOS;
@@ -93,6 +122,9 @@ class PurchasedItem {
         productId = json['productId'] as String,
         transactionReceipt = json['transactionReceipt'] as String,
         purchaseToken = json['purchaseToken'] as String,
+        orderId = json['orderId'] as String,
+        developerPayloadAndroid = json['developerPayloadAndroid'] as String,
+        purchaseStateAndroid = json['purchaseStateAndroid'] as int,
         autoRenewingAndroid = json['autoRenewingAndroid'] as bool,
         dataAndroid = json['dataAndroid'] as String,
         signatureAndroid = json['signatureAndroid'] as String,
@@ -109,8 +141,10 @@ class PurchasedItem {
         'productId: $productId, '
         'transactionReceipt: $transactionReceipt, '
         'purchaseToken: $purchaseToken, '
+        'orderId: $orderId, '
+        'developerPayloadAndroid: $developerPayloadAndroid, '
+        'purchaseStateAndroid: $purchaseStateAndroid, '
         'autoRenewingAndroid: $autoRenewingAndroid, '
-        'dataAndroid: $dataAndroid, '
         'signatureAndroid: $signatureAndroid, '
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS';
@@ -122,5 +156,27 @@ class PurchasedItem {
 
     int _toInt() => double.parse(timestamp.toString()).toInt();
     return DateTime.fromMillisecondsSinceEpoch(_toInt());
+  }
+}
+
+class PurchaseErrorItem {
+  final int responseCode;
+  final String debugMessage;
+  final String code;
+  final String message;
+
+  PurchaseErrorItem.fromJSON(Map<String, dynamic> json)
+      : responseCode = json['responseCode'] as int,
+        debugMessage = json['debugMessage'] as String,
+        code = json['code'] as String,
+        message = json['message'] as String;
+
+  @override
+  String toString() {
+    return 'responseCode: $responseCode, '
+        'debugMessage: $debugMessage, '
+        'code: $code, '
+        'message: $message'
+    ;
   }
 }

@@ -27,6 +27,8 @@ class InApp extends StatefulWidget {
 }
 
 class _InAppState extends State<InApp> {
+  StreamSubscription _purchaseUpdatedSubscription;
+  StreamSubscription _purchaseErrorSubscription;
   final List<String> _productLists = Platform.isAndroid
       ? [
           'android.test.purchased',
@@ -51,13 +53,13 @@ class _InAppState extends State<InApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformVersion = await FlutterInappPurchase.platformVersion;
+      platformVersion = await FlutterInappPurchase.instance.platformVersion;
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
 
     // prepare
-    var result = await FlutterInappPurchase.initConnection;
+    var result = await FlutterInappPurchase.instance.initConnection;
     print('result: $result');
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -70,22 +72,29 @@ class _InAppState extends State<InApp> {
     });
 
     // refresh items for android
-    String msg = await FlutterInappPurchase.consumeAllItems;
-    print('consumeAllItems: $msg');
+    try {
+      String msg = await FlutterInappPurchase.instance.consumeAllItems;
+      print('consumeAllItems: $msg');
+    } catch (err) {
+      print('consumeAllItems error: $err');
+    }
+
+    _purchaseUpdatedSubscription = FlutterInappPurchase.purchaseUpdated.listen((e) {
+        print('purchase-updated: $e');
+    });
+
+    _purchaseErrorSubscription = FlutterInappPurchase.purchaseError.listen((e) {
+      // print(ResponseCodeAndroid.values[e.responseCode ?? 9]);
+      print('purchase-error: $e');
+    });
   }
 
-  Future<Null> _buyProduct(IAPItem item) async {
-    try {
-      PurchasedItem purchased =
-          await FlutterInappPurchase.buyProduct(item.productId);
-      print('purchased: ${purchased.toString()}');
-    } catch (error) {
-      print('$error');
-    }
+  void _buyProduct(IAPItem item) {
+    FlutterInappPurchase.instance.buyProduct(item.productId);
   }
 
   Future<Null> _getProduct() async {
-    List<IAPItem> items = await FlutterInappPurchase.getProducts(_productLists);
+    List<IAPItem> items = await FlutterInappPurchase.instance.getProducts(_productLists);
     for (var item in items) {
       print('${item.toString()}');
       this._items.add(item);
@@ -99,7 +108,7 @@ class _InAppState extends State<InApp> {
 
   Future<Null> _getPurchases() async {
     List<PurchasedItem> items =
-        await FlutterInappPurchase.getAvailablePurchases();
+        await FlutterInappPurchase.instance.getAvailablePurchases();
     for (var item in items) {
       print('${item.toString()}');
       this._purchases.add(item);
@@ -112,7 +121,7 @@ class _InAppState extends State<InApp> {
   }
 
   Future<Null> _getPurchaseHistory() async {
-    List<PurchasedItem> items = await FlutterInappPurchase.getPurchaseHistory();
+    List<PurchasedItem> items = await FlutterInappPurchase.instance.getPurchaseHistory();
     for (var item in items) {
       print('${item.toString()}');
       this._purchases.add(item);
@@ -227,7 +236,7 @@ class _InAppState extends State<InApp> {
                           padding: EdgeInsets.all(0.0),
                           onPressed: () async {
                             print("---------- Connect Billing Button Pressed");
-                            await FlutterInappPurchase.initConnection;
+                            await FlutterInappPurchase.instance.initConnection;
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -250,7 +259,11 @@ class _InAppState extends State<InApp> {
                           padding: EdgeInsets.all(0.0),
                           onPressed: () async {
                             print("---------- End Connection Button Pressed");
-                            await FlutterInappPurchase.endConnection;
+                            await FlutterInappPurchase.instance.endConnection;
+                            _purchaseUpdatedSubscription.cancel();
+                            _purchaseUpdatedSubscription = null;
+                            _purchaseErrorSubscription.cancel();
+                            _purchaseErrorSubscription = null;
                             setState(() {
                               this._items = [];
                               this._purchases = [];

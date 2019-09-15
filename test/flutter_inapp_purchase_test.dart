@@ -109,7 +109,7 @@ void main() {
         test('invokes correct method', () async {
           await FlutterInappPurchase.initConnection;
           expect(log, <Matcher>[
-            isMethodCall('prepare', arguments: null),
+            isMethodCall('initConnection', arguments: null),
           ]);
         });
 

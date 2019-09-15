@@ -35,7 +35,6 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 ## Methods
 | Func  | Param  | Return | Description |
 | :------------ |:---------------:| :---------------:| :-----|
-| ~prepare~ |  | `String` | *Deprecated* Use initConnection instead. |
 | initConnection |  | `String` | Prepare IAP module. Must be called on Android before any other purchase flow methods. In ios, it will simply call `canMakePayments` method and return value.|
 | getProducts | `List<String>` Product IDs/skus | `List<IAPItem>` | Get a list of products (consumable and non-consumable items, but not subscriptions). Note: On iOS versions earlier than 11.2 this method _will_ return subscriptions if they are included in your list of SKUs. This is because we cannot differentiate between IAP products and subscriptions prior to 11.2.  |
 | getSubscriptions | `List<String>` Subscription IDs/skus | `List<IAPItem>` | Get a list of subscriptions. Note: On iOS  this method has the same output as `getProducts`. Because iOS does not differentiate between IAP products and subscriptions.  |
