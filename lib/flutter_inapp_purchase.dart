@@ -18,7 +18,7 @@ enum _TypeInApp {
 }
 
 class FlutterInappPurchase {
-  static final FlutterInappPurchase instance = new FlutterInappPurchase(_instance);
+  static FlutterInappPurchase instance = new FlutterInappPurchase();
 
   static StreamController<PurchasedItem> _purchaseController;
   static Stream<PurchasedItem> get purchaseUpdated => _purchaseController.stream;
@@ -36,16 +36,16 @@ class FlutterInappPurchase {
   final Platform _pf;
   final http.Client _httpClient;
 
-  static Platform get _platform => _instance._pf;
-  static http.Client get _client => _instance._httpClient;
+  static Platform get _platform => instance._pf;
+  static http.Client get _client => instance._httpClient;
 
+  factory FlutterInappPurchase() {
+    return FlutterInappPurchase.private(const LocalPlatform());
+  }
 
-  static FlutterInappPurchase _instance = FlutterInappPurchase(
-      FlutterInappPurchase.private(const LocalPlatform()));
-
-  factory FlutterInappPurchase(FlutterInappPurchase instance) {
-    _instance = instance;
-    return instance;
+  /// Currently, only used in testing.
+  static setTestInstance(FlutterInappPurchase _instance) {
+    instance = _instance;
   }
 
   @visibleForTesting
