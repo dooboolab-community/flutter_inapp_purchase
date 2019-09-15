@@ -926,7 +926,7 @@ void main() {
         });
 
         test('returns correct result', () async {
-          FlutterInappPurchase.instance.requestPurchase(sku);
+          await FlutterInappPurchase.instance.requestPurchase(sku);
           // PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
           // expect(actual.transactionDate, expected.transactionDate);
           // expect(actual.transactionId, expected.transactionId);
@@ -1041,7 +1041,7 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          FlutterInappPurchase.instance.requestSubscription(sku, oldSku: oldSku);
+          await FlutterInappPurchase.instance.requestSubscription(sku, oldSku: oldSku);
           expect(log, <Matcher>[
             isMethodCall(
               'buyItemByType',
@@ -1056,7 +1056,7 @@ void main() {
         });
 
         test('returns correct result', () async {
-          FlutterInappPurchase.instance.requestPurchase(sku);
+          await FlutterInappPurchase.instance.requestPurchase(sku);
           // PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
           // expect(actual.transactionDate, expected.transactionDate);
           // expect(actual.transactionId, expected.transactionId);
