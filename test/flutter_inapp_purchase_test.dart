@@ -912,17 +912,17 @@ void main() {
 
         test('invokes correct method', () async {
           await FlutterInappPurchase.instance.requestPurchase(sku);
-          // expect(log, <Matcher>[
-          //   isMethodCall(
-          //     'buyItemByType',
-          //     arguments: <String, dynamic>{
-          //       'type': 'inapp',
-          //       'sku': sku,
-          //       'oldSku': null,
-          //       'prorationMode': -1,
-          //     },
-          //   ),
-          // ]);
+          expect(log, <Matcher>[
+            isMethodCall(
+              'buyItemByType',
+              arguments: <String, dynamic>{
+                'type': 'inapp',
+                'sku': sku,
+                'oldSku': null,
+                'prorationMode': -1,
+              },
+            ),
+          ]);
         });
 
         test('returns correct result', () async {

@@ -545,7 +545,8 @@
 
 -(void)purchaseProcess:(SKPaymentTransaction *)transaction {
     [self getPurchaseData:transaction withBlock:^(NSDictionary *purchase) {
-        [self.channel invokeMethod:@"purchase-updated" arguments: purchase];
+        NSString* result = [self convertDicToJsonString:purchase];
+        [self.channel invokeMethod:@"purchase-updated" arguments: result];
     }];
 }
 
