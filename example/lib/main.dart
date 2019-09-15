@@ -89,8 +89,8 @@ class _InAppState extends State<InApp> {
     });
   }
 
-  void _buyProduct(IAPItem item) {
-    FlutterInappPurchase.instance.buyProduct(item.productId);
+  void _requestPurchase(IAPItem item) {
+    FlutterInappPurchase.instance.requestPurchase(item.productId);
   }
 
   Future<Null> _getProduct() async {
@@ -155,7 +155,7 @@ class _InAppState extends State<InApp> {
                       color: Colors.orange,
                       onPressed: () {
                         print("---------- Buy Item Button Pressed");
-                        this._buyProduct(item);
+                        this._requestPurchase(item);
                       },
                       child: Row(
                         children: <Widget>[

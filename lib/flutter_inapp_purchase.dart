@@ -215,34 +215,25 @@ class FlutterInappPurchase {
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
-  /// Purchase a product on `Android` or `iOS`.
+  /// Request a purchase on `Android` or `iOS`.
+  /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
   ///
   /// Identical to [buySubscription] on `iOS`.
-  Future<PurchasedItem> buyProduct(String sku) async {
+  void requestPurchase(String sku) {
     if (_platform.isAndroid) {
-      dynamic result = await _channel
+      _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.inapp),
         'sku': sku,
         'oldSku': null,
         'prorationMode': -1,
       });
-
-      Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = PurchasedItem.fromJSON(param);
-
-      return item;
     } else if (_platform.isIOS) {
       try {
-        dynamic result = await _channel.invokeMethod(
+        _channel.invokeMethod(
             'buyProductWithFinishTransaction', <String, dynamic>{
           'sku': sku,
         });
-        result = json.encode(result);
-
-        Map<String, dynamic> param = json.decode(result.toString());
-        PurchasedItem item = PurchasedItem.fromJSON(param);
-        return item;
       } catch (err) {
         print('Caused err');
         print(err);
@@ -252,40 +243,27 @@ class FlutterInappPurchase {
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
-  /// Purchase a subscription on `Android` or `iOS`.
+  /// Request a subscription on `Android` or `iOS`.
+  /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
   ///
   /// **NOTICE** second parameter is required on `Android`.
   ///
-  /// Identical to [buyProduct] on `iOS`.
-  Future<PurchasedItem> buySubscription(String sku,
-      {String oldSku, int prorationMode}) async {
+  /// Identical to [requestPurchase] on `iOS`.
+  void requestSubscription(String sku,
+      {String oldSku, int prorationMode}) {
     if (_platform.isAndroid) {
-      dynamic result = await _channel
+      _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.subs),
         'sku': sku,
         'oldSku': oldSku,
         'prorationMode': prorationMode ?? -1,
       });
-
-      Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = PurchasedItem.fromJSON(param);
-      return item;
     } else if (_platform.isIOS) {
-      try {
-        dynamic result = await _channel.invokeMethod(
-            'buyProductWithFinishTransaction', <String, dynamic>{
-          'sku': sku,
-        });
-        result = json.encode(result);
-
-        Map<String, dynamic> param = json.decode(result.toString());
-        PurchasedItem item = PurchasedItem.fromJSON(param);
-        return item;
-      } catch (err) {
-        print('Caused err. Set additionalSuccessPurchaseListenerIOS.');
-        print(err);
-      }
+      _channel.invokeMethod(
+        'buyProductWithFinishTransaction', <String, dynamic>{
+        'sku': sku,
+      });
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
