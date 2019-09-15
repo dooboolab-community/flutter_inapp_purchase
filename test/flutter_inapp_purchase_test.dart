@@ -979,7 +979,7 @@ void main() {
           await FlutterInappPurchase.instance.requestPurchase(sku);
           expect(log, <Matcher>[
             isMethodCall(
-              'buyProductWithFinishTransaction',
+              'buyProduct',
               arguments: <String, dynamic>{
                 'sku': sku,
               },
@@ -1109,7 +1109,7 @@ void main() {
           await FlutterInappPurchase.instance.requestPurchase(sku);
           expect(log, <Matcher>[
             isMethodCall(
-              'buyProductWithFinishTransaction',
+              'buyProduct',
               arguments: <String, dynamic>{
                 'sku': sku,
               },
@@ -1118,7 +1118,7 @@ void main() {
         });
 
         test('returns correct result', () async {
-          FlutterInappPurchase.instance.requestPurchase(sku);
+          await FlutterInappPurchase.instance.requestPurchase(sku);
           // PurchasedItem expected = PurchasedItem.fromJSON(result);
           // expect(actual.transactionDate, expected.transactionDate);
           // expect(actual.transactionId, expected.transactionId);

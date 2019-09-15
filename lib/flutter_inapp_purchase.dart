@@ -229,7 +229,7 @@ class FlutterInappPurchase {
       });
     } else if (_platform.isIOS) {
       await _channel.invokeMethod(
-        'buyProductWithFinishTransaction', <String, dynamic>{
+        'buyProduct', <String, dynamic>{
         'sku': sku,
       });
     }
@@ -255,7 +255,7 @@ class FlutterInappPurchase {
       });
     } else if (_platform.isIOS) {
       await _channel.invokeMethod(
-        'buyProductWithFinishTransaction', <String, dynamic>{
+        'buyProduct', <String, dynamic>{
         'sku': sku,
       });
     }
@@ -315,40 +315,6 @@ class FlutterInappPurchase {
     } else if (_platform.isIOS) {
       _removePurchaseListener();
       return 'no-ops in ios';
-    }
-    throw PlatformException(
-        code: _platform.operatingSystem, message: "platform not supported");
-  }
-
-  /// Buy a product without finishing the transaction on `iOS`.
-  ///
-  /// This allows you to perform server-side validation before finalizing the transaction on screen.
-  ///
-  /// No effect on `Android`, who does not allow this type of functionality.
-  @deprecated
-  Future<PurchasedItem> buyProductWithoutFinishTransaction(
-      String sku) async {
-    if (_platform.isAndroid) {
-      dynamic result = await _channel
-          .invokeMethod('buyItemByType', <String, dynamic>{
-        'type': EnumUtil.getValueString(_TypeInApp.inapp),
-        'sku': sku,
-        'oldSku': null,
-      });
-
-      Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = PurchasedItem.fromJSON(param);
-      return item;
-    } else if (_platform.isIOS) {
-      dynamic result = await _channel.invokeMethod(
-          'buyProductWithoutFinishTransaction', <String, dynamic>{
-        'sku': sku,
-      });
-      result = json.encode(result);
-
-      Map<String, dynamic> param = json.decode(result.toString());
-      PurchasedItem item = PurchasedItem.fromJSON(param);
-      return item;
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");

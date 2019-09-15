@@ -1,7 +1,6 @@
 #import "FlutterInappPurchasePlugin.h"
 
 @interface FlutterInappPurchasePlugin() {
-    BOOL autoReceiptConform;
     SKPaymentTransaction *currentTransaction;
     FlutterResult flutterResult;
 }
@@ -61,20 +60,10 @@
         } else {
             result([FlutterError errorWithCode:@"ERROR" message:@"Invalid or missing arguments!" details:nil]);
         }
-    } else if ([@"buyProductWithFinishTransaction" isEqualToString:call.method]) {
+    } else if ([@"buyProduct" isEqualToString:call.method]) {
         NSString* identifier = (NSString*)call.arguments[@"sku"];
         NSLog(@"identifier %@", identifier);
         if (identifier != nil) {
-            autoReceiptConform = true;
-            [self purchase:identifier result:result];
-        } else {
-            result([FlutterError errorWithCode:@"ERROR" message:@"Invalid or missing arguments!" details:nil]);
-        }
-    } else if ([@"buyProductWithoutFinishTransaction" isEqualToString:call.method]) {
-        NSString* identifier = (NSString*)call.arguments[@"sku"];
-        NSLog(@"identifier %@", identifier);
-        if (identifier != nil) {
-            autoReceiptConform = false;
             [self purchase:identifier result:result];
         } else {
             result([FlutterError errorWithCode:@"ERROR" message:@"Invalid or missing arguments!" details:nil]);
@@ -291,7 +280,7 @@
                 NSLog(@"\n\n\n\n\n Purchase Successful !! \n\n\n\n\n.");
                 [self purchaseProcess:transaction];
                 break;
-            case SKPaymentTransactionStateRestored: // 기존 구매한 아이템 복구..
+            case SKPaymentTransactionStateRestored:
                 NSLog(@"Restored ");
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 break;
