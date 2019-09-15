@@ -988,7 +988,7 @@ void main() {
         });
 
         test('returns correct result', () async {
-          // FlutterInappPurchase.instance.requestPurchase(sku);
+          await FlutterInappPurchase.instance.requestPurchase(sku);
           // PurchasedItem expected = PurchasedItem.fromJSON(result);
           // expect(actual.transactionDate, expected.transactionDate);
           // expect(actual.transactionId, expected.transactionId);
@@ -1006,7 +1006,7 @@ void main() {
       });
     });
 
-    group('buySubscription', () {
+    group('requestSubscription', () {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
 
@@ -1056,7 +1056,7 @@ void main() {
         });
 
         test('returns correct result', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
+          await FlutterInappPurchase.instance.requestSubscription(sku);
           // PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
           // expect(actual.transactionDate, expected.transactionDate);
           // expect(actual.transactionId, expected.transactionId);
