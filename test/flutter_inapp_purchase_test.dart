@@ -1134,7 +1134,7 @@ void main() {
       });
     });
 
-    group('consumePurchase', () {
+    group('acknowledgePurchaseAndroid', () {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
         final String token = "testToken";
@@ -1154,7 +1154,7 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.consumePurchase(token);
+          await FlutterInappPurchase.instance.acknowledgePurchaseAndroid(token);
           expect(log, <Matcher>[
             isMethodCall('consumeProduct', arguments: <String, dynamic>{
               'token': token,
@@ -1164,7 +1164,7 @@ void main() {
 
         test('returns correct result', () async {
           expect(
-              await FlutterInappPurchase.instance.consumePurchase(token), "Consumed: 0");
+              await FlutterInappPurchase.instance.acknowledgePurchaseAndroid(token), "Acknowledge: 0");
         });
       });
 
@@ -1180,7 +1180,59 @@ void main() {
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.consumePurchase(token),
+          expect(await FlutterInappPurchase.instance.acknowledgePurchaseAndroid(token),
+              "no-ops in ios");
+        });
+      });
+    });
+
+    group('consumePurchaseAndroid', () {
+      group('for Android', () {
+        final List<MethodCall> log = <MethodCall>[];
+        final String token = "testToken";
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "android")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return "Consumed: 0";
+          });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.instance.consumePurchaseAndroid(token);
+          expect(log, <Matcher>[
+            isMethodCall('consumeProduct', arguments: <String, dynamic>{
+              'token': token,
+            }),
+          ]);
+        });
+
+        test('returns correct result', () async {
+          expect(
+              await FlutterInappPurchase.instance.consumePurchaseAndroid(token), "Consumed: 0");
+        });
+      });
+
+      group('for iOS', () {
+        final String token = "testToken";
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "ios")));
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('returns correct result', () async {
+          expect(await FlutterInappPurchase.instance.consumePurchaseAndroid(token),
               "no-ops in ios");
         });
       });

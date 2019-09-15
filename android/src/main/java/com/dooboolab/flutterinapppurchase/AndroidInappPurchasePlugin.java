@@ -3,6 +3,8 @@ package com.dooboolab.flutterinapppurchase;
 import androidx.annotation.Nullable;
 import android.util.Log;
 
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
@@ -375,8 +377,46 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
     }
 
     /*
-     * consumeProduct
-     * arguments: type
+     * acknowledgePurchase (For non-consumable purchases)
+     * arguments: token, developerPayload
+     */
+    else if (call.method.equals("acknowledgePurchase")) {
+      final String token = call.argument("token");
+      final String developerPayLoad = call.argument("developerPayLoad");
+      if (billingClient == null || !billingClient.isReady()) {
+        AcknowledgePurchaseParams acknowledgePurchaseParams =
+            AcknowledgePurchaseParams.newBuilder()
+                .setPurchaseToken(token)
+                .setDeveloperPayload(developerPayLoad)
+                .build();
+        billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
+          @Override
+          public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+            if (billingClient == null || !billingClient.isReady()) {
+              result.error(call.method,
+                  "IAP not prepared. Check if Google Play service is available.",
+                  DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()));
+              return;
+            }
+            try {
+              JSONObject item = new JSONObject();
+              item.put("responseCode", billingResult.getResponseCode());
+              item.put("debugMessage", billingResult.getDebugMessage());
+              String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+              item.put("code", errorData[0]);
+              item.put("message", errorData[1]);
+              result.success(item.toString());
+            } catch (JSONException je) {
+              result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
+            }
+          }
+        });
+      }
+    }
+
+    /*
+     * consumeProduct (For consumable purchases)
+     * arguments: token, developerPayload
      */
     else if (call.method.equals("consumeProduct")) {
       if (billingClient == null || !billingClient.isReady()) {
@@ -402,6 +442,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             JSONObject item = new JSONObject();
             item.put("responseCode", billingResult.getResponseCode());
             item.put("debugMessage", billingResult.getDebugMessage());
+            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+            item.put("code", errorData[0]);
+            item.put("message", errorData[1]);
             result.success(item.toString());
           } catch (JSONException je) {
             result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());

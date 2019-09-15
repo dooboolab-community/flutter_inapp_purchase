@@ -291,14 +291,35 @@ class FlutterInappPurchase {
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
+  /// Acknowledge a purchase on `Android`.
+  ///
+  /// No effect on `iOS`, whose iap purchases are consumed at the time of purchase.
+  Future<String> acknowledgePurchaseAndroid(String token, { String developerPayload }) async {
+    if (_platform.isAndroid) {
+      String result =
+          await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
+        'token': token,
+        'developerPayload': developerPayload,
+      });
+
+      return result;
+    } else if (_platform.isIOS) {
+      return 'no-ops in ios';
+    }
+    throw PlatformException(
+        code: _platform.operatingSystem, message: "platform not supported");
+  }
+
+
   /// Consumes a purchase on `Android`.
   ///
   /// No effect on `iOS`, whose consumable purchases are consumed at the time of purchase.
-  Future<String> consumePurchase(String token) async {
+  Future<String> consumePurchaseAndroid(String token, { String developerPayload }) async {
     if (_platform.isAndroid) {
       String result =
           await _channel.invokeMethod('consumeProduct', <String, dynamic>{
         'token': token,
+        'developerPayload': developerPayload,
       });
 
       return result;

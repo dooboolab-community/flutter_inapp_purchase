@@ -43,9 +43,9 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | getAppStoreInitiatedProducts | | `List<IAPItem>` | If the user has initiated a purchase directly on the App Store, the products that the user is attempting to purchase will be returned here. (iOS only) Note: On iOS versions earlier than 11.0 this method will always return an empty list, as the functionality was introduced in v11.0. [See Apple Docs for more info](https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver/2877502-paymentqueue) Always returns an empty list on Android.
 | buySubscription | `string` Subscription ID/sku, `string` Old Subscription ID/sku (on Android) | `PurchasedItem` | Create (buy) a subscription to a sku. For upgrading/downgrading subscription on Android pass second parameter with current subscription ID, on iOS this is handled automatically by store. |
 | buyProduct | `string` Product ID/sku | `PurchasedItem` | Buy a product |
-| ~~buyProductWithoutFinishTransaction~~ | `string` Product ID/sku | `PurchasedItem` | Buy a product without finish transaction call (iOS only) |
 | finishTransaction | `void` | `String` | Send finishTransaction call to Apple IAP server. Call this function after receipt validation process |
-| consumePurchase | `String` Purchase token | `String` | Consume a product (on Android.) No-op on iOS. |
+| acknowledgePurchaseAndroid | `String` Purchase token, `String` developerPayload? | `String` | Consume a product (on Android.) No-op on iOS. |
+| consumePurchaseAndroid | `String` Purchase token, `String` developerPayload? | `String` | Consume a product (on Android.) No-op on iOS. |
 | endConnection | | `String` | End billing connection (on Android.) No-op on iOS. |
 | consumeAllItems | | `String` | Manually consume all items in android. Do NOT call if you have any non-consumables (one time purchase items). No-op on iOS. |
 | validateReceiptIos | `Map<String,String>` receiptBody, `bool` isTest | `http.Response` | Validate receipt for ios. |
