@@ -1,3 +1,13 @@
+## 2.0.0
++ Renamed `buyProduct` to `requestPurchase` and `buySubscription` to `requestSubscription`. This only invokes method and receive results in `purchaseUpdated` or `purchaseError` listener.
++ Completely remove depreacted method `prepare`.
+[Android]
++ Upgrade billingclient to `2.0.3 which is currently recent in Sep 15 2019.
++ Remove [IInAppBillingService] binding since billingClient has its own functionalities.
++ Add [DoobooUtils] and add `getBillingResponseData` that visualizes erorr codes better.
++ `buyProduct` no more return asyn result. It rather relies on the `purchaseUpdatedListener`.
++ Add more attributes in android when fetching iaps (`isAcknowledgedAndroid`, `originalJsonAndroid`, `orderId`).
+
 ## 1.0.0
 + Add `DEPRECATION` note. Please use [in_app_purchase](https://pub.dev/packages/in_app_purchase).
 
