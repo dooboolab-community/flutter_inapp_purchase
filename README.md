@@ -47,10 +47,10 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | getAppStoreInitiatedProducts | | `List<IAPItem>` | If the user has initiated a purchase directly on the App Store, the products that the user is attempting to purchase will be returned here. (iOS only) Note: On iOS versions earlier than 11.0 this method will always return an empty list, as the functionality was introduced in v11.0. [See Apple Docs for more info](https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver/2877502-paymentqueue) Always returns an empty list on Android.
 | requestSubscription | `string` Subscription ID/sku, `string` Old Subscription ID/sku (on Android) | `PurchasedItem` | Create (request) a subscription to a sku. For upgrading/downgrading subscription on Android pass second parameter with current subscription ID, on iOS this is handled automatically by store. `purchaseUpdatedListener` will receive the result. |
 | requestPurchase | `string` Product ID/sku | `PurchasedItem` | Request a purchase. `purchaseUpdatedListener` will receive the result. |
-| finishTransactionIOS | `void` | `String` | Send finishTransaction call to Apple IAP server. Call this function after receipt validation process |
-| acknowledgePurchaseAndroid | `String` Purchase token, `String` developerPayload? | `String` | Acknowledge a product (on Android) for `non-consumable` and `subscription` purchase. No-op on iOS. |
-| consumePurchaseAndroid | `String` Purchase token, `String` developerPayload? | `String` | Consume a product (on Android) for `consumable` purchase. No-op on iOS. |
-| finishTransaction | `void` | `String` | Send finishTransaction call that abstracts all `acknowledgePurchaseAndroid`, `finishTransactionIOS`, `consumePurchaseAndroid` methods. |
+| finishTransactionIOS | `String` purchaseToke | `PurchaseResult` | Send finishTransaction call to Apple IAP server. Call this function after receipt validation process |
+| acknowledgePurchaseAndroid | `String` purchaseToken, `String` developerPayload? | `PurchaseResult` | Acknowledge a product (on Android) for `non-consumable` and `subscription` purchase. No-op on iOS. |
+| consumePurchaseAndroid | `String` purchaseToken, `String` developerPayload? | `PurchaseResult` | Consume a product (on Android) for `consumable` purchase. No-op on iOS. |
+| finishTransaction | `String` purchaseToken, `String` deveoperPayloadAndroid?, `bool` isConsumable? } | `PurchaseResult` | Send finishTransaction call that abstracts all `acknowledgePurchaseAndroid`, `finishTransactionIOS`, `consumePurchaseAndroid` methods. |
 | endConnection | | `String` | End billing connection (on Android.) No-op on iOS. |
 | consumeAllItems | | `String` | Manually consume all items in android. Do NOT call if you have any non-consumables (one time purchase items). No-op on iOS. |
 | validateReceiptIos | `Map<String,String>` receiptBody, `bool` isTest | `http.Response` | Validate receipt for ios. |
@@ -612,6 +612,6 @@ If you have eneabled proguard you will need to add the following rules to your `
 
 ## Help Maintenance
 I've been maintaining quite many repos these days and burning out slowly. If you could help me cheer up, buying me a cup of coffee will make my life really happy and get much energy out of it.
-<br/>
+
 [![Paypal](https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png)](https://paypal.me/dooboolab)
 <a href="https://www.buymeacoffee.com/dooboolab" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>

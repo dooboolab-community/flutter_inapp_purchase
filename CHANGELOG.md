@@ -1,12 +1,38 @@
-## 2.0.0
-+ Renamed `buyProduct` to `requestPurchase` and `buySubscription` to `requestSubscription`. This only invokes method and receive results in `purchaseUpdated` or `purchaseError` listener.
-+ Completely remove depreacted method `prepare`.
+## 2.0.0+1
+* Properly set return type `PurchaseResult` of when finishing transaction.
+
+## 2.0.0 :tada:
+* Removed deprecated note in the `readme`.
+* Make the previous tests work in `travis`.
+* Documentation on `readme` for breaking features.
+* Abstracts `finishTransaction`.
+  - `acknowledgePurchaseAndroid`, `consumePurchaseAndroid`, `finishTransactionIOS`.
+
 [Android]
-+ Upgrade billingclient to `2.0.3 which is currently recent in Sep 15 2019.
-+ Remove [IInAppBillingService] binding since billingClient has its own functionalities.
-+ Add [DoobooUtils] and add `getBillingResponseData` that visualizes erorr codes better.
-+ `buyProduct` no more return asyn result. It rather relies on the `purchaseUpdatedListener`.
-+ Add more attributes in android when fetching iaps (`isAcknowledgedAndroid`, `originalJsonAndroid`, `orderId`).
+* Completely remove prepare.
+* Upgrade billingclient to 2.0.3 which is currently recent in Sep 15 2019.
+* Remove [IInAppBillingService] binding since billingClient has its own functionalities.
+* Add [DoobooUtils] and add `getBillingResponseData` that visualizes erorr codes better.
+* `buyProduct` no more return asyn result. It rather relies on the `purchaseUpdatedListener`.
+* Add feature method `acknowledgePurchaseAndroid` 
+   - Implement `acknowledgePurchaseAndroid`.
+   - Renamed `consumePurchase` to `consumePurchaseAndroid` in dart side.
+   - Update test codes.
+* Renamed methods
+   - `buyProduct` to `requestPurchase`.
+   - `buySubscription` to `requestSubscription`.
+
+[iOS]
+* Implment features in new releases.
+   - enforce to `finishTransaction` after purchases.
+   - Work with `purchaseUpdated` and `purchaseError` listener as in android.
+   - Feature set from `react-native-iap v3`.
+   - Should call finish transaction in every purchase request.
+   - Add `IAPPromotionObserver` cocoa touch file
+   - Convert dic to json string before invoking purchase-updated
+   - Add `getPromotedProductIOS` and `requestPromotedProductIOS` methods
+   - Implement clearTransaction for ios
+   - Include `purchasePromoted` stream that listens to `iap-promoted-product`.
 
 ## 1.0.0
 + Add `DEPRECATION` note. Please use [in_app_purchase](https://pub.dev/packages/in_app_purchase).

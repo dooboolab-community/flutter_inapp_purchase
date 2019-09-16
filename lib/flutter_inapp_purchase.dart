@@ -331,16 +331,17 @@ class FlutterInappPurchase {
   /// Acknowledge a purchase on `Android`.
   ///
   /// No effect on `iOS`, whose iap purchases are consumed at the time of purchase.
-  Future<String> acknowledgePurchaseAndroid(String token, { String developerPayload }) async {
+  Future<PurchaseResult> acknowledgePurchaseAndroid(String token, { String developerPayload }) async {
     if (_platform.isAndroid) {
       String result = await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
         'token': token,
         'developerPayload': developerPayload,
       });
 
-      return result;
+      PurchaseResult decoded = json.decode(result);
+      return decoded;
     } else if (_platform.isIOS) {
-      return 'no-ops in ios';
+      return PurchaseResult(debugMessage: 'no-ops in ios');
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
@@ -350,7 +351,7 @@ class FlutterInappPurchase {
   /// Consumes a purchase on `Android`.
   ///
   /// No effect on `iOS`, whose consumable purchases are consumed at the time of purchase.
-  Future<String> consumePurchaseAndroid(String token, { String developerPayload }) async {
+  Future<PurchaseResult> consumePurchaseAndroid(String token, { String developerPayload }) async {
     if (_platform.isAndroid) {
       String result =
           await _channel.invokeMethod('consumeProduct', <String, dynamic>{
@@ -358,9 +359,10 @@ class FlutterInappPurchase {
         'developerPayload': developerPayload,
       });
 
-      return result;
+      PurchaseResult decoded = json.decode(result);
+      return decoded;
     } else if (_platform.isIOS) {
-      return 'no-ops in ios';
+      return PurchaseResult(debugMessage: 'no-ops in ios');
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
@@ -389,12 +391,15 @@ class FlutterInappPurchase {
   /// Call this after finalizing server-side validation of the reciept.
   ///
   /// No effect on `Android`, who does not allow this type of functionality.
-  Future<String> finishTransactionIOS() async {
+  Future<PurchaseResult> finishTransactionIOS() async {
     if (_platform.isAndroid) {
-      return 'no-ops in android.';
+      return PurchaseResult(
+        debugMessage: 'no ops in android',
+      );
     } else if (_platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction');
-      return result;
+      PurchaseResult decoded = json.decode(result.toString());
+      return decoded;
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
@@ -403,7 +408,7 @@ class FlutterInappPurchase {
   /// Finish a transaction on both `android` and `iOS`.
   ///
   /// Call this after finalizing server-side validation of the reciept.
-  Future<String> finishTransaction(String purchaseToken,
+  Future<PurchaseResult> finishTransaction(String purchaseToken,
     { String developerPayloadAndroid, bool isConsumable }) async {
     if (_platform.isAndroid) {
       if (isConsumable) {
@@ -411,19 +416,22 @@ class FlutterInappPurchase {
           'token': purchaseToken,
           'developerPayload': developerPayloadAndroid,
         });
-        return result;
+        PurchaseResult decoded = json.decode(result);
+        return decoded;
       } else {
         String result = await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
           'token': purchaseToken,
           'developerPayload': developerPayloadAndroid,
         });
-        return result;
+        PurchaseResult decoded = json.decode(result);
+        return decoded;
       }
     } else if (_platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
         'transactionId': purchaseToken,
       });
-      return result;
+      PurchaseResult decoded = json.decode(result);
+      return decoded;
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");

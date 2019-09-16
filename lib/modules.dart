@@ -176,6 +176,13 @@ class PurchaseResult {
   final String code;
   final String message;
 
+  PurchaseResult({
+    this.responseCode,
+    this.debugMessage,
+    this.code,
+    this.message
+  });
+
   PurchaseResult.fromJSON(Map<String, dynamic> json)
       : responseCode = json['responseCode'] as int,
         debugMessage = json['debugMessage'] as String,

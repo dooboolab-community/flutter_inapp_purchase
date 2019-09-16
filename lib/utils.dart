@@ -25,6 +25,19 @@ List<PurchasedItem> extractPurchased(dynamic result) {
 }
 
 
+List<PurchaseResult> extractResult(dynamic result) {
+  List<PurchaseResult> decoded = json
+      .decode(result.toString())
+      .map<PurchaseResult>(
+        (dynamic product) =>
+            PurchaseResult.fromJSON(product as Map<String, dynamic>),
+      )
+      .toList();
+
+  return decoded;
+}
+
+
 class EnumUtil {
   /// return enum value
   ///
