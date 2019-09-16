@@ -741,6 +741,7 @@ void main() {
             } else if (m['type'] == 'subs') {
               return resultSubs;
             }
+            return null;
           });
         });
 
