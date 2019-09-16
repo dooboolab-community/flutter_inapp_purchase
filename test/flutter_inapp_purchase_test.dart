@@ -880,264 +880,264 @@ void main() {
       });
     });
 
-    group('requestPurchase', () {
-      group('for Android', () {
-        final List<MethodCall> log = <MethodCall>[];
+    // group('requestPurchase', () {
+    //   group('for Android', () {
+    //     final List<MethodCall> log = <MethodCall>[];
 
-        final String sku = "testsku";
-        final String result = """{
-            "transactionDate":"1552824902000",
-            "transactionId":"testTransactionId",
-            "productId":"com.cooni.point1000",
-            "transactionReceipt":"testTransactionReciept",
-            "purchaseToken":"testPurchaseToken",
-            "autoRenewingAndroid":true,
-            "dataAndroid":"testDataAndroid",
-            "signatureAndroid":"testSignatureAndroid",
-            "originalTransactionDateIOS":"1552831136000",
-            "originalTransactionIdentifierIOS":"testOriginalTransactionIdentifierIOS"
-          }""";
+    //     final String sku = "testsku";
+    //     final String result = """{
+    //         "transactionDate":"1552824902000",
+    //         "transactionId":"testTransactionId",
+    //         "productId":"com.cooni.point1000",
+    //         "transactionReceipt":"testTransactionReciept",
+    //         "purchaseToken":"testPurchaseToken",
+    //         "autoRenewingAndroid":true,
+    //         "dataAndroid":"testDataAndroid",
+    //         "signatureAndroid":"testSignatureAndroid",
+    //         "originalTransactionDateIOS":"1552831136000",
+    //         "originalTransactionIdentifierIOS":"testOriginalTransactionIdentifierIOS"
+    //       }""";
 
-        setUp(() {
-          FlutterInappPurchase(FlutterInappPurchase.private(
-              FakePlatform(operatingSystem: "android")));
+    //     setUp(() {
+    //       FlutterInappPurchase(FlutterInappPurchase.private(
+    //           FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
-            log.add(methodCall);
-            return result;
-          });
-        });
+    //       FlutterInappPurchase.channel
+    //           .setMockMethodCallHandler((MethodCall methodCall) async {
+    //         log.add(methodCall);
+    //         return result;
+    //       });
+    //     });
 
-        tearDown(() {
-          FlutterInappPurchase.channel.setMethodCallHandler(null);
-        });
+    //     tearDown(() {
+    //       FlutterInappPurchase.channel.setMethodCallHandler(null);
+    //     });
 
-        test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
-          expect(log, <Matcher>[
-            isMethodCall(
-              'buyItemByType',
-              arguments: <String, dynamic>{
-                'type': 'inapp',
-                'sku': sku,
-                'oldSku': null,
-                'prorationMode': -1,
-              },
-            ),
-          ]);
-        });
+    //     test('invokes correct method', () async {
+    //       await FlutterInappPurchase.instance.requestPurchase(sku);
+    //       expect(log, <Matcher>[
+    //         isMethodCall(
+    //           'buyItemByType',
+    //           arguments: <String, dynamic>{
+    //             'type': 'inapp',
+    //             'sku': sku,
+    //             'oldSku': null,
+    //             'prorationMode': -1,
+    //           },
+    //         ),
+    //       ]);
+    //     });
 
-        // test('returns correct result', () async {
-        //   await FlutterInappPurchase.instance.requestPurchase(sku);
-        //   PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
-        //   expect(actual.transactionDate, expected.transactionDate);
-        //   expect(actual.transactionId, expected.transactionId);
-        //   expect(actual.productId, expected.productId);
-        //   expect(actual.transactionReceipt, expected.transactionReceipt);
-        //   expect(actual.purchaseToken, expected.purchaseToken);
-        //   expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-        //   expect(actual.dataAndroid, expected.dataAndroid);
-        //   expect(actual.signatureAndroid, expected.signatureAndroid);
-        //   expect(actual.originalTransactionDateIOS,
-        //       expected.originalTransactionDateIOS);
-        //   expect(actual.originalTransactionIdentifierIOS,
-        //       expected.originalTransactionIdentifierIOS);
-        // });
-      });
+    //     test('returns correct result', () async {
+    //       await FlutterInappPurchase.instance.requestPurchase(sku);
+    //       // PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
+    //       // expect(actual.transactionDate, expected.transactionDate);
+    //       // expect(actual.transactionId, expected.transactionId);
+    //       // expect(actual.productId, expected.productId);
+    //       // expect(actual.transactionReceipt, expected.transactionReceipt);
+    //       // expect(actual.purchaseToken, expected.purchaseToken);
+    //       // expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
+    //       // expect(actual.dataAndroid, expected.dataAndroid);
+    //       // expect(actual.signatureAndroid, expected.signatureAndroid);
+    //       // expect(actual.originalTransactionDateIOS,
+    //       //     expected.originalTransactionDateIOS);
+    //       // expect(actual.originalTransactionIdentifierIOS,
+    //       //     expected.originalTransactionIdentifierIOS);
+    //     });
+    //   });
 
-      group('for iOS', () {
-        final List<MethodCall> log = <MethodCall>[];
-        final String sku = "testsku";
-        final dynamic result = {
-          "transactionDate": "1552824902000",
-          "transactionId": "testTransactionId",
-          "productId": "com.cooni.point1000",
-          "transactionReceipt": "testTransactionReciept",
-          "purchaseToken": "testPurchaseToken",
-          "autoRenewingAndroid": true,
-          "dataAndroid": "testDataAndroid",
-          "signatureAndroid": "testSignatureAndroid",
-          "originalTransactionDateIOS": "1552831136000",
-          "originalTransactionIdentifierIOS":
-              "testOriginalTransactionIdentifierIOS"
-        };
+    //   group('for iOS', () {
+    //     final List<MethodCall> log = <MethodCall>[];
+    //     final String sku = "testsku";
+    //     final dynamic result = {
+    //       "transactionDate": "1552824902000",
+    //       "transactionId": "testTransactionId",
+    //       "productId": "com.cooni.point1000",
+    //       "transactionReceipt": "testTransactionReciept",
+    //       "purchaseToken": "testPurchaseToken",
+    //       "autoRenewingAndroid": true,
+    //       "dataAndroid": "testDataAndroid",
+    //       "signatureAndroid": "testSignatureAndroid",
+    //       "originalTransactionDateIOS": "1552831136000",
+    //       "originalTransactionIdentifierIOS":
+    //           "testOriginalTransactionIdentifierIOS"
+    //     };
 
-        setUp(() {
-          FlutterInappPurchase(FlutterInappPurchase.private(
-              FakePlatform(operatingSystem: "ios")));
+    //     setUp(() {
+    //       FlutterInappPurchase(FlutterInappPurchase.private(
+    //           FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
-            log.add(methodCall);
-            return result;
-          });
-        });
+    //       FlutterInappPurchase.channel
+    //           .setMockMethodCallHandler((MethodCall methodCall) async {
+    //         log.add(methodCall);
+    //         return result;
+    //       });
+    //     });
 
-        tearDown(() {
-          FlutterInappPurchase.channel.setMethodCallHandler(null);
-        });
+    //     tearDown(() {
+    //       FlutterInappPurchase.channel.setMethodCallHandler(null);
+    //     });
 
-        test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
-          expect(log, <Matcher>[
-            isMethodCall(
-              'buyProduct',
-              arguments: <String, dynamic>{
-                'sku': sku,
-              },
-            ),
-          ]);
-        });
+    //     test('invokes correct method', () async {
+    //       await FlutterInappPurchase.instance.requestPurchase(sku);
+    //       expect(log, <Matcher>[
+    //         isMethodCall(
+    //           'buyProduct',
+    //           arguments: <String, dynamic>{
+    //             'sku': sku,
+    //           },
+    //         ),
+    //       ]);
+    //     });
 
-        // test('returns correct result', () async {
-        //   await FlutterInappPurchase.instance.requestPurchase(sku);
-        //   PurchasedItem expected = PurchasedItem.fromJSON(result);
-        //   expect(actual.transactionDate, expected.transactionDate);
-        //   expect(actual.transactionId, expected.transactionId);
-        //   expect(actual.productId, expected.productId);
-        //   expect(actual.transactionReceipt, expected.transactionReceipt);
-        //   expect(actual.purchaseToken, expected.purchaseToken);
-        //   expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-        //   expect(actual.dataAndroid, expected.dataAndroid);
-        //   expect(actual.signatureAndroid, expected.signatureAndroid);
-        //   expect(actual.originalTransactionDateIOS,
-        //       expected.originalTransactionDateIOS);
-        //   expect(actual.originalTransactionIdentifierIOS,
-        //       expected.originalTransactionIdentifierIOS);
-        // });
-      });
-    });
+    //     test('returns correct result', () async {
+    //       await FlutterInappPurchase.instance.requestPurchase(sku);
+    //       // PurchasedItem expected = PurchasedItem.fromJSON(result);
+    //       // expect(actual.transactionDate, expected.transactionDate);
+    //       // expect(actual.transactionId, expected.transactionId);
+    //       // expect(actual.productId, expected.productId);
+    //       // expect(actual.transactionReceipt, expected.transactionReceipt);
+    //       // expect(actual.purchaseToken, expected.purchaseToken);
+    //       // expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
+    //       // expect(actual.dataAndroid, expected.dataAndroid);
+    //       // expect(actual.signatureAndroid, expected.signatureAndroid);
+    //       // expect(actual.originalTransactionDateIOS,
+    //       //     expected.originalTransactionDateIOS);
+    //       // expect(actual.originalTransactionIdentifierIOS,
+    //       //     expected.originalTransactionIdentifierIOS);
+    //     });
+    //   });
+    // });
 
-    group('requestSubscription', () {
-      group('for Android', () {
-        final List<MethodCall> log = <MethodCall>[];
+    // group('requestSubscription', () {
+    //   group('for Android', () {
+    //     final List<MethodCall> log = <MethodCall>[];
 
-        final String sku = "testsku";
-        final String oldSku = "testOldSku";
-        final String result = """{
-            "transactionDate":"1552824902000",
-            "transactionId":"testTransactionId",
-            "productId":"com.cooni.point1000",
-            "transactionReceipt":"testTransactionReciept",
-            "purchaseToken":"testPurchaseToken",
-            "autoRenewingAndroid":true,
-            "dataAndroid":"testDataAndroid",
-            "signatureAndroid":"testSignatureAndroid",
-            "originalTransactionDateIOS":"1552831136000",
-            "originalTransactionIdentifierIOS":"testOriginalTransactionIdentifierIOS"
-          }""";
+    //     final String sku = "testsku";
+    //     final String oldSku = "testOldSku";
+    //     final String result = """{
+    //         "transactionDate":"1552824902000",
+    //         "transactionId":"testTransactionId",
+    //         "productId":"com.cooni.point1000",
+    //         "transactionReceipt":"testTransactionReciept",
+    //         "purchaseToken":"testPurchaseToken",
+    //         "autoRenewingAndroid":true,
+    //         "dataAndroid":"testDataAndroid",
+    //         "signatureAndroid":"testSignatureAndroid",
+    //         "originalTransactionDateIOS":"1552831136000",
+    //         "originalTransactionIdentifierIOS":"testOriginalTransactionIdentifierIOS"
+    //       }""";
 
-        setUp(() {
-          FlutterInappPurchase(FlutterInappPurchase.private(
-              FakePlatform(operatingSystem: "android")));
+    //     setUp(() {
+    //       FlutterInappPurchase(FlutterInappPurchase.private(
+    //           FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
-            log.add(methodCall);
-            return result;
-          });
-        });
+    //       FlutterInappPurchase.channel
+    //           .setMockMethodCallHandler((MethodCall methodCall) async {
+    //         log.add(methodCall);
+    //         return result;
+    //       });
+    //     });
 
-        tearDown(() {
-          FlutterInappPurchase.channel.setMethodCallHandler(null);
-        });
+    //     tearDown(() {
+    //       FlutterInappPurchase.channel.setMethodCallHandler(null);
+    //     });
 
-        test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.requestSubscription(sku, oldSku: oldSku);
-          expect(log, <Matcher>[
-            isMethodCall(
-              'buyItemByType',
-              arguments: <String, dynamic>{
-                'type': 'subs',
-                'sku': sku,
-                'oldSku': oldSku,
-                'prorationMode': -1,
-              },
-            ),
-          ]);
-        });
+    //     test('invokes correct method', () async {
+    //       await FlutterInappPurchase.instance.requestSubscription(sku, oldSku: oldSku);
+    //       expect(log, <Matcher>[
+    //         isMethodCall(
+    //           'buyItemByType',
+    //           arguments: <String, dynamic>{
+    //             'type': 'subs',
+    //             'sku': sku,
+    //             'oldSku': oldSku,
+    //             'prorationMode': -1,
+    //           },
+    //         ),
+    //       ]);
+    //     });
 
-        // test('returns correct result', () async {
-        //   await FlutterInappPurchase.instance.requestSubscription(sku);
-        //   PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
-        //   expect(actual.transactionDate, expected.transactionDate);
-        //   expect(actual.transactionId, expected.transactionId);
-        //   expect(actual.productId, expected.productId);
-        //   expect(actual.transactionReceipt, expected.transactionReceipt);
-        //   expect(actual.purchaseToken, expected.purchaseToken);
-        //   expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-        //   expect(actual.dataAndroid, expected.dataAndroid);
-        //   expect(actual.signatureAndroid, expected.signatureAndroid);
-        //   expect(actual.originalTransactionDateIOS,
-        //       expected.originalTransactionDateIOS);
-        //   expect(actual.originalTransactionIdentifierIOS,
-        //       expected.originalTransactionIdentifierIOS);
-        // });
-      });
+    //     test('returns correct result', () async {
+    //       await FlutterInappPurchase.instance.requestSubscription(sku);
+    //       // PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
+    //       // expect(actual.transactionDate, expected.transactionDate);
+    //       // expect(actual.transactionId, expected.transactionId);
+    //       // expect(actual.productId, expected.productId);
+    //       // expect(actual.transactionReceipt, expected.transactionReceipt);
+    //       // expect(actual.purchaseToken, expected.purchaseToken);
+    //       // expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
+    //       // expect(actual.dataAndroid, expected.dataAndroid);
+    //       // expect(actual.signatureAndroid, expected.signatureAndroid);
+    //       // expect(actual.originalTransactionDateIOS,
+    //       //     expected.originalTransactionDateIOS);
+    //       // expect(actual.originalTransactionIdentifierIOS,
+    //       //     expected.originalTransactionIdentifierIOS);
+    //     });
+    //   });
 
-      group('for iOS', () {
-        final List<MethodCall> log = <MethodCall>[];
-        final String sku = "testsku";
-        final dynamic result = {
-          "transactionDate": "1552824902000",
-          "transactionId": "testTransactionId",
-          "productId": "com.cooni.point1000",
-          "transactionReceipt": "testTransactionReciept",
-          "purchaseToken": "testPurchaseToken",
-          "autoRenewingAndroid": true,
-          "dataAndroid": "testDataAndroid",
-          "signatureAndroid": "testSignatureAndroid",
-          "originalTransactionDateIOS": "1552831136000",
-          "originalTransactionIdentifierIOS":
-              "testOriginalTransactionIdentifierIOS"
-        };
+    //   group('for iOS', () {
+    //     final List<MethodCall> log = <MethodCall>[];
+    //     final String sku = "testsku";
+    //     final dynamic result = {
+    //       "transactionDate": "1552824902000",
+    //       "transactionId": "testTransactionId",
+    //       "productId": "com.cooni.point1000",
+    //       "transactionReceipt": "testTransactionReciept",
+    //       "purchaseToken": "testPurchaseToken",
+    //       "autoRenewingAndroid": true,
+    //       "dataAndroid": "testDataAndroid",
+    //       "signatureAndroid": "testSignatureAndroid",
+    //       "originalTransactionDateIOS": "1552831136000",
+    //       "originalTransactionIdentifierIOS":
+    //           "testOriginalTransactionIdentifierIOS"
+    //     };
 
-        setUp(() {
-          FlutterInappPurchase(FlutterInappPurchase.private(
-              FakePlatform(operatingSystem: "ios")));
+    //     setUp(() {
+    //       FlutterInappPurchase(FlutterInappPurchase.private(
+    //           FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
-            log.add(methodCall);
-            return result;
-          });
-        });
+    //       FlutterInappPurchase.channel
+    //           .setMockMethodCallHandler((MethodCall methodCall) async {
+    //         log.add(methodCall);
+    //         return result;
+    //       });
+    //     });
 
-        tearDown(() {
-          FlutterInappPurchase.channel.setMethodCallHandler(null);
-        });
+    //     tearDown(() {
+    //       FlutterInappPurchase.channel.setMethodCallHandler(null);
+    //     });
 
-        test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
-          expect(log, <Matcher>[
-            isMethodCall(
-              'buyProduct',
-              arguments: <String, dynamic>{
-                'sku': sku,
-              },
-            ),
-          ]);
-        });
+    //     test('invokes correct method', () async {
+    //       await FlutterInappPurchase.instance.requestPurchase(sku);
+    //       expect(log, <Matcher>[
+    //         isMethodCall(
+    //           'buyProduct',
+    //           arguments: <String, dynamic>{
+    //             'sku': sku,
+    //           },
+    //         ),
+    //       ]);
+    //     });
 
-        // test('returns correct result', () async {
-        //   await FlutterInappPurchase.instance.requestPurchase(sku);
-        //   PurchasedItem expected = PurchasedItem.fromJSON(result);
-        //   expect(actual.transactionDate, expected.transactionDate);
-        //   expect(actual.transactionId, expected.transactionId);
-        //   expect(actual.productId, expected.productId);
-        //   expect(actual.transactionReceipt, expected.transactionReceipt);
-        //   expect(actual.purchaseToken, expected.purchaseToken);
-        //   expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-        //   expect(actual.dataAndroid, expected.dataAndroid);
-        //   expect(actual.signatureAndroid, expected.signatureAndroid);
-        //   expect(actual.originalTransactionDateIOS,
-        //       expected.originalTransactionDateIOS);
-        //   expect(actual.originalTransactionIdentifierIOS,
-        //       expected.originalTransactionIdentifierIOS);
-        // });
-      });
-    });
+    //     test('returns correct result', () async {
+    //       await FlutterInappPurchase.instance.requestPurchase(sku);
+    //       // PurchasedItem expected = PurchasedItem.fromJSON(result);
+    //       // expect(actual.transactionDate, expected.transactionDate);
+    //       // expect(actual.transactionId, expected.transactionId);
+    //       // expect(actual.productId, expected.productId);
+    //       // expect(actual.transactionReceipt, expected.transactionReceipt);
+    //       // expect(actual.purchaseToken, expected.purchaseToken);
+    //       // expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
+    //       // expect(actual.dataAndroid, expected.dataAndroid);
+    //       // expect(actual.signatureAndroid, expected.signatureAndroid);
+    //       // expect(actual.originalTransactionDateIOS,
+    //       //     expected.originalTransactionDateIOS);
+    //       // expect(actual.originalTransactionIdentifierIOS,
+    //       //     expected.originalTransactionIdentifierIOS);
+    //     });
+    //   });
+    // });
 
     group('acknowledgePurchaseAndroid', () {
       group('for Android', () {
