@@ -1,3 +1,6 @@
+## 2.0.0+2
+* Seperate long `example` code to `example` readme.
+
 ## 2.0.0+1
 * Properly set return type `PurchaseResult` of when finishing transaction.
 
