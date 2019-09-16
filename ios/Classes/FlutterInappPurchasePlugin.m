@@ -1,9 +1,10 @@
 #import "FlutterInappPurchasePlugin.h"
+#import "IAPPromotionObserver.h"
 
 @interface FlutterInappPurchasePlugin() {
-    BOOL autoReceiptConform;
     SKPaymentTransaction *currentTransaction;
     FlutterResult flutterResult;
+    void (^receiptBlock)(NSData*, NSError*);
 }
 
 @property (atomic, retain) NSMutableDictionary<NSValue*, FlutterResult>* fetchProducts;
@@ -40,6 +41,7 @@
     self.products = [[NSArray alloc] init];
     self.appStoreInitiatedProducts = [[NSMutableArray alloc] init];
     self.purchases = [[NSMutableSet alloc] init];
+    validProducts = [NSMutableArray array];
 
     return self;
 }
@@ -61,30 +63,166 @@
         } else {
             result([FlutterError errorWithCode:@"ERROR" message:@"Invalid or missing arguments!" details:nil]);
         }
-    } else if ([@"buyProductWithFinishTransaction" isEqualToString:call.method]) {
+    } else if ([@"buyProduct" isEqualToString:call.method]) {
         NSString* identifier = (NSString*)call.arguments[@"sku"];
-        NSLog(@"identifier %@", identifier);
-        if (identifier != nil) {
-            autoReceiptConform = true;
-            [self purchase:identifier result:result];
-        } else {
-            result([FlutterError errorWithCode:@"ERROR" message:@"Invalid or missing arguments!" details:nil]);
+        SKProduct *product;
+
+        for (SKProduct *p in validProducts) {
+            if([identifier isEqualToString:p.productIdentifier]) {
+                product = p;
+                break;
+            }
         }
-    } else if ([@"buyProductWithoutFinishTransaction" isEqualToString:call.method]) {
-        NSString* identifier = (NSString*)call.arguments[@"sku"];
-        NSLog(@"identifier %@", identifier);
-        if (identifier != nil) {
-            autoReceiptConform = false;
-            [self purchase:identifier result:result];
+        if (product) {
+            SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
+            [[SKPaymentQueue defaultQueue] addPayment:payment];
         } else {
-            result([FlutterError errorWithCode:@"ERROR" message:@"Invalid or missing arguments!" details:nil]);
+            NSDictionary *err = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"Invalid product ID.", @"debugMessage",
+                                 @"E_DEVELOPER_ERROR", @"code",
+                                 @"Invalid product ID.", @"message",
+                                 nil
+                                 ];
+            NSString* result = [self convertDicToJsonString:err];
+            [self.channel invokeMethod:@"purchase-error" arguments:result];
         }
+    } else if ([@"requestProductWithOffer" isEqualToString:call.method]) {
+        NSString* sku = (NSString*)call.arguments[@"sku"];
+        NSDictionary* discountOffer = (NSDictionary*)call.arguments[@"withOffer"];
+        NSString* usernameHash = (NSString*)call.arguments[@"forUser"];
+
+        SKProduct *product;
+        SKMutablePayment *payment;
+        for (SKProduct *p in validProducts) {
+            if([sku isEqualToString:p.productIdentifier]) {
+                product = p;
+                break;
+            }
+        }
+        if (product) {
+            payment = [SKMutablePayment paymentWithProduct:product];
+#if __IPHONE_12_2
+            if (@available(iOS 12.2, *)) {
+                SKPaymentDiscount *discount = [[SKPaymentDiscount alloc]
+                                               initWithIdentifier:discountOffer[@"identifier"]
+                                               keyIdentifier:discountOffer[@"keyIdentifier"]
+                                               nonce:[[NSUUID alloc] initWithUUIDString:discountOffer[@"nonce"]]
+                                               signature:discountOffer[@"signature"]
+                                               timestamp:discountOffer[@"timestamp"]
+                                               ];
+                payment.paymentDiscount = discount;
+            }
+#endif
+            payment.applicationUsername = usernameHash;
+            [[SKPaymentQueue defaultQueue] addPayment:payment];
+        } else {
+            NSDictionary *err = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"Invalid product ID.", @"debugMessage",
+                                 @"Invalid product ID.", @"message",
+                                 @"E_DEVELOPER_ERROR", @"code",
+                                 nil
+                                 ];
+            NSString* result = [self convertDicToJsonString:err];
+            [self.channel invokeMethod:@"purchase-error" arguments:result];
+        }
+    } else if ([@"requestProductWithQuantityIOS" isEqualToString:call.method]) {
+        NSString* sku = (NSString*)call.arguments[@"sku"];
+        long quantity = (long)call.arguments[@"quantity"];
+
+        SKProduct *product;
+        for (SKProduct *p in validProducts) {
+            if([sku isEqualToString:p.productIdentifier]) {
+                product = p;
+                break;
+            }
+        }
+        if (product) {
+            SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
+            payment.quantity = quantity;
+            [[SKPaymentQueue defaultQueue] addPayment:payment];
+        } else {
+            NSDictionary *err = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"Invalid product ID.", @"debugMessage",
+                                 @"Invalid product ID.", @"message",
+                                 @"E_DEVELOPER_ERROR", @"code",
+                                 nil
+                                 ];
+            NSString* result = [self convertDicToJsonString:err];
+            [self.channel invokeMethod:@"purchase-error" arguments:result];
+        }
+    } else if ([@"getPromotedProduct" isEqualToString:call.method]) {
+        SKProduct *promotedProduct = [IAPPromotionObserver sharedObserver].product;
+        result(promotedProduct ? promotedProduct.productIdentifier : [NSNull null]);
+    } else if ([@"requestPromotedProduct" isEqualToString:call.method]) {
+        SKPayment *promotedPayment = [IAPPromotionObserver sharedObserver].payment;
+        if (promotedPayment) {
+            NSLog(@"\n\n\n  ***  request promoted product. \n\n.");
+            [[SKPaymentQueue defaultQueue] addPayment:promotedPayment];
+            result(promotedPayment.productIdentifier);
+        } else {
+            result([FlutterError
+                    errorWithCode:@"E_DEVELOPER_ERROR"
+                    message:@"Invalid product ID."
+                    details:nil]);
+        }
+    } else if ([@"requestReceipt" isEqualToString:call.method]) {
+        [self requestReceiptDataWithBlock:^(NSData *receiptData, NSError *error) {
+            if (error == nil) {
+                result([receiptData base64EncodedStringWithOptions:0]);
+            }
+            else {
+                result([FlutterError
+                        errorWithCode:[self standardErrorCode:9]
+                        message:@"Invalid receipt"
+                        details:nil]);
+            }
+        }];
+    } else if ([@"getPendingTransactions" isEqualToString:call.method]) {
+        [self requestReceiptDataWithBlock:^(NSData *receiptData, NSError *error) {
+            if (receiptData == nil) {
+                result(nil);
+            }
+            else {
+                NSArray<SKPaymentTransaction *> *transactions = [[SKPaymentQueue defaultQueue] transactions];
+                NSMutableArray *output = [NSMutableArray array];
+                
+                for (SKPaymentTransaction *item in transactions) {
+                    NSMutableDictionary *purchase = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                                     @(item.transactionDate.timeIntervalSince1970 * 1000), @"transactionDate",
+                                                     item.transactionIdentifier, @"transactionId",
+                                                     item.payment.productIdentifier, @"productId",
+                                                     [receiptData base64EncodedStringWithOptions:0], @"transactionReceipt",
+                                                     nil
+                                                     ];
+                    [output addObject:purchase];
+                }
+                
+                result(output);
+            }
+        }];
     } else if ([@"finishTransaction" isEqualToString:call.method]) {
-        if (currentTransaction) {
-            [[SKPaymentQueue defaultQueue] finishTransaction:currentTransaction];
+        NSString* transactionIdentifier = (NSString*)call.arguments[@"transactionIdentifier"];
+        SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
+        for(SKPaymentTransaction *transaction in queue.transactions) {
+            if([transaction.transactionIdentifier isEqualToString:transactionIdentifier]) {
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+            }
         }
-        currentTransaction = nil;
-        result(@"Finished current transaction");
+        NSDictionary *err = [NSDictionary dictionaryWithObjectsAndKeys:
+                                @"finishTransaction", @"debugMessage",
+                                transactionIdentifier, @"code",
+                                @"finished", @"message",
+                                nil
+                                ];
+        NSString* strResult = [self convertDicToJsonString:err];
+        result(strResult);
+    } else if ([@"clearTransaction" isEqualToString:call.method]) {
+        NSArray *pendingTrans = [[SKPaymentQueue defaultQueue] transactions];
+        NSLog(@"\n\n\n  ***  clear remaining Transactions. Call this before make a new transaction   \n\n.");
+        for (int k = 0; k < pendingTrans.count; k++) {
+            [[SKPaymentQueue defaultQueue] finishTransaction:pendingTrans[k]];
+        }
+        result(@"Cleared transactions");
     } else if ([@"getAvailableItems" isEqualToString:call.method]) {
         [self getAvailableItems:result];
     } else if ([@"getAppStoreInitiatedProducts" isEqualToString:call.method]) {
@@ -115,6 +253,8 @@
     }
 }
 
+#pragma mark ===== StoreKit Delegate
+
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
     NSValue* key = [NSValue valueWithNonretainedObject:request];
     FlutterResult result = [fetchProducts objectForKey:key];
@@ -132,17 +272,35 @@
     FlutterResult result = [fetchProducts objectForKey:key];
     if (result == nil) return;
     [fetchProducts removeObjectForKey:key];
-    products = [response products];
 
-    NSMutableArray<NSDictionary*>* allValues = [[NSMutableArray alloc] init];
-    [[response products] enumerateObjectsUsingBlock:^(SKProduct* product, NSUInteger idx, BOOL* stop) {
-        [allValues addObject:[self getProductAsDictionary:product]];
-    }];
+    for (SKProduct* prod in response.products) {
+        [self addProduct:prod];
+    }
+    NSMutableArray* items = [NSMutableArray array];
+    
+    for (SKProduct* product in validProducts) {
+        [items addObject:[self getProductObject:product]];
+    }
 
-    result(allValues);
+    result(items);
 }
 
--(NSDictionary *)getProductAsDictionary:(SKProduct*)product{
+-(void)addProduct:(SKProduct *)aProd {
+    NSLog(@"\n  Add new object : %@", aProd.productIdentifier);
+    int delTar = -1;
+    for (int k = 0; k < validProducts.count; k++) {
+        SKProduct *cur = validProducts[k];
+        if ([cur.productIdentifier isEqualToString:aProd.productIdentifier]) {
+            delTar = k;
+        }
+    }
+    if (delTar >= 0) {
+        [validProducts removeObjectAtIndex:delTar];
+    }
+    [validProducts addObject:aProd];
+}
+
+-(NSDictionary *)getProductObject:(SKProduct*)product{
     NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
     formatter.numberStyle = NSNumberFormatterCurrencyStyle;
     formatter.locale = product.priceLocale;
@@ -166,7 +324,7 @@
         // itemType = product.subscriptionPeriod ? @"sub" : @"iap";
         unsigned long numOfUnits = (unsigned long) product.subscriptionPeriod.numberOfUnits;
         SKProductPeriodUnit unit = product.subscriptionPeriod.unit;
-
+        
         if (unit == SKProductPeriodUnitYear) {
             periodUnitIOS = @"YEAR";
         } else if (unit == SKProductPeriodUnitMonth) {
@@ -176,12 +334,13 @@
         } else if (unit == SKProductPeriodUnitDay) {
             periodUnitIOS = @"DAY";
         }
-
+        
         periodNumberIOS = [NSString stringWithFormat:@"%lu", numOfUnits];
 
         // subscriptionPeriod = product.subscriptionPeriod ? [product.subscriptionPeriod stringValue] : @"";
         // introductoryPrice = product.introductoryPrice != nil ? [NSString stringWithFormat:@"%@", product.introductoryPrice] : @"";
         if (product.introductoryPrice != nil) {
+
           //SKProductDiscount introductoryPriceObj = product.introductoryPrice;
           formatter.locale = product.introductoryPrice.priceLocale;
           introductoryPrice = [formatter stringFromNumber:product.introductoryPrice.price];
@@ -189,15 +348,19 @@
           switch (product.introductoryPrice.paymentMode) {
               case SKProductDiscountPaymentModeFreeTrial:
                   introductoryPricePaymentMode = @"FREETRIAL";
+                  introductoryPriceNumberOfPeriods = [@(product.introductoryPrice.subscriptionPeriod.numberOfUnits) stringValue];
                   break;
               case SKProductDiscountPaymentModePayAsYouGo:
                   introductoryPricePaymentMode = @"PAYASYOUGO";
+                  introductoryPriceNumberOfPeriods = [@(product.introductoryPrice.numberOfPeriods) stringValue];
                   break;
               case SKProductDiscountPaymentModePayUpFront:
                   introductoryPricePaymentMode = @"PAYUPFRONT";
+                  introductoryPriceNumberOfPeriods = [@(product.introductoryPrice.subscriptionPeriod.numberOfUnits) stringValue];
                   break;
               default:
                   introductoryPricePaymentMode = @"";
+                  introductoryPriceNumberOfPeriods = @"0";
                   break;
           }
 
@@ -226,6 +389,13 @@
     if (@available(iOS 10.0, *)) {
       currencyCode = product.priceLocale.currencyCode;
     }
+    
+    NSArray *discounts;
+#if __IPHONE_12_2
+    if (@available(iOS 12.2, *)) {
+        discounts = [self getDiscountData:[product.discounts copy]];
+    }
+#endif
 
     NSDictionary *obj = [NSDictionary dictionaryWithObjectsAndKeys:
         product.productIdentifier, @"productId",
@@ -240,25 +410,9 @@
         introductoryPricePaymentMode, @"introductoryPricePaymentModeIOS",
         introductoryPriceNumberOfPeriods, @"introductoryPriceNumberOfPeriodsIOS",
         introductoryPriceSubscriptionPeriod, @"introductoryPriceSubscriptionPeriodIOS",
+        discounts, @"discounts",
         nil
     ];
-/*
-    NSDictionary* obj = @{
-      @"productId" : product.productIdentifier,
-      @"price" : [product.price stringValue],
-      @"currency" : currencyCode,
-      // @"type": itemType,
-      @"title" : product.localizedTitle ? product.localizedTitle : @"",
-      @"description" : product.localizedDescription ? product.localizedDescription : @"",
-      @"localizedPrice" : localizedPrice,
-      @"subscriptionPeriodNumberIOS" : periodNumberIOS,
-      @"subscriptionPeriodUnitIOS" : periodUnitIOS,
-      @"introductoryPrice" : introductoryPrice,
-      @"introductoryPricePaymentModeIOS" : introductoryPricePaymentMode,
-      @"introductoryPriceNumberOfPeriodsIOS" : introductoryPriceNumberOfPeriods,
-      @"introductoryPriceSubscriptionPeriodIOS" : introductoryPriceSubscriptionPeriod
-    };
-*/
     return obj;
 }
 
@@ -280,9 +434,94 @@
     }
 }
 
+- (NSMutableArray *)getDiscountData:(NSArray *)discounts {
+    NSMutableArray *mappedDiscounts = [NSMutableArray arrayWithCapacity:[discounts count]];
+    NSString *localizedPrice;
+    NSString *paymendMode;
+    NSString *subscriptionPeriods;
+    NSString *discountType;
+    
+    if (@available(iOS 11.2, *)) {
+        for(SKProductDiscount *discount in discounts) {
+            NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+            formatter.numberStyle = NSNumberFormatterCurrencyStyle;
+            formatter.locale = discount.priceLocale;
+            localizedPrice = [formatter stringFromNumber:discount.price];
+            NSString *numberOfPeriods;
+            
+            switch (discount.paymentMode) {
+                case SKProductDiscountPaymentModeFreeTrial:
+                    paymendMode = @"FREETRIAL";
+                    numberOfPeriods = [@(discount.subscriptionPeriod.numberOfUnits) stringValue];
+                    break;
+                case SKProductDiscountPaymentModePayAsYouGo:
+                    paymendMode = @"PAYASYOUGO";
+                    numberOfPeriods = [@(discount.numberOfPeriods) stringValue];
+                    break;
+                case SKProductDiscountPaymentModePayUpFront:
+                    paymendMode = @"PAYUPFRONT";
+                    numberOfPeriods = [@(discount.subscriptionPeriod.numberOfUnits) stringValue];
+                    break;
+                default:
+                    paymendMode = @"";
+                    numberOfPeriods = @"0";
+                    break;
+            }
+            
+            switch (discount.subscriptionPeriod.unit) {
+                case SKProductPeriodUnitDay:
+                    subscriptionPeriods = @"DAY";
+                    break;
+                case SKProductPeriodUnitWeek:
+                    subscriptionPeriods = @"WEEK";
+                    break;
+                case SKProductPeriodUnitMonth:
+                    subscriptionPeriods = @"MONTH";
+                    break;
+                case SKProductPeriodUnitYear:
+                    subscriptionPeriods = @"YEAR";
+                    break;
+                default:
+                    subscriptionPeriods = @"";
+            }
+
+            NSString* discountIdentifier = @"";
+#if __IPHONE_12_2
+            if (@available(iOS 12.2, *)) {
+                discountIdentifier = discount.identifier;
+                switch (discount.type) {
+                    case SKProductDiscountTypeIntroductory:
+                        discountType = @"INTRODUCTORY";
+                        break;
+                    case SKProductDiscountTypeSubscription:
+                        discountType = @"SUBSCRIPTION";
+                        break;
+                    default:
+                        discountType = @"";
+                        break;
+                }
+                
+            }
+#endif
+            
+            [mappedDiscounts addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                        discountIdentifier, @"identifier",
+                                        discountType, @"type",
+                                        numberOfPeriods, @"numberOfPeriods",
+                                        discount.price, @"price",
+                                        localizedPrice, @"localizedPrice",
+                                        paymendMode, @"paymentMode",
+                                        subscriptionPeriods, @"subscriptionPeriod",
+                                        nil
+                                        ]];
+        }
+    }
+    
+    return mappedDiscounts;
+}
+
 -(void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
     for (SKPaymentTransaction *transaction in transactions) {
-        FlutterResult result = [requestedPayments objectForKey:transaction.payment];
         switch (transaction.transactionState) {
             case SKPaymentTransactionStatePurchasing:
                 NSLog(@"\n\n Purchase Started !! \n\n");
@@ -291,7 +530,7 @@
                 NSLog(@"\n\n\n\n\n Purchase Successful !! \n\n\n\n\n.");
                 [self purchaseProcess:transaction];
                 break;
-            case SKPaymentTransactionStateRestored: // 기존 구매한 아이템 복구..
+            case SKPaymentTransactionStateRestored:
                 NSLog(@"Restored ");
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 break;
@@ -299,75 +538,59 @@
                 NSLog(@"Deferred (awaiting approval via parental controls, etc.)");
                 break;
             case SKPaymentTransactionStateFailed:
-                if (result == nil) return;
                 [requestedPayments removeObjectForKey:transaction.payment];
+                NSDictionary *err = [NSDictionary dictionaryWithObjectsAndKeys:
+                                     @"SKPaymentTransactionStateFailed", @"debugMessage",
+                                     [self standardErrorCode:(int)transaction.error.code], @"code",
+                                     [self englishErrorCodeDescription:(int)transaction.error.code], @"message",
+                                     nil
+                                     ];
+                NSString* result = [self convertDicToJsonString:err];
 
-                result([FlutterError
-                        errorWithCode:[self standardErrorCode:(int)transaction.error.code]
-                        message:[self englishErrorCodeDescription:(int)transaction.error.code]
-                        details:nil
-                ]);
+                [self.channel invokeMethod:@"purchase-error" arguments: [NSString stringWithFormat:@"%@", result]];
                 NSLog(@"\n\n\n\n\n\n Purchase Failed  !! \n\n\n\n\n");
                 break;
         }
     }
 }
 
--(void)purchaseProcess:(SKPaymentTransaction *)transaction {
-    if (autoReceiptConform) {
-        [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-        currentTransaction = nil;
-    } else {
-        currentTransaction = transaction;
-    }
-
-    NSDictionary* purchase = [self getPurchaseData:transaction];
-    FlutterResult result = [requestedPayments objectForKey:transaction.payment];
-    if (result != nil) {
-        result(purchase);
-        [requestedPayments removeObjectForKey:transaction.payment];
-    }
-    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-
-    // additionally send event
-    [self.channel invokeMethod:@"iap-purchase-event" arguments: purchase];
+-(NSString *)convertDicToJsonString:(NSDictionary *)dic {
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
+    NSString* jsonDataStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return jsonDataStr;
 }
 
-- (NSDictionary *)getPurchaseData:(SKPaymentTransaction *)transaction {
-    NSData *receiptData;
-    if (NSFoundationVersionNumber >= NSFoundationVersionNumber_iOS_7_0) {
-        receiptData = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
-    } else {
-        receiptData = [transaction transactionReceipt];
-    }
+-(void)purchaseProcess:(SKPaymentTransaction *)transaction {
+    [self getPurchaseData:transaction withBlock:^(NSDictionary *purchase) {
+        NSString* result = [self convertDicToJsonString:purchase];
+        [self.channel invokeMethod:@"purchase-updated" arguments: result];
+    }];
+}
 
-    if (receiptData == nil) return nil;
-
-    NSMutableDictionary *purchase = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        @(transaction.transactionDate.timeIntervalSince1970 * 1000), @"transactionDate",
-        transaction.transactionIdentifier, @"transactionId",
-        transaction.payment.productIdentifier, @"productId",
-        [receiptData base64EncodedStringWithOptions:0], @"transactionReceipt",
-        nil
-    ];
-
-/*
-    NSMutableDictionary *purchase = [NSMutableDictionary dictionaryWithDictionary: @{
-                                                                                     @"transactionDate": @(transaction.transactionDate.timeIntervalSince1970 * 1000),
-                                                                                     @"transactionId": transaction.transactionIdentifier,
-                                                                                     @"productId": transaction.payment.productIdentifier,
-                                                                                     @"transactionReceipt":[receiptData base64EncodedStringWithOptions:0]
-                                                                                     }];
-*/
-
-    // originalTransaction is available for restore purchase and purchase of cancelled/expired subscriptions
-    SKPaymentTransaction *originalTransaction = transaction.originalTransaction;
-    if (originalTransaction) {
-        purchase[@"originalTransactionDateIOS"] = @(originalTransaction.transactionDate.timeIntervalSince1970 * 1000);
-        purchase[@"originalTransactionIdentifierIOS"] = originalTransaction.transactionIdentifier;
-    }
-
-    return purchase;
+- (void) getPurchaseData:(SKPaymentTransaction *)transaction withBlock:(void (^)(NSDictionary *transactionDict))block {
+    [self requestReceiptDataWithBlock:^(NSData *receiptData, NSError *error) {
+        if (receiptData == nil) {
+            block(nil);
+        }
+        else {
+            NSMutableDictionary *purchase = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                             @(transaction.transactionDate.timeIntervalSince1970 * 1000), @"transactionDate",
+                                             transaction.transactionIdentifier, @"transactionId",
+                                             transaction.payment.productIdentifier, @"productId",
+                                             [receiptData base64EncodedStringWithOptions:0], @"transactionReceipt",
+                                             nil
+                                             ];
+            
+            // originalTransaction is available for restore purchase and purchase of cancelled/expired subscriptions
+            SKPaymentTransaction *originalTransaction = transaction.originalTransaction;
+            if (originalTransaction) {
+                purchase[@"originalTransactionDateIOS"] = @(originalTransaction.transactionDate.timeIntervalSince1970 * 1000);
+                purchase[@"originalTransactionIdentifierIOS"] = originalTransaction.transactionIdentifier;
+            }
+            
+            block(purchase);
+        }
+    }];
 }
 
 - (void)purchased:(NSArray<SKPaymentTransaction*>*)transactions {
@@ -396,14 +619,19 @@
 }
 
 -(void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue {  ////////   RESTORE
+    NSLog(@"\n\n\n  paymentQueueRestoreCompletedTransactionsFinished  \n\n.");
     NSMutableArray* items = [NSMutableArray arrayWithCapacity:queue.transactions.count];
+    
     for(SKPaymentTransaction *transaction in queue.transactions) {
-        if(transaction.transactionState == SKPaymentTransactionStateRestored) {
-            NSDictionary *restored = [self getPurchaseData:transaction];
-            [items addObject:restored];
-            [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+        if(transaction.transactionState == SKPaymentTransactionStateRestored
+           || transaction.transactionState == SKPaymentTransactionStatePurchased) {
+            [self getPurchaseData:transaction withBlock:^(NSDictionary *restored) {
+                [items addObject:restored];
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+            }];
         }
     }
+    
     if (flutterResult != nil) {
         flutterResult(items);
     }
@@ -413,7 +641,7 @@
 - (void)getAppStoreInitiatedProducts:(FlutterResult)result {
     NSMutableArray<NSDictionary*>* initiatedProducts = [[NSMutableArray alloc] init];
     for (SKProduct* p in appStoreInitiatedProducts) {
-        [initiatedProducts addObject:[self getProductAsDictionary:p]];
+        [initiatedProducts addObject:[self getProductObject:p]];
     }
     result(initiatedProducts);
 }
@@ -423,6 +651,7 @@
     // Save any purchases initiated through the App Store
     // Get the products by calling getAppStoreInitiatedProducts and handle the purchase in dart
     [appStoreInitiatedProducts addObject:product];
+    [self.channel invokeMethod:@"iap-promoted-product" arguments:product.productIdentifier];
     return NO;
 }
 #endif
@@ -463,6 +692,53 @@
         return descriptions[code];
     else
         return [NSString stringWithFormat:@"%@ (Error code: %d)", descriptions[0], code];
+}
+
+#pragma mark - Receipt
+
+- (void) requestReceiptDataWithBlock:(void (^)(NSData *data, NSError *error))block {
+    if ([self isReceiptPresent] == NO) {
+        SKReceiptRefreshRequest *refreshRequest = [[SKReceiptRefreshRequest alloc]init];
+        refreshRequest.delegate = self;
+        [refreshRequest start];
+        receiptBlock = block;
+    }
+    else {
+        receiptBlock = nil;
+        block([self receiptData], nil);
+    }
+}
+
+- (BOOL) isReceiptPresent {
+    NSURL *receiptURL = [[NSBundle mainBundle]appStoreReceiptURL];
+    NSError *canReachError = nil;
+    [receiptURL checkResourceIsReachableAndReturnError:&canReachError];
+    return canReachError == nil;
+}
+
+- (NSData *) receiptData {
+    NSURL *receiptURL = [[NSBundle mainBundle]appStoreReceiptURL];
+    NSData *receiptData = [[NSData alloc]initWithContentsOfURL:receiptURL];
+    return receiptData;
+}
+
+#pragma mark - SKRequestDelegate
+
+- (void)requestDidFinish:(SKRequest *)request {
+    if([request isKindOfClass:[SKReceiptRefreshRequest class]]) {
+        if ([self isReceiptPresent] == YES) {
+            NSLog(@"Receipt refreshed success.");
+            if(receiptBlock) {
+                receiptBlock([self receiptData], nil);
+            }
+        }
+        else if(receiptBlock) {
+            NSLog(@"Finished but receipt refreshed failed!");
+            NSError *error = [[NSError alloc]initWithDomain:@"Receipt request finished but it failed!" code:10 userInfo:nil];
+            receiptBlock(nil, error);
+        }
+        receiptBlock = nil;
+    }
 }
 
 @end

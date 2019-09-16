@@ -61,8 +61,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       } catch(IllegalStateException e){
         e.printStackTrace();
       }
-    } else if (call.method.equals("prepare")) {
-      Log.d(TAG, "prepare");
+    } else if (call.method.equals("initConnection")) {
       PurchasingService.getUserData();
       result.success("Billing client ready");
     } else if (call.method.equals("endConnection")) {

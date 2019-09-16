@@ -3,6 +3,6 @@
 
 @interface FlutterInappPurchasePlugin : NSObject<FlutterPlugin, SKProductsRequestDelegate, SKPaymentTransactionObserver>{
   SKProductsRequest *productsRequest;
-  NSArray *validProducts;
+  NSMutableArray *validProducts;
 }
 @end
