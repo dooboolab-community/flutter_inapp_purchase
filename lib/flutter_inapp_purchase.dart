@@ -18,7 +18,8 @@ enum _TypeInApp {
 }
 
 class FlutterInappPurchase {
-  static FlutterInappPurchase instance = new FlutterInappPurchase();
+  static FlutterInappPurchase instance = FlutterInappPurchase(
+    FlutterInappPurchase.private(const LocalPlatform()));
 
   static StreamController<PurchasedItem> _purchaseController;
   static Stream<PurchasedItem> get purchaseUpdated => _purchaseController.stream;
@@ -39,11 +40,9 @@ class FlutterInappPurchase {
   static Platform get _platform => instance._pf;
   static http.Client get _client => instance._httpClient;
 
-  factory FlutterInappPurchase({
-    FlutterInappPurchase assignInstance = null,
-  }) {
-    if (assignInstance != null) return assignInstance;
-    return FlutterInappPurchase.private(const LocalPlatform());
+  factory FlutterInappPurchase(FlutterInappPurchase _instance) {
+    instance = _instance;
+    return instance;
   }
 
   @visibleForTesting
