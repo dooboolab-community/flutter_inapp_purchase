@@ -24,8 +24,8 @@ class FlutterInappPurchase {
   static StreamController<PurchasedItem> _purchaseController;
   static Stream<PurchasedItem> get purchaseUpdated => _purchaseController.stream;
 
-  static StreamController<PurchaseErrorItem> _purchaseErrorController;
-  static Stream<PurchaseErrorItem> get purchaseError => _purchaseErrorController.stream;
+  static StreamController<PurchaseResult> _purchaseErrorController;
+  static Stream<PurchaseResult> get purchaseError => _purchaseErrorController.stream;
 
   static StreamController<String> _purchasePromotedController;
   static Stream<String> get purchasePromoted => _purchasePromotedController.stream;
@@ -333,8 +333,7 @@ class FlutterInappPurchase {
   /// No effect on `iOS`, whose iap purchases are consumed at the time of purchase.
   Future<String> acknowledgePurchaseAndroid(String token, { String developerPayload }) async {
     if (_platform.isAndroid) {
-      String result =
-          await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
+      String result = await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
         'token': token,
         'developerPayload': developerPayload,
       });
@@ -395,6 +394,35 @@ class FlutterInappPurchase {
       return 'no-ops in android.';
     } else if (_platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction');
+      return result;
+    }
+    throw PlatformException(
+        code: _platform.operatingSystem, message: "platform not supported");
+  }
+
+  /// Finish a transaction on both `android` and `iOS`.
+  ///
+  /// Call this after finalizing server-side validation of the reciept.
+  Future<String> finishTransaction(String purchaseToken,
+    { String developerPayloadAndroid, bool isConsumable }) async {
+    if (_platform.isAndroid) {
+      if (isConsumable) {
+        String result = await _channel.invokeMethod('consumePurchase', <String, dynamic>{
+          'token': purchaseToken,
+          'developerPayload': developerPayloadAndroid,
+        });
+        return result;
+      } else {
+        String result = await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
+          'token': purchaseToken,
+          'developerPayload': developerPayloadAndroid,
+        });
+        return result;
+      }
+    } else if (_platform.isIOS) {
+      String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
+        'transactionId': purchaseToken,
+      });
       return result;
     }
     throw PlatformException(
@@ -552,7 +580,7 @@ class FlutterInappPurchase {
           break;
         case "purchase-error":
           Map<String, dynamic> result = jsonDecode(call.arguments);
-          _purchaseErrorController.add(new PurchaseErrorItem.fromJSON(result));
+          _purchaseErrorController.add(new PurchaseResult.fromJSON(result));
           break;
         case "iap-promoted-product":
           String productId = call.arguments;

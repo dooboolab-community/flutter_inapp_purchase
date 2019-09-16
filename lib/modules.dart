@@ -170,13 +170,13 @@ class PurchasedItem {
   }
 }
 
-class PurchaseErrorItem {
+class PurchaseResult {
   final int responseCode;
   final String debugMessage;
   final String code;
   final String message;
 
-  PurchaseErrorItem.fromJSON(Map<String, dynamic> json)
+  PurchaseResult.fromJSON(Map<String, dynamic> json)
       : responseCode = json['responseCode'] as int,
         debugMessage = json['debugMessage'] as String,
         code = json['code'] as String,
