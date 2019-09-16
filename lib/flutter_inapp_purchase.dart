@@ -391,7 +391,7 @@ class FlutterInappPurchase {
   /// Call this after finalizing server-side validation of the reciept.
   ///
   /// No effect on `Android`, who does not allow this type of functionality.
-  Future<PurchaseResult> finishTransactionIOS() async {
+  Future<PurchaseResult> finishTransactionIOS(String purchaseToken) async {
     if (_platform.isAndroid) {
       return PurchaseResult(
         debugMessage: 'no ops in android',
