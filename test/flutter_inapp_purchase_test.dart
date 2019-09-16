@@ -928,22 +928,22 @@ void main() {
           ]);
         });
 
-        test('returns correct result', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
-          // PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
-          // expect(actual.transactionDate, expected.transactionDate);
-          // expect(actual.transactionId, expected.transactionId);
-          // expect(actual.productId, expected.productId);
-          // expect(actual.transactionReceipt, expected.transactionReceipt);
-          // expect(actual.purchaseToken, expected.purchaseToken);
-          // expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-          // expect(actual.dataAndroid, expected.dataAndroid);
-          // expect(actual.signatureAndroid, expected.signatureAndroid);
-          // expect(actual.originalTransactionDateIOS,
-          //     expected.originalTransactionDateIOS);
-          // expect(actual.originalTransactionIdentifierIOS,
-          //     expected.originalTransactionIdentifierIOS);
-        });
+        // test('returns correct result', () async {
+        //   await FlutterInappPurchase.instance.requestPurchase(sku);
+        //   PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
+        //   expect(actual.transactionDate, expected.transactionDate);
+        //   expect(actual.transactionId, expected.transactionId);
+        //   expect(actual.productId, expected.productId);
+        //   expect(actual.transactionReceipt, expected.transactionReceipt);
+        //   expect(actual.purchaseToken, expected.purchaseToken);
+        //   expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
+        //   expect(actual.dataAndroid, expected.dataAndroid);
+        //   expect(actual.signatureAndroid, expected.signatureAndroid);
+        //   expect(actual.originalTransactionDateIOS,
+        //       expected.originalTransactionDateIOS);
+        //   expect(actual.originalTransactionIdentifierIOS,
+        //       expected.originalTransactionIdentifierIOS);
+        // });
       });
 
       group('for iOS', () {
@@ -990,22 +990,22 @@ void main() {
           ]);
         });
 
-        test('returns correct result', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
-          // PurchasedItem expected = PurchasedItem.fromJSON(result);
-          // expect(actual.transactionDate, expected.transactionDate);
-          // expect(actual.transactionId, expected.transactionId);
-          // expect(actual.productId, expected.productId);
-          // expect(actual.transactionReceipt, expected.transactionReceipt);
-          // expect(actual.purchaseToken, expected.purchaseToken);
-          // expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-          // expect(actual.dataAndroid, expected.dataAndroid);
-          // expect(actual.signatureAndroid, expected.signatureAndroid);
-          // expect(actual.originalTransactionDateIOS,
-          //     expected.originalTransactionDateIOS);
-          // expect(actual.originalTransactionIdentifierIOS,
-          //     expected.originalTransactionIdentifierIOS);
-        });
+        // test('returns correct result', () async {
+        //   await FlutterInappPurchase.instance.requestPurchase(sku);
+        //   PurchasedItem expected = PurchasedItem.fromJSON(result);
+        //   expect(actual.transactionDate, expected.transactionDate);
+        //   expect(actual.transactionId, expected.transactionId);
+        //   expect(actual.productId, expected.productId);
+        //   expect(actual.transactionReceipt, expected.transactionReceipt);
+        //   expect(actual.purchaseToken, expected.purchaseToken);
+        //   expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
+        //   expect(actual.dataAndroid, expected.dataAndroid);
+        //   expect(actual.signatureAndroid, expected.signatureAndroid);
+        //   expect(actual.originalTransactionDateIOS,
+        //       expected.originalTransactionDateIOS);
+        //   expect(actual.originalTransactionIdentifierIOS,
+        //       expected.originalTransactionIdentifierIOS);
+        // });
       });
     });
 
@@ -1058,22 +1058,22 @@ void main() {
           ]);
         });
 
-        test('returns correct result', () async {
-          await FlutterInappPurchase.instance.requestSubscription(sku);
-          // PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
-          // expect(actual.transactionDate, expected.transactionDate);
-          // expect(actual.transactionId, expected.transactionId);
-          // expect(actual.productId, expected.productId);
-          // expect(actual.transactionReceipt, expected.transactionReceipt);
-          // expect(actual.purchaseToken, expected.purchaseToken);
-          // expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-          // expect(actual.dataAndroid, expected.dataAndroid);
-          // expect(actual.signatureAndroid, expected.signatureAndroid);
-          // expect(actual.originalTransactionDateIOS,
-          //     expected.originalTransactionDateIOS);
-          // expect(actual.originalTransactionIdentifierIOS,
-          //     expected.originalTransactionIdentifierIOS);
-        });
+        // test('returns correct result', () async {
+        //   await FlutterInappPurchase.instance.requestSubscription(sku);
+        //   PurchasedItem expected = PurchasedItem.fromJSON(json.decode(result));
+        //   expect(actual.transactionDate, expected.transactionDate);
+        //   expect(actual.transactionId, expected.transactionId);
+        //   expect(actual.productId, expected.productId);
+        //   expect(actual.transactionReceipt, expected.transactionReceipt);
+        //   expect(actual.purchaseToken, expected.purchaseToken);
+        //   expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
+        //   expect(actual.dataAndroid, expected.dataAndroid);
+        //   expect(actual.signatureAndroid, expected.signatureAndroid);
+        //   expect(actual.originalTransactionDateIOS,
+        //       expected.originalTransactionDateIOS);
+        //   expect(actual.originalTransactionIdentifierIOS,
+        //       expected.originalTransactionIdentifierIOS);
+        // });
       });
 
       group('for iOS', () {
@@ -1120,22 +1120,22 @@ void main() {
           ]);
         });
 
-        test('returns correct result', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
-          // PurchasedItem expected = PurchasedItem.fromJSON(result);
-          // expect(actual.transactionDate, expected.transactionDate);
-          // expect(actual.transactionId, expected.transactionId);
-          // expect(actual.productId, expected.productId);
-          // expect(actual.transactionReceipt, expected.transactionReceipt);
-          // expect(actual.purchaseToken, expected.purchaseToken);
-          // expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-          // expect(actual.dataAndroid, expected.dataAndroid);
-          // expect(actual.signatureAndroid, expected.signatureAndroid);
-          // expect(actual.originalTransactionDateIOS,
-          //     expected.originalTransactionDateIOS);
-          // expect(actual.originalTransactionIdentifierIOS,
-          //     expected.originalTransactionIdentifierIOS);
-        });
+        // test('returns correct result', () async {
+        //   await FlutterInappPurchase.instance.requestPurchase(sku);
+        //   PurchasedItem expected = PurchasedItem.fromJSON(result);
+        //   expect(actual.transactionDate, expected.transactionDate);
+        //   expect(actual.transactionId, expected.transactionId);
+        //   expect(actual.productId, expected.productId);
+        //   expect(actual.transactionReceipt, expected.transactionReceipt);
+        //   expect(actual.purchaseToken, expected.purchaseToken);
+        //   expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
+        //   expect(actual.dataAndroid, expected.dataAndroid);
+        //   expect(actual.signatureAndroid, expected.signatureAndroid);
+        //   expect(actual.originalTransactionDateIOS,
+        //       expected.originalTransactionDateIOS);
+        //   expect(actual.originalTransactionIdentifierIOS,
+        //       expected.originalTransactionIdentifierIOS);
+        // });
       });
     });
 
@@ -1173,23 +1173,6 @@ void main() {
               await FlutterInappPurchase.instance.acknowledgePurchaseAndroid(token), "Acknowledged: 0");
         });
       });
-
-      group('for iOS', () {
-        final String token = "testToken";
-        setUp(() {
-          FlutterInappPurchase(FlutterInappPurchase.private(
-              FakePlatform(operatingSystem: "ios")));
-        });
-
-        tearDown(() {
-          FlutterInappPurchase.channel.setMethodCallHandler(null);
-        });
-
-        test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.acknowledgePurchaseAndroid(token),
-              "no-ops in ios");
-        });
-      });
     });
 
     group('consumePurchaseAndroid', () {
@@ -1224,23 +1207,6 @@ void main() {
         test('returns correct result', () async {
           expect(
               await FlutterInappPurchase.instance.consumePurchaseAndroid(token), "Consumed: 0");
-        });
-      });
-
-      group('for iOS', () {
-        final String token = "testToken";
-        setUp(() {
-          FlutterInappPurchase(FlutterInappPurchase.private(
-              FakePlatform(operatingSystem: "ios")));
-        });
-
-        tearDown(() {
-          FlutterInappPurchase.channel.setMethodCallHandler(null);
-        });
-
-        test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.consumePurchaseAndroid(token),
-              "no-ops in ios");
         });
       });
     });
@@ -1292,23 +1258,7 @@ void main() {
       });
     });
 
-    group('finishTransaction', () {
-      group('for Android', () {
-        setUp(() {
-          FlutterInappPurchase(FlutterInappPurchase.private(
-              FakePlatform(operatingSystem: "android")));
-        });
-
-        tearDown(() {
-          FlutterInappPurchase.channel.setMethodCallHandler(null);
-        });
-
-        test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.finishTransactionIOS(),
-              "no-ops in android.");
-        });
-      });
-
+    group('finishTransactionIOS', () {
       group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
