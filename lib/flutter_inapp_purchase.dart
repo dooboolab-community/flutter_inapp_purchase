@@ -220,14 +220,14 @@ class FlutterInappPurchase {
   /// Identical to [buySubscription] on `iOS`.
   Future<Null> requestPurchase(String sku) async {
     if (_platform.isAndroid) {
-      await _channel.invokeMethod('buyItemByType', <String, dynamic>{
+      return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.inapp),
         'sku': sku,
         'oldSku': null,
         'prorationMode': -1,
       });
     } else if (_platform.isIOS) {
-      await _channel.invokeMethod(
+      return await _channel.invokeMethod(
         'buyProduct', <String, dynamic>{
         'sku': sku,
       });
@@ -245,7 +245,7 @@ class FlutterInappPurchase {
   Future<Null> requestSubscription(String sku,
       {String oldSku, int prorationMode}) async {
     if (_platform.isAndroid) {
-      await _channel
+      return await _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.subs),
         'sku': sku,
@@ -253,7 +253,7 @@ class FlutterInappPurchase {
         'prorationMode': prorationMode ?? -1,
       });
     } else if (_platform.isIOS) {
-      await _channel.invokeMethod(
+      return await _channel.invokeMethod(
         'buyProduct', <String, dynamic>{
         'sku': sku,
       });
@@ -281,8 +281,9 @@ class FlutterInappPurchase {
   /// @returns {Future<Null>} will receive result from `purchasePromoted` listener.
   Future<Null> requestPromotedProductIOS() async {
     if (_platform.isIOS) {
-      await _channel.invokeMethod('requestPromotedProduct');
+      return await _channel.invokeMethod('requestPromotedProduct');
     }
+    throw PlatformException(code: _platform.operatingSystem, message: "platform not supported");
   }
 
   /// Buy product with offer
@@ -292,12 +293,13 @@ class FlutterInappPurchase {
     String sku, String forUser, String withOffer,
   ) async {
     if (_platform.isIOS) {
-      await _channel.invokeMethod('requestProductWithOfferIOS', <String, dynamic>{
+      return await _channel.invokeMethod('requestProductWithOfferIOS', <String, dynamic>{
         'sku': sku,
         'forUser': forUser,
         'withOffer': withOffer,
       });
     }
+    throw PlatformException(code: _platform.operatingSystem, message: "platform not supported");
   }
 
   /// Buy product with quantity
@@ -307,11 +309,12 @@ class FlutterInappPurchase {
     String sku, int quantity,
   ) async {
     if (_platform.isIOS) {
-      await _channel.invokeMethod('requestPurchaseWithQuantity', <String, dynamic>{
+      return await _channel.invokeMethod('requestPurchaseWithQuantity', <String, dynamic>{
         'sku': sku,
         'quantity': quantity,
       });
     }
+    throw PlatformException(code: _platform.operatingSystem, message: "platform not supported");
   }
 
   /// Get the pending purchases in IOS.
@@ -338,6 +341,10 @@ class FlutterInappPurchase {
         'developerPayload': developerPayload,
       });
 
+      if (result == null) {
+        return null;
+      }
+
       PurchaseResult decoded = json.decode(result);
       return decoded;
     } else if (_platform.isIOS) {
@@ -358,6 +365,10 @@ class FlutterInappPurchase {
         'token': token,
         'developerPayload': developerPayload,
       });
+
+      if (result == null) {
+        return null;
+      }
 
       PurchaseResult decoded = json.decode(result);
       return decoded;
@@ -397,7 +408,9 @@ class FlutterInappPurchase {
         debugMessage: 'no ops in android',
       );
     } else if (_platform.isIOS) {
-      String result = await _channel.invokeMethod('finishTransaction');
+      String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
+        'transactionIdentifier': purchaseToken,
+      });
       PurchaseResult decoded = json.decode(result.toString());
       return decoded;
     }
@@ -428,7 +441,7 @@ class FlutterInappPurchase {
       }
     } else if (_platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
-        'transactionId': purchaseToken,
+        'transactionIdentifier': purchaseToken,
       });
       PurchaseResult decoded = json.decode(result);
       return decoded;
