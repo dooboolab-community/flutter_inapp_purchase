@@ -13,13 +13,14 @@ I've been maintaining this plugin since there wasn't an official plugin out when
 Also, thanks for all your supports that made me stubborn to work hard on this plugin. I've had great experience with all of you and hope we can meet someday with other projects.
 I'll leave this project as live for those who need time. I'll also try to merge the new `PR`'s and publish to `pub` if there's any further work given to this repo.~~
 
-# Last Readme
-In App Purchase plugin for flutter. This project has been `forked` from [react-native-iap](https://github.com/dooboolab/react-native-iap). We are trying to share same experience of `in-app-purchase` in `flutter` as in `react-native`.
+## What this plugin do
+This is an `In App Purchase` plugin for flutter. This project has been `forked` from [react-native-iap](https://github.com/dooboolab/react-native-iap). We are trying to share same experience of `in-app-purchase` in `flutter` as in `react-native`.
 We will keep working on it as time goes by just like we did in `react-native-iap`.
 
 `PR` is always welcomed.
 
 ## Breaking Changes
+* Sunrise in `2.0.0` for highly requests from customers on discomfort in what's called an `official` plugin [in_app_purchase](https://pub.dev/packages/in_app_purchase).
 * Migrated to Android X in `0.9.0`. Please check the [Migration Guide](#migration-guide).
 * There was parameter renaming in `0.5.0` to identify different parameters sent from the device. Please check the readme.
 
@@ -46,14 +47,19 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | getAppStoreInitiatedProducts | | `List<IAPItem>` | If the user has initiated a purchase directly on the App Store, the products that the user is attempting to purchase will be returned here. (iOS only) Note: On iOS versions earlier than 11.0 this method will always return an empty list, as the functionality was introduced in v11.0. [See Apple Docs for more info](https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver/2877502-paymentqueue) Always returns an empty list on Android.
 | requestSubscription | `string` Subscription ID/sku, `string` Old Subscription ID/sku (on Android) | `PurchasedItem` | Create (request) a subscription to a sku. For upgrading/downgrading subscription on Android pass second parameter with current subscription ID, on iOS this is handled automatically by store. `purchaseUpdatedListener` will receive the result. |
 | requestPurchase | `string` Product ID/sku | `PurchasedItem` | Request a purchase. `purchaseUpdatedListener` will receive the result. |
-| finishTransaction | `void` | `String` | Send finishTransaction call to Apple IAP server. Call this function after receipt validation process |
-| acknowledgePurchaseAndroid | `String` Purchase token, `String` developerPayload? | `String` | Consume a product (on Android.) No-op on iOS. |
-| consumePurchaseAndroid | `String` Purchase token, `String` developerPayload? | `String` | Consume a product (on Android.) No-op on iOS. |
+| finishTransactionIOS | `void` | `String` | Send finishTransaction call to Apple IAP server. Call this function after receipt validation process |
+| acknowledgePurchaseAndroid | `String` Purchase token, `String` developerPayload? | `String` | Acknowledge a product (on Android) for `non-consumable` and `subscription` purchase. No-op on iOS. |
+| consumePurchaseAndroid | `String` Purchase token, `String` developerPayload? | `String` | Consume a product (on Android) for `consumable` purchase. No-op on iOS. |
+| finishTransaction | `void` | `String` | Send finishTransaction call that abstracts all `acknowledgePurchaseAndroid`, `finishTransactionIOS`, `consumePurchaseAndroid` methods. |
 | endConnection | | `String` | End billing connection (on Android.) No-op on iOS. |
 | consumeAllItems | | `String` | Manually consume all items in android. Do NOT call if you have any non-consumables (one time purchase items). No-op on iOS. |
 | validateReceiptIos | `Map<String,String>` receiptBody, `bool` isTest | `http.Response` | Validate receipt for ios. |
 | validateReceiptAndroid | `String` packageName, `String` productId, `String` productToken, `String` accessToken, `bool` isSubscription | `http.Response` | Validate receipt for android. |
 
+Purchase flow in `flutter_inapp_purchase@1.0.0+
+-----------------
+![purchase-flow-sequence](docs/react-native-iapv3.svg)
+> When you've successfully received result from `purchaseUpdated` listener, you'll have to `verify` the purchase either by `acknowledgePurchaseAndroid`, `consumePurchaseAndroid`, `finishTransactionIOS` depending on the purchase types or platforms. You'll have to use `consumePurchasAndroid` for `consumable` products and `android` and `acknowledgePurchaseAndroid` for `non-consumable` products either `subscription`. For `ios`, there is no differences in `verifying` purchases. You can just call `finishTransaction`. If you do not verify the purchase, it will be refunded within 3 days to users. We recommend you to `verifyReceipt` first before actually finishing transaction. Lastly, if you want to abstract three different methods into one, consider using `finishTransaction` method.
 
 ## Data Types
 * IAPItem
@@ -61,37 +67,50 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
   final String productId;
   final String price;
   final String currency;
-  final String type;
   final String localizedPrice;
   final String title;
   final String description;
   final String introductoryPrice;
+
   /// ios only
+  final String subscriptionPeriodNumberIOS;
+  final String subscriptionPeriodUnitIOS;
   final String introductoryPricePaymentModeIOS;
   final String introductoryPriceNumberOfPeriodsIOS;
   final String introductoryPriceSubscriptionPeriodIOS;
-  final String subscriptionPeriodNumberIOS;
-  final String subscriptionPeriodUnitIOS;
+
   /// android only
   final String subscriptionPeriodAndroid;
   final String introductoryPriceCyclesAndroid;
   final String introductoryPricePeriodAndroid;
   final String freeTrialPeriodAndroid;
+  final String signatureAndroid;
+
+  final String iconUrl;
+  final String originalJson;
+  final String originalPrice;
   ```
 
 * PurchasedItem
   ```dart
-  final dynamic transactionDate;
-  final String transactionId;
   final String productId;
+  final String transactionId;
+  final DateTime transactionDate;
   final String transactionReceipt;
-  // Android only
   final String purchaseToken;
-  final bool autoRenewingAndroid;
+  final String orderId;
+
+  // Android only
   final String dataAndroid;
   final String signatureAndroid;
+  final bool autoRenewingAndroid;
+  final bool isAcknowledgedAndroid;
+  final int purchaseStateAndroid;
+  final String developerPayloadAndroid;
+  final String originalJsonAndroid;
+
   // iOS only
-  final dynamic originalTransactionDateIOS;
+  final DateTime originalTransactionDateIOS;
   final String originalTransactionIdentifierIOS;
   ```
 
@@ -109,7 +128,7 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
 
 ## Usage Guide
 #### Android `connect` and `endConnection`
-* You should start the billing service in android to use its funtionalities. We recommend you to use `initConnection` getter method in `initState()`. 
+* You should start the billing service in android to use its funtionalities. We recommend you to use `initConnection` getter method in `initState()`. Note that this step is necessary in `ios` also from `flutter_inapp_purchase@1.0.0+` which will also register the `purchaseUpdated` and `purchaseError` `Stream`.
 
   ```dart
     /// start connection for android
@@ -146,15 +165,33 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
 
 #### Purchase Item
   ```dart
-  void purchase() async {
-    PurchasedItem purchased = await FlutterInappPurchase.buyProduct(item.productId);
-    print('purchased - ${purchased.toString()}');
+  void purchase() {
+    FlutterInappPurchase.instance.requestPurchase(item.productId);
   }
+  ```
+
+#### Register listeners to receive purchase
+  ```dart
+  StreamSubscription _purchaseUpdatedSubscription = FlutterInappPurchase.purchaseUpdated.listen((productItem) {
+    print('purchase-updated: $productItem');
+  });
+
+  StreamSubscription _purchaseErrorSubscription = FlutterInappPurchase.purchaseError.listen((purchaseError) {
+    print('purchase-error: $purchaseError');
+  });
+  ```
+
+#### Remove listeners when ending connection
+  ```dart
+  _purchaseUpdatedSubscription.cancel();
+  _purchaseUpdatedSubscription = null;
+  _purchaseErrorSubscription.cancel();
+  _purchaseErrorSubscription = null;
   ```
 
 #### Receipt validation
 From `0.7.1`, we support receipt validation. For Android, you need separate json file from the service account to get the `access_token` from `google-apis`, therefore it is impossible to implement serverless. You should have your own backend and get `access_token`. With `access_token` you can simply call `validateReceiptAndroid` method we implemented. Further reading is [here](https://stackoverflow.com/questions/35127086/android-inapp-purchase-receipt-validation-google-play?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa).
-Currently, serverless receipt validation is possible using `validateReceiptIos` method. The first parameter, you should pass `transactionReceipt` which returns after `buyProduct`. The second parameter, you should pass whether this is `test` environment. If `true`, it will request to `sandbox` and `false` it will request to `production`.
+Currently, serverless receipt validation is possible using `validateReceiptIos` method. The first parameter, you should pass `transactionReceipt` which returns after `requestPurchase`. The second parameter, you should pass whether this is `test` environment. If `true`, it will request to `sandbox` and `false` it will request to `production`.
 
   ```dart
   validateReceipt() async {
@@ -177,7 +214,7 @@ To continue the transaction simple use the standard purchase flow from this plug
 void checkForAppStoreInitiatedProducts() async {
   List<IAPItem> appStoreProducts = await FlutterInappPurchase.getAppStoreInitiatedProducts(); // Get list of products
   if (appStoreProducts.length > 0) {
-    _buyProduct(appStoreProducts.last); // Buy last product in the list
+    _requestPurchase(appStoreProducts.last); // Buy last product in the list
   }
 }
 ```
@@ -186,23 +223,26 @@ void checkForAppStoreInitiatedProducts() async {
 ## Example
 Below code is just a `cp` from example project. You can test this in real example project.
 ```dart
-class MyApp extends StatefulWidget {
+class InApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _InAppState createState() => new _InAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  final List<String>_productLists = Platform.isAndroid
+class _InAppState extends State<InApp> {
+  StreamSubscription _purchaseUpdatedSubscription;
+  StreamSubscription _purchaseErrorSubscription;
+  final List<String> _productLists = Platform.isAndroid
       ? [
-    'android.test.purchased',
-    'point_1000',
-    '5000_point',
-    'android.test.canceled',
-  ]
-      : ['com.cooni.point1000','com.cooni.point5000'];
+          'android.test.purchased',
+          'point_1000',
+          '5000_point',
+          'android.test.canceled',
+        ]
+      : ['com.cooni.point1000', 'com.cooni.point5000'];
 
   String _platformVersion = 'Unknown';
   List<IAPItem> _items = [];
+  List<PurchasedItem> _purchases = [];
 
   @override
   void initState() {
@@ -215,14 +255,14 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformVersion = await FlutterInappPurchase.platformVersion;
+      platformVersion = await FlutterInappPurchase.instance.platformVersion;
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
 
-    // initConnection
-    var result = await FlutterInappPurchase.initConnection;
-    print ('result: $result');
+    // prepare
+    var result = await FlutterInappPurchase.instance.initConnection;
+    print('result: $result');
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -234,21 +274,28 @@ class _MyAppState extends State<MyApp> {
     });
 
     // refresh items for android
-    String msg = await FlutterInappPurchase.consumeAllItems;
-    print('consumeAllItems: $msg');
+    try {
+      String msg = await FlutterInappPurchase.instance.consumeAllItems;
+      print('consumeAllItems: $msg');
+    } catch (err) {
+      print('consumeAllItems error: $err');
+    }
+
+    _purchaseUpdatedSubscription = FlutterInappPurchase.purchaseUpdated.listen((productItem) {
+      print('purchase-updated: $productItem');
+    });
+
+    _purchaseErrorSubscription = FlutterInappPurchase.purchaseError.listen((purchaseError) {
+      print('purchase-error: $purchaseError');
+    });
   }
 
-  Future<Null> _buyProduct(IAPItem item) async {
-    try {
-      PurchasedItem purchased= await FlutterInappPurchase.buyProduct(item.productId);
-      print('purchased - ${purchased.toString()}');
-    } catch (error) {
-      print('$error');
-    }
+  void _requestPurchase(IAPItem item) {
+    FlutterInappPurchase.instance.requestPurchase(item.productId);
   }
 
   Future<Null> _getProduct() async {
-    List<IAPItem> items = await FlutterInappPurchase.getProducts(_productLists);
+    List<IAPItem> items = await FlutterInappPurchase.instance.getProducts(_productLists);
     for (var item in items) {
       print('${item.toString()}');
       this._items.add(item);
@@ -256,105 +303,199 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {
       this._items = items;
+      this._purchases = [];
     });
   }
 
-  _renderInapps() {
-    List<Widget> widgets = this._items.map((item) => Container(
-      margin: EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        child: Column(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(bottom: 5.0),
-              child: Text(
-                item.toString(),
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: Colors.black,
+  Future<Null> _getPurchases() async {
+    List<PurchasedItem> items =
+        await FlutterInappPurchase.instance.getAvailablePurchases();
+    for (var item in items) {
+      print('${item.toString()}');
+      this._purchases.add(item);
+    }
+
+    setState(() {
+      this._items = [];
+      this._purchases = items;
+    });
+  }
+
+  Future<Null> _getPurchaseHistory() async {
+    List<PurchasedItem> items = await FlutterInappPurchase.instance.getPurchaseHistory();
+    for (var item in items) {
+      print('${item.toString()}');
+      this._purchases.add(item);
+    }
+
+    setState(() {
+      this._items = [];
+      this._purchases = items;
+    });
+  }
+
+  List<Widget> _renderInApps() {
+    List<Widget> widgets = this
+        ._items
+        .map((item) => Container(
+              margin: EdgeInsets.symmetric(vertical: 10.0),
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(bottom: 5.0),
+                      child: Text(
+                        item.toString(),
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    FlatButton(
+                      color: Colors.orange,
+                      onPressed: () {
+                        print("---------- Buy Item Button Pressed");
+                        this._requestPurchase(item);
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Container(
+                              height: 48.0,
+                              alignment: Alignment(-1.0, 0.0),
+                              child: Text('Buy Item'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            FlatButton(
-              color: Colors.orange,
-              onPressed: () {
-                this._buyProduct(item);
-              },
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      height: 48.0,
-                      alignment: Alignment(-1.0, 0.0),
-                      child: Text('Buy Item'),
-                    ),
-                  ),
-                ],
+            ))
+        .toList();
+    return widgets;
+  }
+
+  List<Widget> _renderPurchases() {
+    List<Widget> widgets = this
+        ._purchases
+        .map((item) => Container(
+              margin: EdgeInsets.symmetric(vertical: 10.0),
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(bottom: 5.0),
+                      child: Text(
+                        item.toString(),
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    )).toList();
+            ))
+        .toList();
     return widgets;
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Inapp Plugin by dooboolab'),
-        ),
-        body:
-        Container(
-          padding: EdgeInsets.all(10.0),
-          child: ListView(
+    double screenWidth = MediaQuery.of(context).size.width-20;
+    double buttonWidth=(screenWidth/3)-20;
+
+    return Container(
+      padding: EdgeInsets.all(10.0),
+      child: ListView(
+        children: <Widget>[
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              Container(
+                child: Text(
+                  'Running on: $_platformVersion\n',
+                  style: TextStyle(fontSize: 18.0),
+                ),
+              ),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    child: Text(
-                      'Running on: $_platformVersion\n',
-                      style: TextStyle(
-                          fontSize: 18.0
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 60.0,
-                    margin: EdgeInsets.only(bottom: 10.0),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              child: FlatButton(
-                                color: Colors.green,
-                                padding: EdgeInsets.all(0.0),
-                                onPressed: () async {
-                                  await FlutterInappPurchase.initConnection;
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                                  alignment: Alignment(0.0, 0.0),
-                                  child: Text(
-                                    'Connect Billing',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Container(
+                        width: buttonWidth,
+                        height: 60.0,
+                        margin: EdgeInsets.all(7.0),
+                        child: FlatButton(
+                          color: Colors.amber,
+                          padding: EdgeInsets.all(0.0),
+                          onPressed: () async {
+                            print("---------- Connect Billing Button Pressed");
+                            await FlutterInappPurchase.instance.initConnection;
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20.0),
+                            alignment: Alignment(0.0, 0.0),
+                            child: Text(
+                              'Connect Billing',
+                              style: TextStyle(
+                                fontSize: 16.0,
                               ),
                             ),
-                            FlatButton(
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: buttonWidth,
+                        height: 60.0,
+                        margin: EdgeInsets.all(7.0),
+                        child: FlatButton(
+                          color: Colors.amber,
+                          padding: EdgeInsets.all(0.0),
+                          onPressed: () async {
+                            print("---------- End Connection Button Pressed");
+                            await FlutterInappPurchase.instance.endConnection;
+                            _purchaseUpdatedSubscription.cancel();
+                            _purchaseUpdatedSubscription = null;
+                            _purchaseErrorSubscription.cancel();
+                            _purchaseErrorSubscription = null;
+                            setState(() {
+                              this._items = [];
+                              this._purchases = [];
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20.0),
+                            alignment: Alignment(0.0, 0.0),
+                            child: Text(
+                              'End Connection',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Container(
+                            width: buttonWidth,
+                            height: 60.0,
+                            margin: EdgeInsets.all(7.0),
+                            child: FlatButton(
                               color: Colors.green,
                               padding: EdgeInsets.all(0.0),
                               onPressed: () {
+                                print("---------- Get Items Button Pressed");
                                 this._getProduct();
                               },
                               child: Container(
@@ -367,43 +508,65 @@ class _MyAppState extends State<MyApp> {
                                   ),
                                 ),
                               ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.only(left: 15.0),
-                              child: FlatButton(
-                                color: Colors.green,
-                                padding: EdgeInsets.all(0.0),
-                                onPressed: () async {
-                                  await FlutterInappPurchase.endConnection;
-                                  setState(() {
-                                    this._items = [];
-                                  });
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                                  alignment: Alignment(0.0, 0.0),
-                                  child: Text(
-                                    'End Connection',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                    ),
+                            )),
+                        Container(
+                            width: buttonWidth,
+                            height: 60.0,
+                            margin: EdgeInsets.all(7.0),
+                            child: FlatButton(
+                              color: Colors.green,
+                              padding: EdgeInsets.all(0.0),
+                              onPressed: () {
+                                print(
+                                    "---------- Get Purchases Button Pressed");
+                                this._getPurchases();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                alignment: Alignment(0.0, 0.0),
+                                child: Text(
+                                  'Get Purchases',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    children: this._renderInapps(),
-                  ),
+                            )),
+                        Container(
+                            width: buttonWidth,
+                            height: 60.0,
+                            margin: EdgeInsets.all(7.0),
+                            child: FlatButton(
+                              color: Colors.green,
+                              padding: EdgeInsets.all(0.0),
+                              onPressed: () {
+                                print(
+                                    "---------- Get Purchase History Button Pressed");
+                                this._getPurchaseHistory();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                alignment: Alignment(0.0, 0.0),
+                                child: Text(
+                                  'Get Purchase History',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                              ),
+                            )),
+                      ]),
                 ],
+              ),
+              Column(
+                children: this._renderInApps(),
+              ),
+              Column(
+                children: this._renderPurchases(),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
