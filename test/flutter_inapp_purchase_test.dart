@@ -912,7 +912,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return;
+            return null;
           });
         });
 
@@ -930,6 +930,10 @@ void main() {
               },
             ),
           ]);
+        });
+
+        test('returns correct result', () async {
+          expect(FlutterInappPurchase.instance.requestPurchase(sku), null);
         });
       });
 
@@ -957,7 +961,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return;
+            return null;
           });
         });
 
@@ -978,6 +982,10 @@ void main() {
               },
             ),
           ]);
+        });
+
+        test('returns correct result', () async {
+          expect(FlutterInappPurchase.instance.requestPurchase(sku), null);
         });
       });
     });
@@ -1008,7 +1016,7 @@ void main() {
           FlutterInappPurchase.channel
             .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return;
+            return null;
           });
         });
 
@@ -1029,6 +1037,10 @@ void main() {
               },
             ),
           ]);
+        });
+
+        test('returns correct result', () async {
+          expect(FlutterInappPurchase.instance.requestSubscription(sku), null);
         });
       });
 
@@ -1056,7 +1068,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return;
+            return null;
           });
         });
 
@@ -1074,6 +1086,10 @@ void main() {
               },
             ),
           ]);
+        });
+
+        test('returns correct result', () async {
+          expect(FlutterInappPurchase.instance.requestSubscription(sku), null);
         });
       });
     });
