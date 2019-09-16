@@ -201,11 +201,21 @@
             }
         }];
     } else if ([@"finishTransaction" isEqualToString:call.method]) {
-        if (currentTransaction) {
-            [[SKPaymentQueue defaultQueue] finishTransaction:currentTransaction];
+        NSString* transactionIdentifier = (NSString*)call.arguments[@"transactionIdentifier"];
+        SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
+        for(SKPaymentTransaction *transaction in queue.transactions) {
+            if([transaction.transactionIdentifier isEqualToString:transactionIdentifier]) {
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+            }
         }
-        currentTransaction = nil;
-        result(@"Finished current transaction");
+        NSDictionary *err = [NSDictionary dictionaryWithObjectsAndKeys:
+                                @"finishTransaction", @"debugMessage",
+                                transactionIdentifier, @"code",
+                                @"finished", @"message",
+                                nil
+                                ];
+        NSString* strResult = [self convertDicToJsonString:err];
+        result(strResult);
     } else if ([@"clearTransaction" isEqualToString:call.method]) {
         NSArray *pendingTrans = [[SKPaymentQueue defaultQueue] transactions];
         NSLog(@"\n\n\n  ***  clear remaining Transactions. Call this before make a new transaction   \n\n.");
