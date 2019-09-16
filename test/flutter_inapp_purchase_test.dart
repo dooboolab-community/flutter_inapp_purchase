@@ -2,11 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
+import 'package:flutter_inapp_purchase/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:platform/platform.dart';
 import 'package:http/testing.dart';
 import 'package:http/http.dart' as http;
+
+enum _TypeInApp {
+  inapp, subs
+}
 
 void main() {
   group('FlutterInappPurchase', () {
@@ -882,41 +887,8 @@ void main() {
     });
 
     group('requestPurchase', () {
-      group('for Android', () {
-        final List<MethodCall> log = <MethodCall>[];
-        final dynamic result = {
-          "transactionDate": "1552824902000",
-          "transactionId": "testTransactionId",
-          "productId": "com.cooni.point1000",
-          "transactionReceipt": "testTransactionReciept",
-          "purchaseToken": "testPurchaseToken",
-          "autoRenewingAndroid": true,
-          "dataAndroid": "testDataAndroid",
-          "signatureAndroid": "testSignatureAndroid",
-          "originalTransactionDateIOS": "1552831136000",
-          "originalTransactionIdentifierIOS":
-              "testOriginalTransactionIdentifierIOS"
-        };
-
-        final String sku = "testsku";
-
-        setUp(() {
-          FlutterInappPurchase(FlutterInappPurchase.private(
-              FakePlatform(operatingSystem: "android")));
-        });
-
-        tearDown(() {
-          FlutterInappPurchase.channel.setMethodCallHandler(null);
-        });
-
-        test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
-        });
-      });
-
       group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
-        final String sku = "testsku";
         final dynamic result = {
           "transactionDate": "1552824902000",
           "transactionId": "testTransactionId",
@@ -928,12 +900,20 @@ void main() {
           "signatureAndroid": "testSignatureAndroid",
           "originalTransactionDateIOS": "1552831136000",
           "originalTransactionIdentifierIOS":
-              "testOriginalTransactionIdentifierIOS"
+          "testOriginalTransactionIdentifierIOS"
         };
+
+        final String sku = "testsku";
 
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return;
+          });
         });
 
         tearDown(() {
@@ -947,6 +927,54 @@ void main() {
               'buyProduct',
               arguments: <String, dynamic>{
                 'sku': sku,
+              },
+            ),
+          ]);
+        });
+      });
+
+      group('for Android', () {
+        final List<MethodCall> log = <MethodCall>[];
+        final String sku = "testsku";
+        final dynamic result = {
+          "transactionDate": "1552824902000",
+          "transactionId": "testTransactionId",
+          "productId": "com.cooni.point1000",
+          "transactionReceipt": "testTransactionReciept",
+          "purchaseToken": "testPurchaseToken",
+          "autoRenewingAndroid": true,
+          "dataAndroid": "testDataAndroid",
+          "signatureAndroid": "testSignatureAndroid",
+          "originalTransactionDateIOS": "1552831136000",
+          "originalTransactionIdentifierIOS":
+              "testOriginalTransactionIdentifierIOS"
+        };
+
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "android")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return;
+          });
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.instance.requestPurchase(sku);
+          expect(log, <Matcher>[
+            isMethodCall(
+              'buyProduct',
+              arguments: <String, dynamic>{
+                'type': EnumUtil.getValueString(_TypeInApp.inapp),
+                'sku': sku,
+                'oldSku': null,
+                'prorationMode': -1,
               },
             ),
           ]);
@@ -976,6 +1004,12 @@ void main() {
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
+
+          FlutterInappPurchase.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return;
+          });
         });
 
         tearDown(() {
@@ -988,7 +1022,7 @@ void main() {
             isMethodCall(
               'buyItemByType',
               arguments: <String, dynamic>{
-                'type': 'subs',
+                'type': _TypeInApp.subs,
                 'sku': sku,
                 'oldSku': oldSku,
                 'prorationMode': -1,
@@ -1018,6 +1052,12 @@ void main() {
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
+
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return;
+          });
         });
 
         tearDown(() {
@@ -1055,7 +1095,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return purchaseResult;
+            return purchaseResult.toJson().toString();
           });
         });
 
@@ -1097,7 +1137,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return purchaseResult;
+            return purchaseResult.toJson().toString();
           });
         });
 
@@ -1184,7 +1224,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return purchaseResult;
+            return purchaseResult.toJson().toString();
           });
         });
 
