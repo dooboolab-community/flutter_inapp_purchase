@@ -218,16 +218,16 @@ class FlutterInappPurchase {
   /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
   ///
   /// Identical to [buySubscription] on `iOS`.
-  Future<void> requestPurchase(String sku) async {
+  Future<Null> requestPurchase(String sku) async {
     if (_platform.isAndroid) {
-      await _channel.invokeMethod('buyItemByType', <String, dynamic>{
+      return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.inapp),
         'sku': sku,
         'oldSku': null,
         'prorationMode': -1,
       });
     } else if (_platform.isIOS) {
-      await _channel.invokeMethod(
+      return await _channel.invokeMethod(
         'buyProduct', <String, dynamic>{
         'sku': sku,
       });
@@ -242,10 +242,10 @@ class FlutterInappPurchase {
   /// **NOTICE** second parameter is required on `Android`.
   ///
   /// Identical to [requestPurchase] on `iOS`.
-  Future<void> requestSubscription(String sku,
+  Future<Null> requestSubscription(String sku,
       {String oldSku, int prorationMode}) async {
     if (_platform.isAndroid) {
-      await _channel
+      return await _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.subs),
         'sku': sku,
@@ -253,7 +253,7 @@ class FlutterInappPurchase {
         'prorationMode': prorationMode ?? -1,
       });
     } else if (_platform.isIOS) {
-      await _channel.invokeMethod(
+      return await _channel.invokeMethod(
         'buyProduct', <String, dynamic>{
         'sku': sku,
       });
@@ -278,40 +278,43 @@ class FlutterInappPurchase {
   /// Add Store Payment (iOS only)
   /// Indicates that the App Store purchase should continue from the app instead of the App Store.
   ///
-  /// @returns {Future<void>} will receive result from `purchasePromoted` listener.
-  Future<void> requestPromotedProductIOS() async {
+  /// @returns {Future<Null>} will receive result from `purchasePromoted` listener.
+  Future<Null> requestPromotedProductIOS() async {
     if (_platform.isIOS) {
-      await _channel.invokeMethod('requestPromotedProduct');
+      return await _channel.invokeMethod('requestPromotedProduct');
     }
+    throw PlatformException(code: _platform.operatingSystem, message: "platform not supported");
   }
 
   /// Buy product with offer
   ///
-  /// @returns {Future<void>} will receive result from `purchaseUpdated` listener.
-  Future<void> requestProductWithOfferIOS(
+  /// @returns {Future<Null>} will receive result from `purchaseUpdated` listener.
+  Future<Null> requestProductWithOfferIOS(
     String sku, String forUser, String withOffer,
   ) async {
     if (_platform.isIOS) {
-      await _channel.invokeMethod('requestProductWithOfferIOS', <String, dynamic>{
+      return await _channel.invokeMethod('requestProductWithOfferIOS', <String, dynamic>{
         'sku': sku,
         'forUser': forUser,
         'withOffer': withOffer,
       });
     }
+    throw PlatformException(code: _platform.operatingSystem, message: "platform not supported");
   }
 
   /// Buy product with quantity
   ///
-  /// @returns {Future<void>} will receive result from `purchaseUpdated` listener.
-  Future<void> requestPurchaseWithQuantityIOS(
+  /// @returns {Future<Null>} will receive result from `purchaseUpdated` listener.
+  Future<Null> requestPurchaseWithQuantityIOS(
     String sku, int quantity,
   ) async {
     if (_platform.isIOS) {
-      await _channel.invokeMethod('requestPurchaseWithQuantity', <String, dynamic>{
+      return await _channel.invokeMethod('requestPurchaseWithQuantity', <String, dynamic>{
         'sku': sku,
         'quantity': quantity,
       });
     }
+    throw PlatformException(code: _platform.operatingSystem, message: "platform not supported");
   }
 
   /// Get the pending purchases in IOS.
@@ -338,6 +341,10 @@ class FlutterInappPurchase {
         'developerPayload': developerPayload,
       });
 
+      if (result == null) {
+        return null;
+      }
+
       PurchaseResult decoded = json.decode(result);
       return decoded;
     } else if (_platform.isIOS) {
@@ -358,6 +365,10 @@ class FlutterInappPurchase {
         'token': token,
         'developerPayload': developerPayload,
       });
+
+      if (result == null) {
+        return null;
+      }
 
       PurchaseResult decoded = json.decode(result);
       return decoded;
@@ -391,13 +402,15 @@ class FlutterInappPurchase {
   /// Call this after finalizing server-side validation of the reciept.
   ///
   /// No effect on `Android`, who does not allow this type of functionality.
-  Future<PurchaseResult> finishTransactionIOS() async {
+  Future<PurchaseResult> finishTransactionIOS(String purchaseToken) async {
     if (_platform.isAndroid) {
       return PurchaseResult(
         debugMessage: 'no ops in android',
       );
     } else if (_platform.isIOS) {
-      String result = await _channel.invokeMethod('finishTransaction');
+      String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
+        'transactionIdentifier': purchaseToken,
+      });
       PurchaseResult decoded = json.decode(result.toString());
       return decoded;
     }
@@ -428,7 +441,7 @@ class FlutterInappPurchase {
       }
     } else if (_platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
-        'transactionId': purchaseToken,
+        'transactionIdentifier': purchaseToken,
       });
       PurchaseResult decoded = json.decode(result);
       return decoded;
@@ -571,7 +584,7 @@ class FlutterInappPurchase {
     );
   }
 
-  Future<void> _setPurchaseListener() async {
+  Future<Null> _setPurchaseListener() async {
     if (_purchaseController == null) {
       _purchaseController = new StreamController.broadcast();
     }
@@ -601,7 +614,7 @@ class FlutterInappPurchase {
     });
   }
 
-  Future<void> _removePurchaseListener() async {
+  Future<Null> _removePurchaseListener() async {
     if (_purchaseController != null) {
       _purchaseController
         ..add(null)

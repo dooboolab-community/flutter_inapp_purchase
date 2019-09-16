@@ -189,6 +189,13 @@ class PurchaseResult {
         code = json['code'] as String,
         message = json['message'] as String;
 
+  Map<String, dynamic> toJson() => {
+    "responseCode": responseCode ?? 0,
+    "debugMessage": debugMessage ?? '',
+    "code": code ?? '',
+    "message": message ?? '',
+  };
+
   @override
   String toString() {
     return 'responseCode: $responseCode, '

@@ -382,12 +382,12 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
      */
     else if (call.method.equals("acknowledgePurchase")) {
       final String token = call.argument("token");
-      final String developerPayLoad = call.argument("developerPayLoad");
+      final String developerPayload = call.argument("developerPayload");
       if (billingClient == null || !billingClient.isReady()) {
         AcknowledgePurchaseParams acknowledgePurchaseParams =
             AcknowledgePurchaseParams.newBuilder()
                 .setPurchaseToken(token)
-                .setDeveloperPayload(developerPayLoad)
+                .setDeveloperPayload(developerPayload)
                 .build();
         billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
           @Override
@@ -425,11 +425,11 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       }
 
       final String token = call.argument("token");
-      final String developerPayLoad = call.argument("developerPayLoad");
+      final String developerPayload = call.argument("developerPayload");
 
       final ConsumeParams params = ConsumeParams.newBuilder()
           .setPurchaseToken(token)
-          .setDeveloperPayload(developerPayLoad)
+          .setDeveloperPayload(developerPayload)
           .build();
       billingClient.consumeAsync(params, new ConsumeResponseListener() {
         @Override
