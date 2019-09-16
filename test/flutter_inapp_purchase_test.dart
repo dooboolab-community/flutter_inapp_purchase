@@ -1095,7 +1095,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return json.encode(purchaseResult.toJson());
+            return purchaseResult;
           });
         });
 
@@ -1137,7 +1137,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return json.encode(purchaseResult.toJson());
+            return purchaseResult;
           });
         });
 
@@ -1224,7 +1224,7 @@ void main() {
           FlutterInappPurchase.channel
               .setMockMethodCallHandler((MethodCall methodCall) async {
             log.add(methodCall);
-            return json.encode(purchaseResult.toJson());
+            return purchaseResult;
           });
         });
 
