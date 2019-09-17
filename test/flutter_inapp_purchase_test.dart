@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
-import 'package:flutter_inapp_purchase/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:platform/platform.dart';
@@ -977,6 +976,8 @@ void main() {
                 'sku': sku,
                 'oldSku': null,
                 'prorationMode': -1,
+                'developerId': null,
+                'accountId': null,
               },
             ),
           ]);
@@ -1023,7 +1024,7 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.requestSubscription(sku, oldSku: oldSku);
+          await FlutterInappPurchase.instance.requestSubscription(sku, oldSkuAndroid: oldSku);
           expect(log, <Matcher>[
             isMethodCall(
               'buyItemByType',
@@ -1032,6 +1033,8 @@ void main() {
                 'sku': sku,
                 'oldSku': oldSku,
                 'prorationMode': -1,
+                'developerId': null,
+                'accountId': null,
               },
             ),
           ]);
