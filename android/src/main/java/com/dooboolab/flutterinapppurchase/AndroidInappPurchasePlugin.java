@@ -505,6 +505,14 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
 
             channel.invokeMethod("purchase-updated", item.toString());
           }
+        } else {
+          JSONObject json = new JSONObject();
+          json.put("responseCode", billingResult.getResponseCode());
+          json.put("debugMessage", billingResult.getDebugMessage());
+          String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+          json.put("code", errorData[0]);
+          json.put("message", "purchases returns null.");
+          channel.invokeMethod("purchase-error", json.toString());
         }
       } catch (JSONException je) {
         channel.invokeMethod("purchase-error", je.getMessage());

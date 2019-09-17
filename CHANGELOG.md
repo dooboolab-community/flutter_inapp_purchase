@@ -1,3 +1,5 @@
+## 2.0.0+6
+* Send `purchase-error` with purchases returns null.
 ## 2.0.0+5
 * Renamed invoked parameters non-platform specific.
 ## 2.0.0+4
