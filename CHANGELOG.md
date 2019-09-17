@@ -1,3 +1,5 @@
+## 2.0.0+5
+* Renamed invoked parameters non-platform specific.
 ## 2.0.0+4
 * Add `deveoperId` and `accountId` when requesting `purchase` or `subscription` in `android`. Find out more in `requestPurchase` and `requestSubscription`.
 

@@ -316,7 +316,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
 
     /*
      * buyItemByType
-     * arguments: type, accounIdAndroid, developerIdAndroid,  sku, oldSku, prorationMode
+     * arguments: type, accountId, developerId,  sku, oldSku, prorationMode
      */
     else if (call.method.equals("buyItemByType")) {
       if (billingClient == null || !billingClient.isReady()) {
@@ -325,8 +325,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       }
 
       final String type = call.argument("type");
-      final String accountId = call.argument("accountIdAndroid");
-      final String developerId = call.argument("developerIdAndroid");
+      final String accountId = call.argument("accountId");
+      final String developerId = call.argument("developerId");
       final String sku = call.argument("sku");
       final String oldSku = call.argument("oldSku");
       final int prorationMode = call.argument("prorationMode");

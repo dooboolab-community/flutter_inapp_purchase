@@ -228,8 +228,8 @@ class FlutterInappPurchase {
         'sku': sku,
         'oldSku': null,
         'prorationMode': -1,
-        'developerIdAndroid': developerIdAndroid,
-        'accountIdAndroid': accountIdAndroid,
+        'developerId': developerIdAndroid,
+        'accountId': accountIdAndroid,
       });
     } else if (_platform.isIOS) {
       return await _channel.invokeMethod(
@@ -261,8 +261,8 @@ class FlutterInappPurchase {
         'sku': sku,
         'oldSku': oldSkuAndroid,
         'prorationMode': prorationModeAndroid ?? -1,
-        'developerIdAndroid': developerIdAndroid,
-        'accountIdAndroid': accountIdAndroid,
+        'developerId': developerIdAndroid,
+        'accountId': accountIdAndroid,
       });
     } else if (_platform.isIOS) {
       return await _channel.invokeMethod(
