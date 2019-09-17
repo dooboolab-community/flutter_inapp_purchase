@@ -217,14 +217,19 @@ class FlutterInappPurchase {
   /// Request a purchase on `Android` or `iOS`.
   /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
   ///
-  /// Identical to [buySubscription] on `iOS`.
-  Future<Null> requestPurchase(String sku) async {
+  /// Identical to [requestSubscription] on `iOS`.
+  Future<Null> requestPurchase(String sku, {
+    String developerIdAndroid,
+    String accountIdAndroid,
+  }) async {
     if (_platform.isAndroid) {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.inapp),
         'sku': sku,
         'oldSku': null,
         'prorationMode': -1,
+        'developerIdAndroid': developerIdAndroid,
+        'accountIdAndroid': accountIdAndroid,
       });
     } else if (_platform.isIOS) {
       return await _channel.invokeMethod(
@@ -243,7 +248,12 @@ class FlutterInappPurchase {
   ///
   /// Identical to [requestPurchase] on `iOS`.
   Future<Null> requestSubscription(String sku,
-      {String oldSku, int prorationMode}) async {
+      {
+        String oldSku,
+        int prorationMode,
+        String developerIdAndroid,
+        String accountIdAndroid,
+      }) async {
     if (_platform.isAndroid) {
       return await _channel
           .invokeMethod('buyItemByType', <String, dynamic>{
@@ -251,6 +261,8 @@ class FlutterInappPurchase {
         'sku': sku,
         'oldSku': oldSku,
         'prorationMode': prorationMode ?? -1,
+        'developerIdAndroid': developerIdAndroid,
+        'accountIdAndroid': accountIdAndroid,
       });
     } else if (_platform.isIOS) {
       return await _channel.invokeMethod(

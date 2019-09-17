@@ -316,7 +316,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
 
     /*
      * buyItemByType
-     * arguments: type, sku, oldSku, prorationMode
+     * arguments: type, accounIdAndroid, developerIdAndroid,  sku, oldSku, prorationMode
      */
     else if (call.method.equals("buyItemByType")) {
       if (billingClient == null || !billingClient.isReady()) {
@@ -325,6 +325,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       }
 
       final String type = call.argument("type");
+      final String accountId = call.argument("accountIdAndroid");
+      final String developerId = call.argument("developerIdAndroid");
       final String sku = call.argument("sku");
       final String oldSku = call.argument("oldSku");
       final int prorationMode = call.argument("prorationMode");
@@ -333,7 +335,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
 
       if (type.equals(BillingClient.SkuType.SUBS) && oldSku != null && !oldSku.isEmpty()) {
         // Subscription upgrade/downgrade
-        builder.addOldSku(oldSku);
+        builder.setOldSku(oldSku);
       }
 
       if (type.equals(BillingClient.SkuType.SUBS) && oldSku != null && !oldSku.isEmpty()) {
@@ -345,11 +347,10 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
           } else if (prorationMode == BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION) {
             builder.setReplaceSkusProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
           } else {
-            // builder.addOldSku(oldSku);
             builder.setOldSku(oldSku);
           }
         } else {
-          builder.addOldSku(oldSku);
+          builder.setOldSku(oldSku);
         }
       }
 
@@ -370,9 +371,15 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         return;
       }
 
-      BillingFlowParams flowParams = builder
-          .setSkuDetails(selectedSku)
-          .build();
+      if (accountId != null) {
+        builder.setAccountId(accountId);
+      }
+      if (developerId != null) {
+        builder.setDeveloperId(developerId);
+      }
+
+      builder.setSkuDetails(selectedSku);
+      BillingFlowParams flowParams = builder.build();
       billingClient.launchBillingFlow(reg.activity(), flowParams);
     }
 
