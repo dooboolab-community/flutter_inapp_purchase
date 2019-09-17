@@ -249,8 +249,8 @@ class FlutterInappPurchase {
   /// Identical to [requestPurchase] on `iOS`.
   Future<Null> requestSubscription(String sku,
       {
-        String oldSku,
-        int prorationMode,
+        String oldSkuAndroid,
+        int prorationModeAndroid,
         String developerIdAndroid,
         String accountIdAndroid,
       }) async {
@@ -259,8 +259,8 @@ class FlutterInappPurchase {
           .invokeMethod('buyItemByType', <String, dynamic>{
         'type': EnumUtil.getValueString(_TypeInApp.subs),
         'sku': sku,
-        'oldSku': oldSku,
-        'prorationMode': prorationMode ?? -1,
+        'oldSku': oldSkuAndroid,
+        'prorationMode': prorationModeAndroid ?? -1,
         'developerIdAndroid': developerIdAndroid,
         'accountIdAndroid': accountIdAndroid,
       });
