@@ -414,17 +414,14 @@ class FlutterInappPurchase {
   /// Call this after finalizing server-side validation of the reciept.
   ///
   /// No effect on `Android`, who does not allow this type of functionality.
-  Future<PurchaseResult> finishTransactionIOS(String purchaseToken) async {
+  Future<String> finishTransactionIOS(String purchaseToken) async {
     if (_platform.isAndroid) {
-      return PurchaseResult(
-        debugMessage: 'no ops in android',
-      );
+      return 'no ops in android';
     } else if (_platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
         'transactionIdentifier': purchaseToken,
       });
-      PurchaseResult decoded = json.decode(result.toString());
-      return decoded;
+      return result;
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
