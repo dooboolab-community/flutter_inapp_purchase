@@ -346,21 +346,16 @@ class FlutterInappPurchase {
   /// Acknowledge a purchase on `Android`.
   ///
   /// No effect on `iOS`, whose iap purchases are consumed at the time of purchase.
-  Future<PurchaseResult> acknowledgePurchaseAndroid(String token, { String developerPayload }) async {
+  Future<String> acknowledgePurchaseAndroid(String token, { String developerPayload }) async {
     if (_platform.isAndroid) {
       String result = await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
         'token': token,
         'developerPayload': developerPayload,
       });
 
-      if (result == null) {
-        return null;
-      }
-
-      PurchaseResult decoded = json.decode(result);
-      return decoded;
+      return result;
     } else if (_platform.isIOS) {
-      return PurchaseResult(debugMessage: 'no-ops in ios');
+      return 'no-ops in ios';
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
@@ -370,22 +365,16 @@ class FlutterInappPurchase {
   /// Consumes a purchase on `Android`.
   ///
   /// No effect on `iOS`, whose consumable purchases are consumed at the time of purchase.
-  Future<PurchaseResult> consumePurchaseAndroid(String token, { String developerPayload }) async {
+  Future<String> consumePurchaseAndroid(String token, { String developerPayload }) async {
     if (_platform.isAndroid) {
       String result =
           await _channel.invokeMethod('consumeProduct', <String, dynamic>{
         'token': token,
         'developerPayload': developerPayload,
       });
-
-      if (result == null) {
-        return null;
-      }
-
-      PurchaseResult decoded = json.decode(result);
-      return decoded;
+      return result;
     } else if (_platform.isIOS) {
-      return PurchaseResult(debugMessage: 'no-ops in ios');
+      return 'no-ops in ios';
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
@@ -430,7 +419,7 @@ class FlutterInappPurchase {
   /// Finish a transaction on both `android` and `iOS`.
   ///
   /// Call this after finalizing server-side validation of the reciept.
-  Future<PurchaseResult> finishTransaction(String purchaseToken,
+  Future<String> finishTransaction(String purchaseToken,
     { String developerPayloadAndroid, bool isConsumable }) async {
     if (_platform.isAndroid) {
       if (isConsumable) {
@@ -438,22 +427,19 @@ class FlutterInappPurchase {
           'token': purchaseToken,
           'developerPayload': developerPayloadAndroid,
         });
-        PurchaseResult decoded = json.decode(result);
-        return decoded;
+        return result;
       } else {
         String result = await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
           'token': purchaseToken,
           'developerPayload': developerPayloadAndroid,
         });
-        PurchaseResult decoded = json.decode(result);
-        return decoded;
+        return result;
       }
     } else if (_platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
         'transactionIdentifier': purchaseToken,
       });
-      PurchaseResult decoded = json.decode(result);
-      return decoded;
+      return result;
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
