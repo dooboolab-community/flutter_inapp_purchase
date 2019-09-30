@@ -1,3 +1,5 @@
+## 2.0.0+9
+* Resolve [#101](https://github.com/dooboolab/flutter_inapp_purchase/issues/101).
 ## 2.0.0+8
 * Resolve [#100](https://github.com/dooboolab/flutter_inapp_purchase/issues/100).
 ## 2.0.0+7

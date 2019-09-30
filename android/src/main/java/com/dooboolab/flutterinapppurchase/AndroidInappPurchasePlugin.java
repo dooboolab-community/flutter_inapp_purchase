@@ -390,35 +390,44 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
     else if (call.method.equals("acknowledgePurchase")) {
       final String token = call.argument("token");
       final String developerPayload = call.argument("developerPayload");
+
       if (billingClient == null || !billingClient.isReady()) {
-        AcknowledgePurchaseParams acknowledgePurchaseParams =
-            AcknowledgePurchaseParams.newBuilder()
-                .setPurchaseToken(token)
-                .setDeveloperPayload(developerPayload)
-                .build();
-        billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
-          @Override
-          public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
-            if (billingClient == null || !billingClient.isReady()) {
-              result.error(call.method,
-                  "IAP not prepared. Check if Google Play service is available.",
-                  DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()));
-              return;
-            }
-            try {
-              JSONObject item = new JSONObject();
-              item.put("responseCode", billingResult.getResponseCode());
-              item.put("debugMessage", billingResult.getDebugMessage());
-              String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-              item.put("code", errorData[0]);
-              item.put("message", errorData[1]);
-              result.success(item.toString());
-            } catch (JSONException je) {
-              result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
-            }
-          }
-        });
+        result.error(call.method,
+          "IAP not prepared. Check if Google Play service is available.",
+          DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()),
+        );
+        return;
       }
+
+      AcknowledgePurchaseParams acknowledgePurchaseParams =
+          AcknowledgePurchaseParams.newBuilder()
+              .setPurchaseToken(token)
+              .setDeveloperPayload(developerPayload)
+              .build();
+      billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
+        @Override
+        public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+        if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
+          result.error(
+            call.method,
+            "The response code is not OK when requested acknowledge.",
+            DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()),
+          );
+          return;
+        }
+          try {
+            JSONObject item = new JSONObject();
+            item.put("responseCode", billingResult.getResponseCode());
+            item.put("debugMessage", billingResult.getDebugMessage());
+            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+            item.put("code", errorData[0]);
+            item.put("message", errorData[1]);
+            result.success(item.toString());
+          } catch (JSONException je) {
+            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
+          }
+        }
+      });
     }
 
     /*
