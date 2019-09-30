@@ -392,10 +392,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       final String developerPayload = call.argument("developerPayload");
 
       if (billingClient == null || !billingClient.isReady()) {
-        result.error(call.method,
-          "IAP not prepared. Check if Google Play service is available.",
-          DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()),
-        );
+        result.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
         return;
       }
 
@@ -411,8 +408,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
           result.error(
             call.method,
             "The response code is not OK when requested acknowledge.",
-            DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()),
-          );
+            DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()));
           return;
         }
           try {
