@@ -188,9 +188,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
           int responseCode = billingResult.getResponseCode();
           if (responseCode != BillingClient.BillingResponseCode.OK) {
-            result.error(call.method,
-                String.valueOf(billingResult.getResponseCode()),
-                DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()));
+            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+            result.error(call.method, errorData[0], errorData[1]);
             return;
           }
 
@@ -288,7 +287,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         @Override
         public void onPurchaseHistoryResponse(BillingResult billingResult, List<PurchaseHistoryRecord> purchaseHistoryRecordList) {
           if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-            result.error(call.method, call.arguments.toString(), billingResult.getResponseCode());
+            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+            result.error(call.method, errorData[0], errorData[1]);
             return;
           }
 
@@ -405,10 +405,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         @Override
         public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
         if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-          result.error(
-            call.method,
-            "The response code is not OK when requested acknowledge.",
-            DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()));
+          String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+          result.error(call.method, errorData[0], errorData[1]);
           return;
         }
           try {
@@ -447,7 +445,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         @Override
         public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
           if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-            result.error(TAG, "buyItemByType", billingResult.getResponseCode());
+            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+            result.error(call.method, errorData[0], errorData[1]);
+            return;
           }
 
           try {

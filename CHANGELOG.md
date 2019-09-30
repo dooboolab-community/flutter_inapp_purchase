@@ -1,3 +1,5 @@
+## 2.0.0+12
+* Resolve [#102](https://github.com/dooboolab/flutter_inapp_purchase/issues/102). Fluter seems to only sends strings between platforms.
 ## 2.0.0+9
 * Resolve [#101](https://github.com/dooboolab/flutter_inapp_purchase/issues/101).
 ## 2.0.0+8
