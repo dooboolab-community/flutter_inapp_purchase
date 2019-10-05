@@ -544,6 +544,7 @@ class FlutterInappPurchase {
   ///
   /// For Android, you need separate json file from the service account to get the access_token from google-apis, therefore it is impossible to implement serverless. You should have your own backend and get access_token.
   /// Read: https://stackoverflow.com/questions/35127086/android-inapp-purchase-receipt-validation-google-play?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+  /// Reference: https://developers.google.com/android-publisher/api-ref/purchases/products?hl=en#resource
   ///
   /// Example:
   /// ```
@@ -570,7 +571,7 @@ class FlutterInappPurchase {
 
     final String type = isSubscription ? 'subscriptions' : 'products';
     final String url =
-        'https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
+        'https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
     return await _client.get(
       url,
       headers: {
