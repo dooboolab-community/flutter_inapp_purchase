@@ -1,3 +1,5 @@
+## 2.0.0+13
+* Android receipt validation api upgrade to `v3`.
 ## 2.0.0+12
 * Resolve [#102](https://github.com/dooboolab/flutter_inapp_purchase/issues/102). Fluter seems to only sends strings between platforms.
 ## 2.0.0+9
