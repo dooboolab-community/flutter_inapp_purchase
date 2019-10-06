@@ -55,7 +55,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       try {
         result.success("Android " + android.os.Build.VERSION.RELEASE);
       } catch(IllegalStateException e){
-        e.printStackTrace();
+        result.error(call.method, e.getMessage(), e.getLocalizedMessage());
       }
     }
 
@@ -67,7 +67,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         try{
           result.success("Already started. Call endConnection method if you want to start over.");
         } catch(IllegalStateException e){
-          e.printStackTrace();
+          result.error(call.method, e.getMessage(), e.getLocalizedMessage());
+          // e.printStackTrace();
         }
         return;
       }
@@ -88,7 +89,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
                 result.error(call.method, "responseCode: " + responseCode, "");
               }
             } catch (IllegalStateException e) {
-              e.printStackTrace();
+              result.error(call.method, e.getMessage(), e.getLocalizedMessage());
             }
           }
 
