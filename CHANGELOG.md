@@ -1,3 +1,5 @@
+## 2.0.0+14
+* Pass android exception to flutter side.
 ## 2.0.0+13
 * Android receipt validation api upgrade to `v3`.
 ## 2.0.0+12
