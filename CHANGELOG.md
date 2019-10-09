@@ -1,3 +1,5 @@
+## 2.0.0+15
+* Fixed minor typo when generating string with `toString`. Resolve [#110](https://github.com/dooboolab/flutter_inapp_purchase/issues/110).
 ## 2.0.0+14
 * Pass android exception to flutter side.
 ## 2.0.0+13

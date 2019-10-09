@@ -155,7 +155,7 @@ class PurchasedItem {
         'autoRenewingAndroid: $autoRenewingAndroid, '
         'purchaseStateAndroid: $purchaseStateAndroid, '
         'developerPayloadAndroid: $developerPayloadAndroid, '
-        'oreiginalJsonAndroid: $originalJsonAndroid, '
+        'originalJsonAndroid: $originalJsonAndroid, '
         /// ios specific
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS';
