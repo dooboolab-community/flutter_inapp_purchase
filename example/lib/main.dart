@@ -29,6 +29,7 @@ class InApp extends StatefulWidget {
 class _InAppState extends State<InApp> {
   StreamSubscription _purchaseUpdatedSubscription;
   StreamSubscription _purchaseErrorSubscription;
+  StreamSubscription _conectionSubscription;
   final List<String> _productLists = Platform.isAndroid
       ? [
           'android.test.purchased',
@@ -46,6 +47,14 @@ class _InAppState extends State<InApp> {
   void initState() {
     super.initState();
     initPlatformState();
+  }
+
+  @override
+  void dispose() {
+    if (_conectionSubscription != null) {
+      _conectionSubscription.cancel();
+      _conectionSubscription = null;
+    }
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -78,6 +87,10 @@ class _InAppState extends State<InApp> {
     } catch (err) {
       print('consumeAllItems error: $err');
     }
+
+    _conectionSubscription = FlutterInappPurchase.connectionUpdated.listen((connected) {
+      print('connected: $connected');
+    });
 
     _purchaseUpdatedSubscription = FlutterInappPurchase.purchaseUpdated.listen((productItem) {
       print('purchase-updated: $productItem');
@@ -259,10 +272,14 @@ class _InAppState extends State<InApp> {
                           onPressed: () async {
                             print("---------- End Connection Button Pressed");
                             await FlutterInappPurchase.instance.endConnection;
-                            _purchaseUpdatedSubscription.cancel();
-                            _purchaseUpdatedSubscription = null;
-                            _purchaseErrorSubscription.cancel();
-                            _purchaseErrorSubscription = null;
+                            if (_purchaseUpdatedSubscription != null) {
+                              _purchaseUpdatedSubscription.cancel();
+                              _purchaseUpdatedSubscription = null;
+                            }
+                            if (_purchaseErrorSubscription != null) {
+                              _purchaseErrorSubscription.cancel();
+                              _purchaseErrorSubscription = null;
+                            }
                             setState(() {
                               this._items = [];
                               this._purchases = [];

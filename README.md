@@ -144,6 +144,14 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
   ```
 * You should end the billing service in android when you are done with it. Otherwise it will be keep running in background. We recommend to use this feature in `dispose()`.
 
+* Additionally, we've added `connectionUpdated` stream just in case if you'd like to monitor the connection more thoroughly form `2.0.1`.
+  ```
+  _conectionSubscription = FlutterInappPurchase.connectionUpdated.listen((connected) {
+    print('connected: $connected');
+  });
+  ```
+  > You can see how you can use this in detail in `example` project.
+
   ```dart
     /// start connection for android
     @override
