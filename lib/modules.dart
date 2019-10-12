@@ -218,7 +218,7 @@ class ConnectionResult {
       : connected = json['connected'] as bool;
 
   Map<String, dynamic> toJson() => {
-    "connected": connected?? false,
+    "connected": connected ?? false,
   };
 
   @override
