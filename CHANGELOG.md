@@ -1,3 +1,5 @@
+## 2.0.0+16
+* Resolve [#106](https://github.com/dooboolab/flutter_inapp_purchase/issues/106) by not sending `result.error` to the listener. Created use `_conectionSubscription`.
 ## 2.0.0+15
 * Fixed minor typo when generating string with `toString`. Resolve [#110](https://github.com/dooboolab/flutter_inapp_purchase/issues/110).
 ## 2.0.0+14

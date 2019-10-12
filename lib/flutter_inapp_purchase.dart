@@ -27,6 +27,9 @@ class FlutterInappPurchase {
   static StreamController<PurchaseResult> _purchaseErrorController;
   static Stream<PurchaseResult> get purchaseError => _purchaseErrorController.stream;
 
+  static StreamController<PurchaseResult> _connectionController;
+  static Stream<PurchaseResult> get connectionUpdated => _connectionController.stream;
+
   static StreamController<String> _purchasePromotedController;
   static Stream<String> get purchasePromoted => _purchasePromotedController.stream;
 
@@ -544,7 +547,6 @@ class FlutterInappPurchase {
   ///
   /// For Android, you need separate json file from the service account to get the access_token from google-apis, therefore it is impossible to implement serverless. You should have your own backend and get access_token.
   /// Read: https://stackoverflow.com/questions/35127086/android-inapp-purchase-receipt-validation-google-play?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-  /// Reference: https://developers.google.com/android-publisher/api-ref/purchases/products?hl=en#resource
   ///
   /// Example:
   /// ```
@@ -571,7 +573,7 @@ class FlutterInappPurchase {
 
     final String type = isSubscription ? 'subscriptions' : 'products';
     final String url =
-        'https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
+        'https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
     return await _client.get(
       url,
       headers: {
@@ -597,6 +599,10 @@ class FlutterInappPurchase {
           break;
         case "purchase-error":
           Map<String, dynamic> result = jsonDecode(call.arguments);
+          _purchaseErrorController.add(new PurchaseResult.fromJSON(result));
+          break;
+        case "connected":
+          Map<String, dynamic> result = call.arguments;
           _purchaseErrorController.add(new PurchaseResult.fromJSON(result));
           break;
         case "iap-promoted-product":

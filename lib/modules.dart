@@ -205,3 +205,25 @@ class PurchaseResult {
     ;
   }
 }
+
+
+class ConnectionResult {
+  final bool connected;
+
+  ConnectionResult({
+    this.connected,
+  });
+
+  ConnectionResult.fromJSON(Map<String, dynamic> json)
+      : connected = json['connected'] as bool;
+
+  Map<String, dynamic> toJson() => {
+    "connected": connected?? false,
+  };
+
+  @override
+  String toString() {
+    return 'connected: $connected'
+    ;
+  }
+}

@@ -64,43 +64,47 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
      */
     else if (call.method.equals("initConnection")) {
       if (billingClient != null) {
-        try{
-          result.success("Already started. Call endConnection method if you want to start over.");
-        } catch(IllegalStateException e){
-          result.error(call.method, e.getMessage(), e.getLocalizedMessage());
-          // e.printStackTrace();
-        }
+        result.success("Already started. Call endConnection method if you want to start over.");
         return;
       }
 
-      try {
-        billingClient = BillingClient.newBuilder(reg.context()).setListener(purchasesUpdatedListener)
-            .enablePendingPurchases()
-            .build();
-        billingClient.startConnection(new BillingClientStateListener() {
-          @Override
-          public void onBillingSetupFinished(BillingResult billingResult) {
+      billingClient = BillingClient.newBuilder(reg.context()).setListener(purchasesUpdatedListener)
+          .enablePendingPurchases()
+          .build();
+      billingClient.startConnection(new BillingClientStateListener() {
+        @Override
+        public void onBillingSetupFinished(BillingResult billingResult) {
+          try {
             int responseCode = billingResult.getResponseCode();
 
-            try {
-              if (responseCode == BillingClient.BillingResponseCode.OK) {
-                result.success("Billing client ready");
-              } else {
-                result.error(call.method, "responseCode: " + responseCode, "");
-              }
-            } catch (IllegalStateException e) {
-              result.error(call.method, e.getMessage(), e.getLocalizedMessage());
+            if (responseCode == BillingClient.BillingResponseCode.OK) {
+              JSONObject item = new JSONObject();
+              item.put("connected", true);
+              channel.invokeMethod("connection-updated", item.toString());
+              result.success("Billing client ready");
+            } else {
+              JSONObject item = new JSONObject();
+              item.put("connected", false);
+              channel.invokeMethod("connection-updated", item.toString());
+              result.error(call.method, "responseCode: " + responseCode, "");
             }
+          } catch (JSONException je) {
+            je.printStackTrace();
           }
 
-          @Override
-          public void onBillingServiceDisconnected() {
-            result.error(call.method, "initConnection", "Billing service disconnected.");
+        }
+
+        @Override
+        public void onBillingServiceDisconnected() {
+          try {
+            JSONObject item = new JSONObject();
+            item.put("connected", false);
+            channel.invokeMethod("connection-updated", item.toString());
+          } catch (JSONException je) {
+            je.printStackTrace();
           }
-        });
-      } catch (Exception e) {
-        result.error(call.method, "Call endConnection method if you want to start over.", e.getMessage());
-      }
+        }
+      });
     }
 
     /*
@@ -224,7 +228,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             }
             result.success(items.toString());
           } catch (JSONException je) {
-            result.error(call.method, je.getMessage(), je.getLocalizedMessage());
+            je.printStackTrace();
           } catch (FlutterException fe) {
             result.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
           }
@@ -309,7 +313,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             }
             result.success(items.toString());
           } catch (JSONException je) {
-            result.error(call.method, je.getMessage(), je.getLocalizedMessage());
+            je.printStackTrace();
           }
         }
       });
@@ -419,7 +423,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             item.put("message", errorData[1]);
             result.success(item.toString());
           } catch (JSONException je) {
-            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
+            je.printStackTrace();
           }
         }
       });
