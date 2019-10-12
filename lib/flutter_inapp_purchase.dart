@@ -573,7 +573,7 @@ class FlutterInappPurchase {
 
     final String type = isSubscription ? 'subscriptions' : 'products';
     final String url =
-        'https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
+        'https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
     return await _client.get(
       url,
       headers: {
