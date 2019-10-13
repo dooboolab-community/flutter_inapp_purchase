@@ -1,3 +1,5 @@
+## 2.0.2
+* use ConnectionResult as type for connection stream, fix controller creation [#112](/flutter_inapp_purchase/pull/112)
 ## 2.0.0+16
 * Resolve [#106](https://github.com/dooboolab/flutter_inapp_purchase/issues/106) by not sending `result.error` to the listener. Created use `_conectionSubscription`.
 ## 2.0.0+15
