@@ -27,8 +27,8 @@ class FlutterInappPurchase {
   static StreamController<PurchaseResult> _purchaseErrorController;
   static Stream<PurchaseResult> get purchaseError => _purchaseErrorController.stream;
 
-  static StreamController<PurchaseResult> _connectionController;
-  static Stream<PurchaseResult> get connectionUpdated => _connectionController.stream;
+  static StreamController<ConnectionResult> _connectionController;
+  static Stream<ConnectionResult> get connectionUpdated => _connectionController.stream;
 
   static StreamController<String> _purchasePromotedController;
   static Stream<String> get purchasePromoted => _purchasePromotedController.stream;
@@ -591,6 +591,14 @@ class FlutterInappPurchase {
       _purchaseErrorController = new StreamController.broadcast();
     }
 
+    if (_connectionController == null) {
+      _connectionController = new StreamController.broadcast();
+    }
+
+    if (_purchasePromotedController == null) {
+      _purchasePromotedController = new StreamController.broadcast();
+    }
+
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
         case "purchase-updated":
@@ -601,9 +609,9 @@ class FlutterInappPurchase {
           Map<String, dynamic> result = jsonDecode(call.arguments);
           _purchaseErrorController.add(new PurchaseResult.fromJSON(result));
           break;
-        case "connected":
+        case "connection-updated":
           Map<String, dynamic> result = call.arguments;
-          _purchaseErrorController.add(new PurchaseResult.fromJSON(result));
+          _connectionController.add(new ConnectionResult.fromJSON(result));
           break;
         case "iap-promoted-product":
           String productId = call.arguments;
