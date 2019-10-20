@@ -610,7 +610,7 @@ class FlutterInappPurchase {
           _purchaseErrorController.add(new PurchaseResult.fromJSON(result));
           break;
         case "connection-updated":
-          Map<String, dynamic> result = call.arguments;
+          Map<String, dynamic> result = jsonDecode(call.arguments);
           _connectionController.add(new ConnectionResult.fromJSON(result));
           break;
         case "iap-promoted-product":
