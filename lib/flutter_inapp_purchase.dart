@@ -426,7 +426,7 @@ class FlutterInappPurchase {
     { String developerPayloadAndroid, bool isConsumable }) async {
     if (_platform.isAndroid) {
       if (isConsumable) {
-        String result = await _channel.invokeMethod('consumePurchase', <String, dynamic>{
+        String result = await _channel.invokeMethod('consumeProduct', <String, dynamic>{
           'token': purchaseToken,
           'developerPayload': developerPayloadAndroid,
         });
