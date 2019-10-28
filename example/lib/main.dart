@@ -105,7 +105,7 @@ class _InAppState extends State<InApp> {
     FlutterInappPurchase.instance.requestPurchase(item.productId);
   }
 
-  Future<Null> _getProduct() async {
+  Future _getProduct() async {
     List<IAPItem> items = await FlutterInappPurchase.instance.getProducts(_productLists);
     for (var item in items) {
       print('${item.toString()}');
@@ -118,7 +118,7 @@ class _InAppState extends State<InApp> {
     });
   }
 
-  Future<Null> _getPurchases() async {
+  Future _getPurchases() async {
     List<PurchasedItem> items =
         await FlutterInappPurchase.instance.getAvailablePurchases();
     for (var item in items) {
@@ -132,7 +132,7 @@ class _InAppState extends State<InApp> {
     });
   }
 
-  Future<Null> _getPurchaseHistory() async {
+  Future _getPurchaseHistory() async {
     List<PurchasedItem> items = await FlutterInappPurchase.instance.getPurchaseHistory();
     for (var item in items) {
       print('${item.toString()}');

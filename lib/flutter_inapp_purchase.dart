@@ -221,7 +221,7 @@ class FlutterInappPurchase {
   /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
   ///
   /// Identical to [requestSubscription] on `iOS`.
-  Future<Null> requestPurchase(String sku, {
+  Future requestPurchase(String sku, {
     String developerIdAndroid,
     String accountIdAndroid,
   }) async {
@@ -250,7 +250,7 @@ class FlutterInappPurchase {
   /// **NOTICE** second parameter is required on `Android`.
   ///
   /// Identical to [requestPurchase] on `iOS`.
-  Future<Null> requestSubscription(String sku,
+  Future requestSubscription(String sku,
       {
         String oldSkuAndroid,
         int prorationModeAndroid,
@@ -293,8 +293,8 @@ class FlutterInappPurchase {
   /// Add Store Payment (iOS only)
   /// Indicates that the App Store purchase should continue from the app instead of the App Store.
   ///
-  /// @returns {Future<Null>} will receive result from `purchasePromoted` listener.
-  Future<Null> requestPromotedProductIOS() async {
+  /// @returns {Future} will receive result from `purchasePromoted` listener.
+  Future requestPromotedProductIOS() async {
     if (_platform.isIOS) {
       return await _channel.invokeMethod('requestPromotedProduct');
     }
@@ -303,8 +303,8 @@ class FlutterInappPurchase {
 
   /// Buy product with offer
   ///
-  /// @returns {Future<Null>} will receive result from `purchaseUpdated` listener.
-  Future<Null> requestProductWithOfferIOS(
+  /// @returns {Future} will receive result from `purchaseUpdated` listener.
+  Future requestProductWithOfferIOS(
     String sku, String forUser, String withOffer,
   ) async {
     if (_platform.isIOS) {
@@ -319,8 +319,8 @@ class FlutterInappPurchase {
 
   /// Buy product with quantity
   ///
-  /// @returns {Future<Null>} will receive result from `purchaseUpdated` listener.
-  Future<Null> requestPurchaseWithQuantityIOS(
+  /// @returns {Future} will receive result from `purchaseUpdated` listener.
+  Future requestPurchaseWithQuantityIOS(
     String sku, int quantity,
   ) async {
     if (_platform.isIOS) {
@@ -582,7 +582,7 @@ class FlutterInappPurchase {
     );
   }
 
-  Future<Null> _setPurchaseListener() async {
+  Future _setPurchaseListener() async {
     if (_purchaseController == null) {
       _purchaseController = new StreamController.broadcast();
     }
@@ -624,7 +624,7 @@ class FlutterInappPurchase {
     });
   }
 
-  Future<Null> _removePurchaseListener() async {
+  Future _removePurchaseListener() async {
     if (_purchaseController != null) {
       _purchaseController
         ..add(null)
