@@ -1,3 +1,5 @@
+## 2.0.5
++ [bugfix] Fix double call of result reply on connection init [#126](https://github.com/dooboolab/flutter_inapp_purchase/pull/126)
 ## 2.0.4
 + [bugfix] Fix plugin throws exceptions with flutter v1.10.7 beta [#117](https://github.com/dooboolab/flutter_inapp_purchase/pull/117)
 ## 2.0.3
