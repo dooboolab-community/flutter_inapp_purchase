@@ -72,6 +72,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
           .enablePendingPurchases()
           .build();
       billingClient.startConnection(new BillingClientStateListener() {
+        private boolean alreadyFinished = false;
+
         @Override
         public void onBillingSetupFinished(BillingResult billingResult) {
           try {
@@ -81,11 +83,15 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
               JSONObject item = new JSONObject();
               item.put("connected", true);
               channel.invokeMethod("connection-updated", item.toString());
+              if (alreadyFinished) return;
+              alreadyFinished = true;
               result.success("Billing client ready");
             } else {
               JSONObject item = new JSONObject();
               item.put("connected", false);
               channel.invokeMethod("connection-updated", item.toString());
+              if (alreadyFinished) return;
+              alreadyFinished = true;
               result.error(call.method, "responseCode: " + responseCode, "");
             }
           } catch (JSONException je) {
