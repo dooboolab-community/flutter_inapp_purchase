@@ -1,3 +1,6 @@
+## 2.1.0
++ `finishTransaction` parameter changes to `purchasedItem` from `purchaseToken`.
+
 ## 2.0.5
 + [bugfix] Fix double call of result reply on connection init [#126](https://github.com/dooboolab/flutter_inapp_purchase/pull/126)
 ## 2.0.4
