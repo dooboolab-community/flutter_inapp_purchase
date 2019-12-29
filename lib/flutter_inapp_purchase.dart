@@ -422,25 +422,25 @@ class FlutterInappPurchase {
   /// Finish a transaction on both `android` and `iOS`.
   ///
   /// Call this after finalizing server-side validation of the reciept.
-  Future<String> finishTransaction(String purchaseToken,
+  Future<String> finishTransaction(PurchasedItem purchasedItem,
     { String developerPayloadAndroid, bool isConsumable }) async {
     if (_platform.isAndroid) {
       if (isConsumable) {
         String result = await _channel.invokeMethod('consumeProduct', <String, dynamic>{
-          'token': purchaseToken,
+          'token': purchasedItem.purchaseToken,
           'developerPayload': developerPayloadAndroid,
         });
         return result;
       } else {
         String result = await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
-          'token': purchaseToken,
+          'token': purchasedItem.purchaseToken,
           'developerPayload': developerPayloadAndroid,
         });
         return result;
       }
     } else if (_platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
-        'transactionIdentifier': purchaseToken,
+        'transactionIdentifier': purchasedItem.transactionId,
       });
       return result;
     }
