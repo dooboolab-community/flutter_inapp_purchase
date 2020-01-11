@@ -38,10 +38,11 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
   public static Registrar reg;
   private final String TAG = "InappPurchasePlugin";
   private Result result = null;
+  private static MethodChannel channel;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_inapp");
+    channel = new MethodChannel(registrar.messenger(), "flutter_inapp");
     channel.setMethodCallHandler(new FlutterInappPurchasePlugin());
     reg = registrar;
   }
@@ -208,6 +209,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
                   transactionDate.doubleValue());
             Log.d(TAG, "opr Putting "+item.toString());
             result.success(item.toString());
+            channel.invokeMethod("purchase-updated", item.toString());
           } catch (JSONException e) {
             result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
           }
