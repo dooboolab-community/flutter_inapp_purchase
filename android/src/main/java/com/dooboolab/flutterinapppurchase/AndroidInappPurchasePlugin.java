@@ -55,7 +55,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       try {
         result.success("Android " + android.os.Build.VERSION.RELEASE);
       } catch(IllegalStateException e){
-        e.printStackTrace();
+        result.error(call.method, e.getMessage(), e.getLocalizedMessage());
       }
     }
 
@@ -64,42 +64,53 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
      */
     else if (call.method.equals("initConnection")) {
       if (billingClient != null) {
-        try{
-          result.success("Already started. Call endConnection method if you want to start over.");
-        } catch(IllegalStateException e){
-          e.printStackTrace();
-        }
+        result.success("Already started. Call endConnection method if you want to start over.");
         return;
       }
 
-      try {
-        billingClient = BillingClient.newBuilder(reg.context()).setListener(purchasesUpdatedListener)
-            .enablePendingPurchases()
-            .build();
-        billingClient.startConnection(new BillingClientStateListener() {
-          @Override
-          public void onBillingSetupFinished(BillingResult billingResult) {
+      billingClient = BillingClient.newBuilder(reg.context()).setListener(purchasesUpdatedListener)
+          .enablePendingPurchases()
+          .build();
+      billingClient.startConnection(new BillingClientStateListener() {
+        private boolean alreadyFinished = false;
+
+        @Override
+        public void onBillingSetupFinished(BillingResult billingResult) {
+          try {
             int responseCode = billingResult.getResponseCode();
 
-            try {
-              if (responseCode == BillingClient.BillingResponseCode.OK) {
-                result.success("Billing client ready");
-              } else {
-                result.error(call.method, "responseCode: " + responseCode, "");
-              }
-            } catch (IllegalStateException e) {
-              e.printStackTrace();
+            if (responseCode == BillingClient.BillingResponseCode.OK) {
+              JSONObject item = new JSONObject();
+              item.put("connected", true);
+              channel.invokeMethod("connection-updated", item.toString());
+              if (alreadyFinished) return;
+              alreadyFinished = true;
+              result.success("Billing client ready");
+            } else {
+              JSONObject item = new JSONObject();
+              item.put("connected", false);
+              channel.invokeMethod("connection-updated", item.toString());
+              if (alreadyFinished) return;
+              alreadyFinished = true;
+              result.error(call.method, "responseCode: " + responseCode, "");
             }
+          } catch (JSONException je) {
+            je.printStackTrace();
           }
 
-          @Override
-          public void onBillingServiceDisconnected() {
-            result.error(call.method, "initConnection", "Billing service disconnected.");
+        }
+
+        @Override
+        public void onBillingServiceDisconnected() {
+          try {
+            JSONObject item = new JSONObject();
+            item.put("connected", false);
+            channel.invokeMethod("connection-updated", item.toString());
+          } catch (JSONException je) {
+            je.printStackTrace();
           }
-        });
-      } catch (Exception e) {
-        result.error(call.method, "Call endConnection method if you want to start over.", e.getMessage());
-      }
+        }
+      });
     }
 
     /*
@@ -188,9 +199,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
           int responseCode = billingResult.getResponseCode();
           if (responseCode != BillingClient.BillingResponseCode.OK) {
-            result.error(call.method,
-                String.valueOf(billingResult.getResponseCode()),
-                DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()));
+            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+            result.error(call.method, errorData[0], errorData[1]);
             return;
           }
 
@@ -224,7 +234,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             }
             result.success(items.toString());
           } catch (JSONException je) {
-            result.error(call.method, je.getMessage(), je.getLocalizedMessage());
+            je.printStackTrace();
           } catch (FlutterException fe) {
             result.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
           }
@@ -288,7 +298,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         @Override
         public void onPurchaseHistoryResponse(BillingResult billingResult, List<PurchaseHistoryRecord> purchaseHistoryRecordList) {
           if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-            result.error(call.method, call.arguments.toString(), billingResult.getResponseCode());
+            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+            result.error(call.method, errorData[0], errorData[1]);
             return;
           }
 
@@ -308,7 +319,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             }
             result.success(items.toString());
           } catch (JSONException je) {
-            result.error(call.method, je.getMessage(), je.getLocalizedMessage());
+            je.printStackTrace();
           }
         }
       });
@@ -390,35 +401,38 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
     else if (call.method.equals("acknowledgePurchase")) {
       final String token = call.argument("token");
       final String developerPayload = call.argument("developerPayload");
+
       if (billingClient == null || !billingClient.isReady()) {
-        AcknowledgePurchaseParams acknowledgePurchaseParams =
-            AcknowledgePurchaseParams.newBuilder()
-                .setPurchaseToken(token)
-                .setDeveloperPayload(developerPayload)
-                .build();
-        billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
-          @Override
-          public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
-            if (billingClient == null || !billingClient.isReady()) {
-              result.error(call.method,
-                  "IAP not prepared. Check if Google Play service is available.",
-                  DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode()));
-              return;
-            }
-            try {
-              JSONObject item = new JSONObject();
-              item.put("responseCode", billingResult.getResponseCode());
-              item.put("debugMessage", billingResult.getDebugMessage());
-              String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-              item.put("code", errorData[0]);
-              item.put("message", errorData[1]);
-              result.success(item.toString());
-            } catch (JSONException je) {
-              result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
-            }
-          }
-        });
+        result.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+        return;
       }
+
+      AcknowledgePurchaseParams acknowledgePurchaseParams =
+          AcknowledgePurchaseParams.newBuilder()
+              .setPurchaseToken(token)
+              .setDeveloperPayload(developerPayload)
+              .build();
+      billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
+        @Override
+        public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+        if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
+          String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+          result.error(call.method, errorData[0], errorData[1]);
+          return;
+        }
+          try {
+            JSONObject item = new JSONObject();
+            item.put("responseCode", billingResult.getResponseCode());
+            item.put("debugMessage", billingResult.getDebugMessage());
+            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+            item.put("code", errorData[0]);
+            item.put("message", errorData[1]);
+            result.success(item.toString());
+          } catch (JSONException je) {
+            je.printStackTrace();
+          }
+        }
+      });
     }
 
     /*
@@ -442,7 +456,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         @Override
         public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
           if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-            result.error(TAG, "buyItemByType", billingResult.getResponseCode());
+            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+            result.error(call.method, errorData[0], errorData[1]);
+            return;
           }
 
           try {

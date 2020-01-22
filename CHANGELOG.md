@@ -1,3 +1,28 @@
+## 2.1.0
++ `finishTransaction` parameter changes to `purchasedItem` from `purchaseToken`.
++ Update android billing client to `2.1.0` from `2.0.3`.
+
+## 2.0.5
++ [bugfix] Fix double call of result reply on connection init [#126](https://github.com/dooboolab/flutter_inapp_purchase/pull/126)
+## 2.0.4
++ [bugfix] Fix plugin throws exceptions with flutter v1.10.7 beta [#117](https://github.com/dooboolab/flutter_inapp_purchase/pull/117)
+## 2.0.3
++ [bugfix] Decode response code for connection updates stream [#114](https://github.com/dooboolab/flutter_inapp_purchase/pull/114)
++ [bugfix] Fix typo in `consumePurchase` [#115](https://github.com/dooboolab/flutter_inapp_purchase/pull/115)
+## 2.0.2
+* use ConnectionResult as type for connection stream, fix controller creation [#112](https://github.com/dooboolab/flutter_inapp_purchase/pull/112)
+## 2.0.0+16
+* Resolve [#106](https://github.com/dooboolab/flutter_inapp_purchase/issues/106) by not sending `result.error` to the listener. Created use `_conectionSubscription`.
+## 2.0.0+15
+* Fixed minor typo when generating string with `toString`. Resolve [#110](https://github.com/dooboolab/flutter_inapp_purchase/issues/110).
+## 2.0.0+14
+* Pass android exception to flutter side.
+## 2.0.0+13
+* Android receipt validation api upgrade to `v3`.
+## 2.0.0+12
+* Resolve [#102](https://github.com/dooboolab/flutter_inapp_purchase/issues/102). Fluter seems to only sends strings between platforms.
+## 2.0.0+9
+* Resolve [#101](https://github.com/dooboolab/flutter_inapp_purchase/issues/101).
 ## 2.0.0+8
 * Resolve [#100](https://github.com/dooboolab/flutter_inapp_purchase/issues/100).
 ## 2.0.0+7

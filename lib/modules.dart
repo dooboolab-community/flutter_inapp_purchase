@@ -155,7 +155,7 @@ class PurchasedItem {
         'autoRenewingAndroid: $autoRenewingAndroid, '
         'purchaseStateAndroid: $purchaseStateAndroid, '
         'developerPayloadAndroid: $developerPayloadAndroid, '
-        'oreiginalJsonAndroid: $originalJsonAndroid, '
+        'originalJsonAndroid: $originalJsonAndroid, '
         /// ios specific
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS';
@@ -202,6 +202,28 @@ class PurchaseResult {
         'debugMessage: $debugMessage, '
         'code: $code, '
         'message: $message'
+    ;
+  }
+}
+
+
+class ConnectionResult {
+  final bool connected;
+
+  ConnectionResult({
+    this.connected,
+  });
+
+  ConnectionResult.fromJSON(Map<String, dynamic> json)
+      : connected = json['connected'] as bool;
+
+  Map<String, dynamic> toJson() => {
+    "connected": connected ?? false,
+  };
+
+  @override
+  String toString() {
+    return 'connected: $connected'
     ;
   }
 }

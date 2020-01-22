@@ -1390,7 +1390,7 @@ void main() {
             accessToken: accessToken,
             isSubscription: true);
         expect(response.request.url.toString(),
-            "https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
+            "https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
       });
       test('returns correct http request url, isSubscription is false',
           () async {
@@ -1406,7 +1406,7 @@ void main() {
             accessToken: accessToken,
             isSubscription: false);
         expect(response.request.url.toString(),
-            "https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
+            "https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
       });
     });
   });

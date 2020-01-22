@@ -27,6 +27,9 @@ class FlutterInappPurchase {
   static StreamController<PurchaseResult> _purchaseErrorController;
   static Stream<PurchaseResult> get purchaseError => _purchaseErrorController.stream;
 
+  static StreamController<ConnectionResult> _connectionController;
+  static Stream<ConnectionResult> get connectionUpdated => _connectionController.stream;
+
   static StreamController<String> _purchasePromotedController;
   static Stream<String> get purchasePromoted => _purchasePromotedController.stream;
 
@@ -218,7 +221,7 @@ class FlutterInappPurchase {
   /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
   ///
   /// Identical to [requestSubscription] on `iOS`.
-  Future<Null> requestPurchase(String sku, {
+  Future requestPurchase(String sku, {
     String developerIdAndroid,
     String accountIdAndroid,
   }) async {
@@ -247,7 +250,7 @@ class FlutterInappPurchase {
   /// **NOTICE** second parameter is required on `Android`.
   ///
   /// Identical to [requestPurchase] on `iOS`.
-  Future<Null> requestSubscription(String sku,
+  Future requestSubscription(String sku,
       {
         String oldSkuAndroid,
         int prorationModeAndroid,
@@ -290,8 +293,8 @@ class FlutterInappPurchase {
   /// Add Store Payment (iOS only)
   /// Indicates that the App Store purchase should continue from the app instead of the App Store.
   ///
-  /// @returns {Future<Null>} will receive result from `purchasePromoted` listener.
-  Future<Null> requestPromotedProductIOS() async {
+  /// @returns {Future} will receive result from `purchasePromoted` listener.
+  Future requestPromotedProductIOS() async {
     if (_platform.isIOS) {
       return await _channel.invokeMethod('requestPromotedProduct');
     }
@@ -300,8 +303,8 @@ class FlutterInappPurchase {
 
   /// Buy product with offer
   ///
-  /// @returns {Future<Null>} will receive result from `purchaseUpdated` listener.
-  Future<Null> requestProductWithOfferIOS(
+  /// @returns {Future} will receive result from `purchaseUpdated` listener.
+  Future requestProductWithOfferIOS(
     String sku, String forUser, String withOffer,
   ) async {
     if (_platform.isIOS) {
@@ -316,8 +319,8 @@ class FlutterInappPurchase {
 
   /// Buy product with quantity
   ///
-  /// @returns {Future<Null>} will receive result from `purchaseUpdated` listener.
-  Future<Null> requestPurchaseWithQuantityIOS(
+  /// @returns {Future} will receive result from `purchaseUpdated` listener.
+  Future requestPurchaseWithQuantityIOS(
     String sku, int quantity,
   ) async {
     if (_platform.isIOS) {
@@ -419,25 +422,25 @@ class FlutterInappPurchase {
   /// Finish a transaction on both `android` and `iOS`.
   ///
   /// Call this after finalizing server-side validation of the reciept.
-  Future<String> finishTransaction(String purchaseToken,
+  Future<String> finishTransaction(PurchasedItem purchasedItem,
     { String developerPayloadAndroid, bool isConsumable }) async {
     if (_platform.isAndroid) {
       if (isConsumable) {
-        String result = await _channel.invokeMethod('consumePurchase', <String, dynamic>{
-          'token': purchaseToken,
+        String result = await _channel.invokeMethod('consumeProduct', <String, dynamic>{
+          'token': purchasedItem.purchaseToken,
           'developerPayload': developerPayloadAndroid,
         });
         return result;
       } else {
         String result = await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
-          'token': purchaseToken,
+          'token': purchasedItem.purchaseToken,
           'developerPayload': developerPayloadAndroid,
         });
         return result;
       }
     } else if (_platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
-        'transactionIdentifier': purchaseToken,
+        'transactionIdentifier': purchasedItem.transactionId,
       });
       return result;
     }
@@ -570,7 +573,7 @@ class FlutterInappPurchase {
 
     final String type = isSubscription ? 'subscriptions' : 'products';
     final String url =
-        'https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
+        'https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
     return await _client.get(
       url,
       headers: {
@@ -579,13 +582,21 @@ class FlutterInappPurchase {
     );
   }
 
-  Future<Null> _setPurchaseListener() async {
+  Future _setPurchaseListener() async {
     if (_purchaseController == null) {
       _purchaseController = new StreamController.broadcast();
     }
 
     if (_purchaseErrorController == null) {
       _purchaseErrorController = new StreamController.broadcast();
+    }
+
+    if (_connectionController == null) {
+      _connectionController = new StreamController.broadcast();
+    }
+
+    if (_purchasePromotedController == null) {
+      _purchasePromotedController = new StreamController.broadcast();
     }
 
     _channel.setMethodCallHandler((MethodCall call) {
@@ -598,6 +609,10 @@ class FlutterInappPurchase {
           Map<String, dynamic> result = jsonDecode(call.arguments);
           _purchaseErrorController.add(new PurchaseResult.fromJSON(result));
           break;
+        case "connection-updated":
+          Map<String, dynamic> result = jsonDecode(call.arguments);
+          _connectionController.add(new ConnectionResult.fromJSON(result));
+          break;
         case "iap-promoted-product":
           String productId = call.arguments;
           _purchasePromotedController.add(productId);
@@ -609,7 +624,7 @@ class FlutterInappPurchase {
     });
   }
 
-  Future<Null> _removePurchaseListener() async {
+  Future _removePurchaseListener() async {
     if (_purchaseController != null) {
       _purchaseController
         ..add(null)
