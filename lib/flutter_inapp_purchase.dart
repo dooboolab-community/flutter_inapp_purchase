@@ -19,7 +19,7 @@ enum _TypeInApp {
 
 class FlutterInappPurchase {
   static FlutterInappPurchase instance = FlutterInappPurchase(
-    FlutterInappPurchase.private(const LocalPlatform()));
+    FlutterInappPurchase.private(const LocalPlatform(), client: http.Client()));
 
   static StreamController<PurchasedItem> _purchaseController;
   static Stream<PurchasedItem> get purchaseUpdated => _purchaseController.stream;
