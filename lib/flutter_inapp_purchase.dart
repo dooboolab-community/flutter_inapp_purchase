@@ -406,12 +406,12 @@ class FlutterInappPurchase {
   /// Call this after finalizing server-side validation of the reciept.
   ///
   /// No effect on `Android`, who does not allow this type of functionality.
-  Future<String> finishTransactionIOS(String purchaseToken) async {
+  Future<String> finishTransactionIOS(String transactionId) async {
     if (_platform.isAndroid) {
       return 'no ops in android';
     } else if (_platform.isIOS) {
       String result = await _channel.invokeMethod('finishTransaction', <String, dynamic>{
-        'transactionIdentifier': purchaseToken,
+        'transactionIdentifier': transactionId,
       });
       return result;
     }
