@@ -1,3 +1,6 @@
+## 2.1.1
++ Renamed `finishTransactionIOS` argument `purchaseToken` to `transactionId`.
+
 ## 2.1.0
 + `finishTransaction` parameter changes to `purchasedItem` from `purchaseToken`.
 + Update android billing client to `2.1.0` from `2.0.3`.
