@@ -13,3 +13,4 @@ flutter_inapp.iml
 flutter_inapp_android.iml
 flutter_export_environment*
 launch.json
+.flutter-plugins-*
