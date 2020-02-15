@@ -1,3 +1,6 @@
+## 2.1.2
++ Add PurchasedItem.transactionStateIOS.
+
 ## 2.1.1
 + Renamed `finishTransactionIOS` argument `purchaseToken` to `transactionId`.
 
