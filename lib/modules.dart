@@ -116,6 +116,7 @@ class PurchasedItem {
   // iOS only
   final DateTime originalTransactionDateIOS;
   final String originalTransactionIdentifierIOS;
+  final TransactionState transactionStateIOS;
 
   /// Create [PurchasedItem] from a Map that was previously JSON formatted
   PurchasedItem.fromJSON(Map<String, dynamic> json)
@@ -137,7 +138,9 @@ class PurchasedItem {
         originalTransactionDateIOS =
             _extractDate(json['originalTransactionDateIOS']),
         originalTransactionIdentifierIOS =
-            json['originalTransactionIdentifierIOS'] as String;
+            json['originalTransactionIdentifierIOS'] as String,
+        transactionStateIOS =
+            _decodeTransactionStateIOS(json['transactionStateIOS'] as int);
 
   /// This returns transaction dates in ISO 8601 format.
   @override
@@ -158,7 +161,8 @@ class PurchasedItem {
         'originalJsonAndroid: $originalJsonAndroid, '
         /// ios specific
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
-        'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS';
+        'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS, '
+        'transactionStateIOS: $transactionStateIOS';
   }
 
   /// Coerce miliseconds since epoch in double, int, or String into DateTime format
@@ -225,5 +229,40 @@ class ConnectionResult {
   String toString() {
     return 'connected: $connected'
     ;
+  }
+}
+
+/// See also https://developer.apple.com/documentation/storekit/skpaymenttransactionstate
+enum TransactionState {
+  /// A transaction that is being processed by the App Store.
+  purchasing,
+
+  /// A successfully processed transaction.
+  purchased,
+
+  /// A failed transaction.
+  failed,
+
+  /// A transaction that restores content previously purchased by the user.
+  restored,
+
+  /// A transaction that is in the queue, but its final status is pending external action such as Ask to Buy.
+  deferred,
+}
+
+TransactionState _decodeTransactionStateIOS(int rawValue) {
+  switch (rawValue) {
+    case 0:
+      return TransactionState.purchasing;
+    case 1:
+      return TransactionState.purchased;
+    case 2:
+      return TransactionState.failed;
+    case 3:
+      return TransactionState.restored;
+    case 4:
+      return TransactionState.deferred;
+    default:
+      return null;
   }
 }

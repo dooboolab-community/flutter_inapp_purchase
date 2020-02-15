@@ -192,6 +192,7 @@
                                                      item.transactionIdentifier, @"transactionId",
                                                      item.payment.productIdentifier, @"productId",
                                                      [receiptData base64EncodedStringWithOptions:0], @"transactionReceipt",
+                                                     [NSNumber numberWithInt: item.transactionState], @"transactionStateIOS",
                                                      nil
                                                      ];
                     [output addObject:purchase];
@@ -578,6 +579,7 @@
                                              transaction.transactionIdentifier, @"transactionId",
                                              transaction.payment.productIdentifier, @"productId",
                                              [receiptData base64EncodedStringWithOptions:0], @"transactionReceipt",
+                                             [NSNumber numberWithInt: transaction.transactionState], @"transactionStateIOS",
                                              nil
                                              ];
             
