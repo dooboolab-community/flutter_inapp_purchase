@@ -365,8 +365,6 @@
                   break;
           }
 
-          introductoryPriceNumberOfPeriods = [@(product.introductoryPrice.numberOfPeriods) stringValue];
-
           if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitDay) {
               introductoryPriceSubscriptionPeriod = @"DAY";
           }	else if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitWeek) {
