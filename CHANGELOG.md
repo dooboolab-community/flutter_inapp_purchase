@@ -1,5 +1,8 @@
+## 2.1.3
++ Fix wrong introductory price number of periods [#164](https://github.com/dooboolab/flutter_inapp_purchase/pull/164).
+
 ## 2.1.2
-+ Add PurchasedItem.transactionStateIOS.
++ Trigger purchaseUpdated callback when iap purchased [#165](https://github.com/dooboolab/flutter_inapp_purchase/pull/165).
 
 ## 2.1.1
 + Renamed `finishTransactionIOS` argument `purchaseToken` to `transactionId`.
