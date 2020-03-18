@@ -484,10 +484,11 @@ class FlutterInappPurchase {
   /// It is highly recommended to do server-side validation for all subscriptions.
   /// This method is NOT secure and untested in production.
   Future<bool> checkSubscribed({
-    String sku,
+    @required String sku,
     Duration duration: const Duration(days: 30),
     Duration grace: const Duration(days: 3),
   }) async {
+    assert(sku != null);
     if (_platform.isIOS) {
       var history = await getPurchaseHistory();
 
