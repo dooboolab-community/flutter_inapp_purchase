@@ -423,7 +423,7 @@ class FlutterInappPurchase {
   ///
   /// Call this after finalizing server-side validation of the reciept.
   Future<String> finishTransaction(PurchasedItem purchasedItem,
-    { String developerPayloadAndroid, bool isConsumable }) async {
+    { String developerPayloadAndroid = '', bool isConsumable = false }) async {
     if (_platform.isAndroid) {
       if (isConsumable) {
         String result = await _channel.invokeMethod('consumeProduct', <String, dynamic>{
