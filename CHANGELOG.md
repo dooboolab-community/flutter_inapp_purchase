@@ -1,3 +1,6 @@
+## 2.1.4
++ Fix dart side expression warning [#169](https://github.com/dooboolab/flutter_inapp_purchase/pull/169).
+
 ## 2.1.3
 + Fix wrong introductory price number of periods [#164](https://github.com/dooboolab/flutter_inapp_purchase/pull/164).
 
