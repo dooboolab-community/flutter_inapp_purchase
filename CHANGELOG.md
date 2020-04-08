@@ -1,3 +1,6 @@
+## 2.1.5
++ Fix ios failed purchase handling problem in 11.4+ [#176](https://github.com/dooboolab/flutter_inapp_purchase/pull/176)
+
 ## 2.1.4
 + Fix dart side expression warning [#169](https://github.com/dooboolab/flutter_inapp_purchase/pull/169).
 
