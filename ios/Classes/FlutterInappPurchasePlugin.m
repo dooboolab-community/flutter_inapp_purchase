@@ -537,6 +537,7 @@
                 NSLog(@"Deferred (awaiting approval via parental controls, etc.)");
                 break;
             case SKPaymentTransactionStateFailed:
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 [requestedPayments removeObjectForKey:transaction.payment];
                 NSDictionary *err = [NSDictionary dictionaryWithObjectsAndKeys:
                                      @"SKPaymentTransactionStateFailed", @"debugMessage",
