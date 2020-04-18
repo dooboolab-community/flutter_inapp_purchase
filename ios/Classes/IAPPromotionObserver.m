@@ -23,17 +23,6 @@
     [IAPPromotionObserver sharedObserver];
 }
 
-- (instancetype)init {
-    if ((self = [super init])) {
-        [SKPaymentQueue.defaultQueue addTransactionObserver:self];
-    }
-    return self;
-}
-
--(void) dealloc {
-    [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
-}
-
 - (SKPayment *)payment {
     return _promotedPayment;
 }

@@ -1,5 +1,6 @@
 #import "FlutterInappPurchasePlugin.h"
-#import "IAPPromotionObserver.h"
+
+#import <IAPPromotionObserver.h>
 
 @interface FlutterInappPurchasePlugin() {
     SKPaymentTransaction *currentTransaction;
@@ -30,7 +31,6 @@
     instance.channel = [FlutterMethodChannel
                         methodChannelWithName:@"flutter_inapp"
                         binaryMessenger:[registrar messenger]];
-    [[SKPaymentQueue defaultQueue] addTransactionObserver:instance];
     [registrar addMethodCallDelegate:instance channel:instance.channel];
 }
 
@@ -42,6 +42,7 @@
     self.appStoreInitiatedProducts = [[NSMutableArray alloc] init];
     self.purchases = [[NSMutableSet alloc] init];
     validProducts = [NSMutableArray array];
+    [IAPPromotionObserver sharedObserver].delegate = self;
 
     return self;
 }
@@ -55,7 +56,11 @@
     if ([@"getPlatformVersion" isEqualToString:call.method]) {
         result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
     } else if ([@"canMakePayments" isEqualToString:call.method]) {
+        [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
         [self canMakePayments:result];
+    } else if ([@"endConnection" isEqualToString:call.method]) {
+        [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+        result(@"Billing client ended");
     } else if ([@"getItems" isEqualToString:call.method]) {
         NSArray<NSString*>* identifiers = (NSArray<NSString*>*)call.arguments[@"skus"];
         if (identifiers != nil) {

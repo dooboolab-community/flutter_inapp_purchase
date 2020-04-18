@@ -51,7 +51,7 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 | acknowledgePurchaseAndroid | `String` purchaseToken, `String` developerPayload? | `PurchaseResult` | Acknowledge a product (on Android) for `non-consumable` and `subscription` purchase. No-op on iOS. |
 | consumePurchaseAndroid | `String` purchaseToken, `String` developerPayload? | `PurchaseResult` | Consume a product (on Android) for `consumable` purchase. No-op on iOS. |
 | finishTransaction | `String` purchaseToken, `String` deveoperPayloadAndroid?, `bool` isConsumable? } | `PurchaseResult` | Send finishTransaction call that abstracts all `acknowledgePurchaseAndroid`, `finishTransactionIOS`, `consumePurchaseAndroid` methods. |
-| endConnection | | `String` | End billing connection (on Android.) No-op on iOS. |
+| endConnection | | `String` | End billing connection. |
 | consumeAllItems | | `String` | Manually consume all items in android. Do NOT call if you have any non-consumables (one time purchase items). No-op on iOS. |
 | validateReceiptIos | `Map<String,String>` receiptBody, `bool` isTest | `http.Response` | Validate receipt for ios. |
 | validateReceiptAndroid | `String` packageName, `String` productId, `String` productToken, `String` accessToken, `bool` isSubscription | `http.Response` | Validate receipt for android. |

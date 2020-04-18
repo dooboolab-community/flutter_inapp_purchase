@@ -75,10 +75,10 @@ class FlutterInappPurchase {
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
-  /// InitConnection `Android` to purchase items.
+  /// InitConnection prepare iap features for both `Android` and `iOS`.
   ///
-  /// Must be called on `Android` before purchasing.
-  /// On `iOS` this just checks if the client can make payments.
+  /// This must be called on `Android` and `iOS` before purchasing.
+  /// On `iOS`, it also checks if the client can make payments.
   Future<String> get initConnection async {
     if (_platform.isAndroid) {
       await _setPurchaseListener();
@@ -383,19 +383,18 @@ class FlutterInappPurchase {
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
-  /// End Play Store connection on `Android`.
+  /// End Play Store connection on `Android` and remove iap observer in `iOS`.
   ///
-  /// Absolutely necessary to call this when done with the Play Store.
-  ///
-  /// No effect on `iOS`, whose store connection is always available.
+  /// Absolutely necessary to call this when done with the payment.
   Future<String> get endConnection async {
     if (_platform.isAndroid) {
       final String result = await _channel.invokeMethod('endConnection');
       _removePurchaseListener();
       return result;
     } else if (_platform.isIOS) {
+      final String result = await _channel.invokeMethod('endConnection');
       _removePurchaseListener();
-      return 'no-ops in ios';
+      return result;
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
