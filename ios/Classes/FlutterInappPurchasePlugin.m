@@ -594,25 +594,6 @@
     }];
 }
 
-- (void)purchased:(NSArray<SKPaymentTransaction*>*)transactions {
-    NSMutableArray<FlutterResult>* results = [[NSMutableArray alloc] init];
-
-    [transactions enumerateObjectsUsingBlock:^(SKPaymentTransaction* transaction, NSUInteger idx, BOOL* stop) {
-        [self -> purchases addObject:transaction.payment.productIdentifier];
-        FlutterResult result = [self -> requestedPayments objectForKey:transaction.payment];
-        if (result != nil) {
-            [self -> requestedPayments removeObjectForKey:transaction.payment];
-            [results addObject:result];
-        }
-        [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-    }];
-
-    NSArray<NSString*>* productIdentifiers = [purchases allObjects];
-    [results enumerateObjectsUsingBlock:^(FlutterResult result, NSUInteger idx, BOOL* stop) {
-        result(productIdentifiers);
-    }];
-}
-
 // getAvailablePurchases
 - (void)getAvailableItems:(FlutterResult)result {
     [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
