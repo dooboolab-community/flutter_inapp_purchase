@@ -1,3 +1,8 @@
+## 2.2.0
++ Implement `endConnection` method to declaratively finish observer in iOS.
++ Remove `addTransactionObserver` in IAPPromotionObserver.m for dup observer problems.
++ Automatically startPromotionObserver in `initConnection` for iOS.
+
 ## 2.1.5
 + Fix ios failed purchase handling problem in 11.4+ [#176](https://github.com/dooboolab/flutter_inapp_purchase/pull/176)
 
