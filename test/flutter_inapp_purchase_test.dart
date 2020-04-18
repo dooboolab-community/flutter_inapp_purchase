@@ -1214,7 +1214,7 @@ void main() {
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.endConnection, "no-ops in ios");
+          expect(await FlutterInappPurchase.instance.endConnection, "Billing client has ended.");
         });
       });
     });
