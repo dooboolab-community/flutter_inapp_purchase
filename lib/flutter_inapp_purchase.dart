@@ -368,6 +368,15 @@ class FlutterInappPurchase {
   /// Consumes a purchase on `Android`.
   ///
   /// No effect on `iOS`, whose consumable purchases are consumed at the time of purchase.
+  ///
+  /// if you already invoked [getProducts],you ought to invoked this method to confirm you have consumed.
+  /// that means you can purchase one IAPItem more times, otherwise you'll receive error code : 7
+  ///
+  /// in DoobooUtils.java error like this:
+  /// case BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED:
+  ///        errorData[0] = E_ALREADY_OWNED;
+  ///        errorData[1] = "You already own this item.";
+  ///        break;
   Future<String> consumePurchaseAndroid(String token, { String developerPayload }) async {
     if (_platform.isAndroid) {
       String result =
