@@ -435,6 +435,57 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       });
     }
 
+    else if(call.method.equals("PriceChangeConfirmation")){
+      if (billingClient == null || !billingClient.isReady()) {
+        result.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+        return;
+      }
+      final String sku = call.argument("sku");
+      SkuDetails selectedSku = null;
+      for (SkuDetails skuDetail : skus) {
+        if (skuDetail.getSku().equals(sku)) {
+          selectedSku = skuDetail;
+          break;
+        }
+      }
+      if (selectedSku == null) {
+        String debugMessage = "The sku was not found. Please fetch products first by calling getItems";
+        result.error(call.method, "PriceChangeConfirmation", debugMessage);
+        return;
+      }
+
+      PriceChangeFlowParams priceChangeFlowParams = PriceChangeFlowParams.newBuilder()
+              .setSkuDetails(selectedSku)
+              .build();
+
+      billingClient.launchPriceChangeConfirmationFlow(reg.context(),
+              priceChangeFlowParams,
+              new PriceChangeConfirmationListener() {
+                @Override
+                public void onPriceChangeConfirmationResult(BillingResult billingResult) {
+                  try {
+                    int responseCode =  billingResult.getResponseCode();
+
+                    if (responseCode == BillingClient.BillingResponseCode.OK) {
+                      result.success(Integer.toString(BillingClient.BillingResponseCode.OK));
+                    } else if (responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+                      JSONObject json = new JSONObject();
+                      json.put("responseCode", billingResult.getResponseCode());
+                      json.put("debugMessage", billingResult.getDebugMessage());
+                      String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+                      json.put("code", errorData[0]);
+                      json.put("message", "user canceled price change for subscription");
+                      channel.invokeMethod("purchase-error", json.toString());
+                      result.success(Integer.toString(BillingClient.BillingResponseCode.USER_CANCELED));
+                    }
+                  } catch (JSONException e) {
+                    e.printStackTrace();
+                  }
+                }
+              });
+    }
+
+
     /*
      * consumeProduct (For consumable purchases)
      * arguments: token, developerPayload
