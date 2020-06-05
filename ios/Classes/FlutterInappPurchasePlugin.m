@@ -532,6 +532,7 @@
                 break;
             case SKPaymentTransactionStatePurchased:
                 NSLog(@"\n\n\n\n\n Purchase Successful !! \n\n\n\n\n.");
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 [self purchaseProcess:transaction];
                 break;
             case SKPaymentTransactionStateRestored:
