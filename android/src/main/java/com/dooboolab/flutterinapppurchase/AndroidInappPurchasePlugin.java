@@ -460,7 +460,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
               .setSkuDetails(selectedSku)
               .build();
 
-      billingClient.launchPriceChangeConfirmationFlow(reg.context(),
+      billingClient.launchPriceChangeConfirmationFlow(reg.activity(),
               priceChangeFlowParams,
               new PriceChangeConfirmationListener() {
                 @Override
