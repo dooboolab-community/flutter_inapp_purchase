@@ -139,7 +139,7 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
     }
 
     void asyncInitState() async {
-      await FlutterInappPurchase.initConnection;
+      await FlutterInappPurchase.instance.initConnection;
     }
   ```
 * You should end the billing service in android when you are done with it. Otherwise it will be keep running in background. We recommend to use this feature in `dispose()`.
@@ -157,13 +157,13 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
     @override
     void dispose() async{
       super.dispose();
-      await FlutterInappPurchase.endConnection;
+      await FlutterInappPurchase.instance.endConnection;
     }
   ```
 #### Get IAP items
   ```dart
   void getItems () async {
-    List<IAPItem> items = await FlutterInappPurchase.getProducts(_productLists);
+    List<IAPItem> items = await FlutterInappPurchase.instance.getProducts(_productLists);
     for (var item in items) {
       print('${item.toString()}');
       this._items.add(item);
