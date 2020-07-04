@@ -68,6 +68,43 @@ class IAPItem {
         originalJson = json['originalJson'] as String,
         originalPrice = json['originalJson'] as String;
 
+  /// wow, i find if i want to save a IAPItem, there is not "toJson" to cast it into String...
+  /// i'm sorry to see that... so,
+  ///
+  /// you can cast a IAPItem to json(Map<String, dynamic>) via invoke this method.
+  /// for example:
+  /// String str =  convert.jsonEncode(item)
+  ///
+  /// and then get IAPItem from "str" above
+  /// IAPItem item = IAPItem.fromJSON(convert.jsonDecode(str));
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['productId'] = this.productId;
+    data['price'] = this.price;
+    data['currency'] = this.currency;
+    data['localizedPrice'] = this.localizedPrice;
+    data['title'] = this.title;
+    data['description'] = this.description;
+    data['introductoryPrice'] = this.introductoryPrice;
+
+    data['subscriptionPeriodNumberIOS'] = this.subscriptionPeriodNumberIOS;
+    data['subscriptionPeriodUnitIOS'] = this.subscriptionPeriodUnitIOS;
+    data['introductoryPricePaymentModeIOS'] = this.introductoryPricePaymentModeIOS;
+    data['introductoryPriceNumberOfPeriodsIOS'] = this.introductoryPriceNumberOfPeriodsIOS;
+    data['introductoryPriceSubscriptionPeriodIOS'] = this.introductoryPriceSubscriptionPeriodIOS;
+
+    data['subscriptionPeriodAndroid'] = this.subscriptionPeriodAndroid;
+    data['introductoryPriceCyclesAndroid'] = this.introductoryPriceCyclesAndroid;
+    data['introductoryPricePeriodAndroid'] = this.introductoryPricePeriodAndroid;
+    data['freeTrialPeriodAndroid'] = this.freeTrialPeriodAndroid;
+    data['signatureAndroid'] = this.signatureAndroid;
+
+    data['iconUrl'] = this.iconUrl;
+    data['originalJson'] = this.originalJson;
+    data['originalPrice'] = this.originalPrice;
+    return data;
+  }
+
   /// Return the contents of this class as a string
   @override
   String toString() {
