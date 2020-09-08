@@ -232,7 +232,7 @@ void checkForAppStoreInitiatedProducts() async {
 Direct to [example readme](example/README.md) which is just a `cp` from example project. You can test this in real example project.
 
 ## ProGuard
-If you have eneabled proguard you will need to add the following rules to your `proguard-rules.pro`
+If you have enabled proguard you will need to add the following rules to your `proguard-rules.pro`
 
 ```
 #In app Purchase
