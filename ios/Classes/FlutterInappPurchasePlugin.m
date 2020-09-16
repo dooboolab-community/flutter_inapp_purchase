@@ -91,7 +91,7 @@
             NSString* result = [self convertDicToJsonString:err];
             [self.channel invokeMethod:@"purchase-error" arguments:result];
         }
-    } else if ([@"requestProductWithOffer" isEqualToString:call.method]) {
+    } else if ([@"requestProductWithOfferIOS" isEqualToString:call.method]) {
         NSString* sku = (NSString*)call.arguments[@"sku"];
         NSDictionary* discountOffer = (NSDictionary*)call.arguments[@"withOffer"];
         NSString* usernameHash = (NSString*)call.arguments[@"forUser"];
