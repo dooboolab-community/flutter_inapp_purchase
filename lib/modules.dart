@@ -139,11 +139,16 @@ class IAPItem {
 
   static List<DiscountIOS> _extractDiscountIOS(dynamic json) {
     List list = json as List;
-    List<DiscountIOS> discounts = list
-        .map<DiscountIOS>(
-          (dynamic discount) => DiscountIOS.fromJSON(discount as Map<String, dynamic>),
-    )
-        .toList();
+    List<DiscountIOS> discounts;
+
+    if (list != null) {
+      discounts = list
+          .map<DiscountIOS>(
+            (dynamic discount) => DiscountIOS.fromJSON(discount as Map<String, dynamic>),
+      )
+          .toList();
+    }
+
 
     return discounts;
   }
