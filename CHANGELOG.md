@@ -1,3 +1,9 @@
+## 3.0.0
++ Upgrade android billing client to `2.1.0` from `3.0.0`.
++ Removed `deveoperId` and `accountId` when requesting `purchase` or `subscription` in `android`.
++ Removed `developerPayload` in `android`.
++ Added `purchaseToken` as an optional parameter to `requestPurchase` and `requestSubscription`.
+
 ## 2.3.1
 Republishing since sourcode seems not merged correctly.
 
