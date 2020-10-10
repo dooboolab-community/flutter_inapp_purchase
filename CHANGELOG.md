@@ -1,3 +1,9 @@
+## 2.3.0
++ Update android billing client to `2.1.0` from `3.0.0`.
++ Removed `deveoperId` and `accountId` when requesting `purchase` or `subscription` in `android`.
++ Removed `developerPayload` in `android`.
++ Added `purchaseToken` as an optional parameter to `requestPurchase` and `requestSubscription`.
+
 ## 2.2.0
 + Implement `endConnection` method to declaratively finish observer in iOS.
 + Remove `addTransactionObserver` in IAPPromotionObserver.m for dup observer problems.
