@@ -976,6 +976,7 @@ void main() {
                 'sku': sku,
                 'oldSku': null,
                 'prorationMode': -1,
+                'purchaseToken': null,
               },
             ),
           ]);
@@ -1031,6 +1032,7 @@ void main() {
                 'sku': sku,
                 'oldSku': oldSku,
                 'prorationMode': -1,
+                'purchaseToken': null,
               },
             ),
           ]);
