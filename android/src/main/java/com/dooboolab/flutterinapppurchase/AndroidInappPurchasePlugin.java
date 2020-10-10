@@ -148,7 +148,6 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         for (Purchase purchase : purchases) {
           final ConsumeParams consumeParams = ConsumeParams.newBuilder()
               .setPurchaseToken(purchase.getPurchaseToken())
-              .setDeveloperPayload(purchase.getDeveloperPayload())
               .build();
 
           final ConsumeResponseListener listener = new ConsumeResponseListener() {
@@ -267,7 +266,6 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             item.put("transactionReceipt", purchase.getOriginalJson());
             item.put("orderId", purchase.getOrderId());
             item.put("purchaseToken", purchase.getPurchaseToken());
-            item.put("developerPayloadAndroid", purchase.getDeveloperPayload());
             item.put("signatureAndroid", purchase.getSignature());
             item.put("purchaseStateAndroid", purchase.getPurchaseState());
 
@@ -314,7 +312,6 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
               item.put("purchaseToken", purchase.getPurchaseToken());
               item.put("dataAndroid", purchase.getOriginalJson());
               item.put("signatureAndroid", purchase.getSignature());
-              item.put("developerPayload", purchase.getDeveloperPayload());
               items.put(item);
             }
             result.success(items.toString());
@@ -387,11 +384,10 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
 
     /*
      * acknowledgePurchase (For non-consumable purchases)
-     * arguments: token, developerPayload
+     * arguments: token
      */
     else if (call.method.equals("acknowledgePurchase")) {
       final String token = call.argument("token");
-      final String developerPayload = call.argument("developerPayload");
 
       if (billingClient == null || !billingClient.isReady()) {
         result.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
@@ -401,7 +397,6 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       AcknowledgePurchaseParams acknowledgePurchaseParams =
           AcknowledgePurchaseParams.newBuilder()
               .setPurchaseToken(token)
-              .setDeveloperPayload(developerPayload)
               .build();
       billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
         @Override
@@ -428,7 +423,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
 
     /*
      * consumeProduct (For consumable purchases)
-     * arguments: token, developerPayload
+     * arguments: token
      */
     else if (call.method.equals("consumeProduct")) {
       if (billingClient == null || !billingClient.isReady()) {
@@ -437,11 +432,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       }
 
       final String token = call.argument("token");
-      final String developerPayload = call.argument("developerPayload");
 
       final ConsumeParams params = ConsumeParams.newBuilder()
           .setPurchaseToken(token)
-          .setDeveloperPayload(developerPayload)
           .build();
       billingClient.consumeAsync(params, new ConsumeResponseListener() {
         @Override
@@ -506,7 +499,6 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
             item.put("autoRenewingAndroid", purchase.isAutoRenewing());
             item.put("isAcknowledgedAndroid", purchase.isAcknowledged());
             item.put("purchaseStateAndroid", purchase.getPurchaseState());
-            item.put("developerPayloadAndroid", purchase.getDeveloperPayload());
             item.put("originalJsonAndroid", purchase.getOriginalJson());
 
 
