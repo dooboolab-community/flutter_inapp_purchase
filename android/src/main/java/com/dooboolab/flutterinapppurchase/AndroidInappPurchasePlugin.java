@@ -336,27 +336,28 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       final String sku = call.argument("sku");
       final String oldSku = call.argument("oldSku");
       final int prorationMode = call.argument("prorationMode");
+      final String purchaseToken = call.argument("purchaseToken");
 
       BillingFlowParams.Builder builder = BillingFlowParams.newBuilder();
 
       if (type.equals(BillingClient.SkuType.SUBS) && oldSku != null && !oldSku.isEmpty()) {
         // Subscription upgrade/downgrade
-        builder.setOldSku(oldSku);
+        builder.setOldSku(oldSku, purchaseToken);
       }
 
       if (type.equals(BillingClient.SkuType.SUBS) && oldSku != null && !oldSku.isEmpty()) {
         // Subscription upgrade/downgrade
         if (prorationMode != -1) {
-          builder.setOldSku(oldSku);
+          builder.setOldSku(oldSku, purchaseToken);
           if (prorationMode == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE) {
             builder.setReplaceSkusProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE);
           } else if (prorationMode == BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION) {
             builder.setReplaceSkusProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
           } else {
-            builder.setOldSku(oldSku);
+            builder.setOldSku(oldSku, purchaseToken);
           }
         } else {
-          builder.setOldSku(oldSku);
+          builder.setOldSku(oldSku, purchaseToken);
         }
       }
 
