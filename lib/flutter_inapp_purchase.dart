@@ -345,11 +345,10 @@ class FlutterInappPurchase {
   /// Acknowledge a purchase on `Android`.
   ///
   /// No effect on `iOS`, whose iap purchases are consumed at the time of purchase.
-  Future<String> acknowledgePurchaseAndroid(String token, { String developerPayload }) async {
+  Future<String> acknowledgePurchaseAndroid(String token) async {
     if (_platform.isAndroid) {
       String result = await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
         'token': token,
-        'developerPayload': developerPayload,
       });
 
       return result;
@@ -373,12 +372,11 @@ class FlutterInappPurchase {
   ///        errorData[0] = E_ALREADY_OWNED;
   ///        errorData[1] = "You already own this item.";
   ///        break;
-  Future<String> consumePurchaseAndroid(String token, { String developerPayload }) async {
+  Future<String> consumePurchaseAndroid(String token) async {
     if (_platform.isAndroid) {
       String result =
           await _channel.invokeMethod('consumeProduct', <String, dynamic>{
         'token': token,
-        'developerPayload': developerPayload,
       });
       return result;
     } else if (_platform.isIOS) {
@@ -427,18 +425,16 @@ class FlutterInappPurchase {
   ///
   /// Call this after finalizing server-side validation of the reciept.
   Future<String> finishTransaction(PurchasedItem purchasedItem,
-    { String developerPayloadAndroid = '', bool isConsumable = false }) async {
+    { bool isConsumable = false }) async {
     if (_platform.isAndroid) {
       if (isConsumable) {
         String result = await _channel.invokeMethod('consumeProduct', <String, dynamic>{
           'token': purchasedItem.purchaseToken,
-          'developerPayload': developerPayloadAndroid,
         });
         return result;
       } else {
         String result = await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
           'token': purchasedItem.purchaseToken,
-          'developerPayload': developerPayloadAndroid,
         });
         return result;
       }
