@@ -32,7 +32,7 @@ class IAPItem {
 
   /// android only
   final String subscriptionPeriodAndroid;
-  final String introductoryPriceCyclesAndroid;
+  final int introductoryPriceCyclesAndroid;
   final String introductoryPricePeriodAndroid;
   final String freeTrialPeriodAndroid;
   final String signatureAndroid;
@@ -62,7 +62,7 @@ class IAPItem {
         subscriptionPeriodUnitIOS = json['subscriptionPeriodUnitIOS'] as String,
         subscriptionPeriodAndroid = json['subscriptionPeriodAndroid'] as String,
         introductoryPriceCyclesAndroid =
-            json['introductoryPriceCyclesAndroid'] as String,
+            json['introductoryPriceCyclesAndroid'] as int,
         introductoryPricePeriodAndroid =
             json['introductoryPricePeriodAndroid'] as String,
         freeTrialPeriodAndroid = json['freeTrialPeriodAndroid'] as String,
