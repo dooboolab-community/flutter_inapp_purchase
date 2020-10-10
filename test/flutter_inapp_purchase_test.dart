@@ -173,7 +173,7 @@ void main() {
             "subscriptionPeriodUnitIOS": "1",
             "subscriptionPeriodAndroid": "2",
             "subscriptionPeriodNumberIOS": "3",
-            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
@@ -264,7 +264,7 @@ void main() {
             "subscriptionPeriodUnitIOS": "1",
             "subscriptionPeriodAndroid": "2",
             "subscriptionPeriodNumberIOS": "3",
-            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
@@ -356,7 +356,7 @@ void main() {
             "subscriptionPeriodUnitIOS": "1",
             "subscriptionPeriodAndroid": "2",
             "subscriptionPeriodNumberIOS": "3",
-            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
@@ -447,7 +447,7 @@ void main() {
             "subscriptionPeriodUnitIOS": "1",
             "subscriptionPeriodAndroid": "2",
             "subscriptionPeriodNumberIOS": "3",
-            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
@@ -1285,7 +1285,7 @@ void main() {
             "subscriptionPeriodUnitIOS": "1",
             "subscriptionPeriodAndroid": "2",
             "subscriptionPeriodNumberIOS": "3",
-            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
