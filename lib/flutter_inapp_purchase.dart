@@ -305,7 +305,7 @@ class FlutterInappPurchase {
   ///
   /// @returns {Future} will receive result from `purchaseUpdated` listener.
   Future requestProductWithOfferIOS(
-    String sku, String forUser, String withOffer,
+    String sku, String forUser, Map<String, dynamic> withOffer,
   ) async {
     if (_platform.isIOS) {
       return await _channel.invokeMethod('requestProductWithOfferIOS', <String, dynamic>{

@@ -28,6 +28,7 @@ class IAPItem {
   final String introductoryPricePaymentModeIOS;
   final String introductoryPriceNumberOfPeriodsIOS;
   final String introductoryPriceSubscriptionPeriodIOS;
+  final List<DiscountIOS> discountsIOS;
 
   /// android only
   final String subscriptionPeriodAndroid;
@@ -68,7 +69,8 @@ class IAPItem {
         signatureAndroid = json['signatureAndroid'] as String,
         iconUrl = json['iconUrl'] as String,
         originalJson = json['originalJson'] as String,
-        originalPrice = json['originalPrice'] as String;
+        originalPrice = json['originalPrice'] as String,
+        discountsIOS = _extractDiscountIOS(json['discounts']);
 
   /// wow, i find if i want to save a IAPItem, there is not "toJson" to cast it into String...
   /// i'm sorry to see that... so,
@@ -104,6 +106,7 @@ class IAPItem {
     data['iconUrl'] = this.iconUrl;
     data['originalJson'] = this.originalJson;
     data['originalPrice'] = this.originalPrice;
+    data['discounts'] = this.discountsIOS;
     return data;
   }
 
@@ -130,6 +133,68 @@ class IAPItem {
         'iconUrl: $iconUrl, '
         'originalJson: $originalJson, '
         'originalPrice: $originalPrice, '
+        'discounts: $discountsIOS, '
+    ;
+  }
+
+  static List<DiscountIOS> _extractDiscountIOS(dynamic json) {
+    List list = json as List;
+    List<DiscountIOS> discounts;
+
+    if (list != null) {
+      discounts = list
+          .map<DiscountIOS>(
+            (dynamic discount) => DiscountIOS.fromJSON(discount as Map<String, dynamic>),
+      )
+          .toList();
+    }
+
+
+    return discounts;
+  }
+}
+
+class DiscountIOS {
+  String identifier;
+  String type;
+  String numberOfPeriods;
+  double price;
+  String localizedPrice;
+  String paymentMode;
+  String subscriptionPeriod;
+
+  /// Create [DiscountIOS] from a Map that was previously JSON formatted
+  DiscountIOS.fromJSON(Map<String, dynamic> json)
+      : identifier = json['identifier'] as String,
+        type = json['type'] as String,
+        numberOfPeriods = json['numberOfPeriods'] as String,
+        price = json['price'] as double,
+        localizedPrice = json['localizedPrice'] as String,
+        paymentMode = json['paymentMode'] as String,
+        subscriptionPeriod = json['subscriptionPeriod'] as String;
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['identifier'] = this.identifier;
+    data['type'] = this.type;
+    data['numberOfPeriods'] = this.numberOfPeriods;
+    data['price'] = this.price;
+    data['localizedPrice'] = this.localizedPrice;
+    data['paymentMode'] = this.paymentMode;
+    data['subscriptionPeriod'] = this.subscriptionPeriod;
+    return data;
+  }
+
+  /// Return the contents of this class as a string
+  @override
+  String toString() {
+    return 'identifier: $identifier, '
+        'type: $type, '
+        'numberOfPeriods: $numberOfPeriods, '
+        'price: $price, '
+        'localizedPrice: $localizedPrice, '
+        'paymentMode: $paymentMode, '
+        'subscriptionPeriod: $subscriptionPeriod, '
     ;
   }
 }
