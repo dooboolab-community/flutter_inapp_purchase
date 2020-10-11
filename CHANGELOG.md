@@ -1,3 +1,6 @@
+## 2.3.1
+Republishing since sourcode seems not merged correctly.
+
 ## 2.3.0
 + Bugfix IAPItem deserialization [#212](https://github.com/dooboolab/flutter_inapp_purchase/pull/212)
 + Add introductoryPriceNumberIOS [#214](https://github.com/dooboolab/flutter_inapp_purchase/pull/214)
