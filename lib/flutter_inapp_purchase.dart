@@ -222,7 +222,9 @@ class FlutterInappPurchase {
   ///
   /// Identical to [requestSubscription] on `iOS`.
   Future requestPurchase(String sku, {
-    String purchaseToken
+    String obfuscatedAccountIdAndroid,
+    String obfuscatedProfileIdAndroid,
+    String purchaseToken,
   }) async {
     if (_platform.isAndroid) {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
@@ -230,6 +232,8 @@ class FlutterInappPurchase {
         'sku': sku,
         'oldSku': null,
         'prorationMode': -1,
+        'obfuscatedAccountId': obfuscatedAccountIdAndroid,
+        'obfuscatedProfileId': obfuscatedProfileIdAndroid,
         'purchaseToken': purchaseToken,
       });
     } else if (_platform.isIOS) {
@@ -252,6 +256,8 @@ class FlutterInappPurchase {
       {
         String oldSkuAndroid,
         int prorationModeAndroid,
+        String obfuscatedAccountIdAndroid,
+        String obfuscatedProfileIdAndroid,
         String purchaseToken,
       }) async {
     if (_platform.isAndroid) {
@@ -261,6 +267,8 @@ class FlutterInappPurchase {
         'sku': sku,
         'oldSku': oldSkuAndroid,
         'prorationMode': prorationModeAndroid ?? -1,
+        'obfuscatedAccountId': obfuscatedAccountIdAndroid,
+        'obfuscatedProfileId': obfuscatedProfileIdAndroid,
         'purchaseToken': purchaseToken,
       });
     } else if (_platform.isIOS) {

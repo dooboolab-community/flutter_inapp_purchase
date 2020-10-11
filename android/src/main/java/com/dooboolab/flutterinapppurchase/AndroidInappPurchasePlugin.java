@@ -324,7 +324,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
 
     /*
      * buyItemByType
-     * arguments: type,  sku, oldSku, prorationMode, purchaseToken
+     * arguments: type, obfuscatedAccountId, obfuscatedProfileId, sku, oldSku, prorationMode, purchaseToken
      */
     else if (call.method.equals("buyItemByType")) {
       if (billingClient == null || !billingClient.isReady()) {
@@ -333,6 +333,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       }
 
       final String type = call.argument("type");
+      final String obfuscatedAccountId.argument("obfuscatedAccountId");
+      final String obfuscatedProfileId = call.argument("obfuscatedProfileId");
       final String sku = call.argument("sku");
       final String oldSku = call.argument("oldSku");
       final int prorationMode = call.argument("prorationMode");
@@ -376,6 +378,13 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         String debugMessage = "The sku was not found. Please fetch products first by calling getItems";
         result.error(TAG, "buyItemByType", debugMessage);
         return;
+      }
+
+      if (obfuscatedAccountId != null) {
+        builder.setObfuscatedAccountId(obfuscatedAccountId);
+      }
+      if (obfuscatedProfileId != null) {
+        builder.setObfuscatedProfileId(obfuscatedProfileId);
       }
 
       builder.setSkuDetails(selectedSku);
