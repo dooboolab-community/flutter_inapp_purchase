@@ -24,6 +24,7 @@ class IAPItem {
   /// ios only
   final String subscriptionPeriodNumberIOS;
   final String subscriptionPeriodUnitIOS;
+  final String introductoryPriceNumberIOS;
   final String introductoryPricePaymentModeIOS;
   final String introductoryPriceNumberOfPeriodsIOS;
   final String introductoryPriceSubscriptionPeriodIOS;
@@ -54,6 +55,7 @@ class IAPItem {
             json['introductoryPriceNumberOfPeriodsIOS'] as String,
         introductoryPriceSubscriptionPeriodIOS =
             json['introductoryPriceSubscriptionPeriodIOS'] as String,
+        introductoryPriceNumberIOS = json['introductoryPriceNumberIOS'] as String,
         subscriptionPeriodNumberIOS =
             json['subscriptionPeriodNumberIOS'] as String,
         subscriptionPeriodUnitIOS = json['subscriptionPeriodUnitIOS'] as String,
