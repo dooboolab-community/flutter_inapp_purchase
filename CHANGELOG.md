@@ -1,6 +1,7 @@
 ## 2.3.0
 + Update android billing client to `2.1.0` from `3.0.0`.
 + Removed `deveoperId` and `accountId` when requesting `purchase` or `subscription` in `android`.
++ Added `obfuscatedAccountIdAndroid` and `obfuscatedProfileIdAndroid` when requesting `purchase` or `subscription` in `android`.
 + Removed `developerPayload` in `android`.
 + Added `purchaseToken` as an optional parameter to `requestPurchase` and `requestSubscription`.
 
