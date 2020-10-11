@@ -333,7 +333,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       }
 
       final String type = call.argument("type");
-      final String obfuscatedAccountId.argument("obfuscatedAccountId");
+      final String obfuscatedAccountId = call.argument("obfuscatedAccountId");
       final String obfuscatedProfileId = call.argument("obfuscatedProfileId");
       final String sku = call.argument("sku");
       final String oldSku = call.argument("oldSku");
