@@ -1,5 +1,7 @@
 package com.dooboolab.flutterinapppurchase;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import com.amazon.device.iap.PurchasingListener;
@@ -27,31 +29,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** AmazonInappPurchasePlugin */
 public class AmazonInappPurchasePlugin implements MethodCallHandler {
-  public static Registrar reg;
+
   private final String TAG = "InappPurchasePlugin";
   private Result result = null;
-  private static MethodChannel channel;
+  private MethodChannel channel;
+  private Context context;
+  private Activity activity;
 
-  /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
-    channel = new MethodChannel(registrar.messenger(), "flutter_inapp");
-    channel.setMethodCallHandler(new FlutterInappPurchasePlugin());
-    reg = registrar;
+  public void setContext(Context context) {
+    this.context = context;
+  }
+
+  public void setActivity(Activity activity) {
+    this.activity = activity;
+  }
+
+  public void setChannel(MethodChannel channel) {
+    this.channel = channel;
   }
 
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
     this.result=result;
     try {
-      PurchasingService.registerListener(reg.context(), purchasesUpdatedListener);
+      PurchasingService.registerListener(context, purchasesUpdatedListener);
 
     } catch (Exception e) {
       result.error(call.method, "Call endConnection method if you want to start over.", e.getMessage());
@@ -87,7 +96,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       Log.d(TAG, "gaibt="+type);
       // NOTE: getPurchaseUpdates doesnt return Consumables which are FULFILLED
       if(type.equals("inapp")) {
-          PurchasingService.getPurchaseUpdates(true);
+        PurchasingService.getPurchaseUpdates(true);
       } else if(type.equals("subs")) {
         // Subscriptions are retrieved during inapp, so we just return empty list
         result.success("[]");
@@ -204,9 +213,9 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
           Long transactionDate=date.getTime();
           try {
             JSONObject item = getPurchaseData(receipt.getSku(),
-                  receipt.getReceiptId(),
-                  receipt.getReceiptId(),
-                  transactionDate.doubleValue());
+                    receipt.getReceiptId(),
+                    receipt.getReceiptId(),
+                    transactionDate.doubleValue());
             Log.d(TAG, "opr Putting "+item.toString());
             result.success(item.toString());
             channel.invokeMethod("purchase-updated", item.toString());
