@@ -69,7 +69,7 @@ class IAPItem {
         signatureAndroid = json['signatureAndroid'] as String,
         iconUrl = json['iconUrl'] as String,
         originalJson = json['originalJson'] as String,
-        originalPrice = json['originalJson'] as String,
+        originalPrice = json['originalPrice'].toString(),
         discountsIOS = _extractDiscountIOS(json['discounts']);
 
   /// wow, i find if i want to save a IAPItem, there is not "toJson" to cast it into String...
