@@ -91,7 +91,7 @@
             NSString* result = [self convertDicToJsonString:err];
             [self.channel invokeMethod:@"purchase-error" arguments:result];
         }
-    } else if ([@"requestProductWithOffer" isEqualToString:call.method]) {
+    } else if ([@"requestProductWithOfferIOS" isEqualToString:call.method]) {
         NSString* sku = (NSString*)call.arguments[@"sku"];
         NSDictionary* discountOffer = (NSDictionary*)call.arguments[@"withOffer"];
         NSString* usernameHash = (NSString*)call.arguments[@"forUser"];
@@ -312,6 +312,7 @@
     formatter.locale = product.priceLocale;
     NSString* localizedPrice = [formatter stringFromNumber:product.price];
     NSString* introductoryPrice;
+    NSString* introductoryPriceNumber = @"";
     NSString* introductoryPricePaymentMode = @"";
     NSString* introductoryPriceNumberOfPeriods = @"";
     NSString* introductoryPriceSubscriptionPeriod = @"";
@@ -350,6 +351,7 @@
           //SKProductDiscount introductoryPriceObj = product.introductoryPrice;
           formatter.locale = product.introductoryPrice.priceLocale;
           introductoryPrice = [formatter stringFromNumber:product.introductoryPrice.price];
+          introductoryPriceNumber = [product.introductoryPrice.price stringValue];
 
           switch (product.introductoryPrice.paymentMode) {
               case SKProductDiscountPaymentModeFreeTrial:
@@ -384,6 +386,7 @@
 
         } else {
           introductoryPrice = @"";
+          introductoryPriceNumber = @"";
           introductoryPricePaymentMode = @"";
           introductoryPriceNumberOfPeriods = @"";
           introductoryPriceSubscriptionPeriod = @"";
@@ -411,6 +414,7 @@
         periodNumberIOS, @"subscriptionPeriodNumberIOS",
         periodUnitIOS, @"subscriptionPeriodUnitIOS",
         introductoryPrice, @"introductoryPrice",
+        introductoryPriceNumber, @"introductoryPriceNumberIOS",
         introductoryPricePaymentMode, @"introductoryPricePaymentModeIOS",
         introductoryPriceNumberOfPeriods, @"introductoryPriceNumberOfPeriodsIOS",
         introductoryPriceSubscriptionPeriod, @"introductoryPriceSubscriptionPeriodIOS",

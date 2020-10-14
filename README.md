@@ -59,7 +59,7 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 Purchase flow in `flutter_inapp_purchase@2.0.0+
 -----------------
 ![purchase-flow-sequence](https://github.com/dooboolab/react-native-iap/blob/master/docs/react-native-iapv3.svg)
-> When you've successfully received result from `purchaseUpdated` listener, you'll have to `verify` the purchase either by `acknowledgePurchaseAndroid`, `consumePurchaseAndroid`, `finishTransactionIOS` depending on the purchase types or platforms. You'll have to use `consumePurchasAndroid` for `consumable` products and `android` and `acknowledgePurchaseAndroid` for `non-consumable` products either `subscription`. For `ios`, there is no differences in `verifying` purchases. You can just call `finishTransaction`. If you do not verify the purchase, it will be refunded within 3 days to users. We recommend you to `verifyReceipt` first before actually finishing transaction. Lastly, if you want to abstract three different methods into one, consider using `finishTransaction` method.
+> When you've successfully received result from `purchaseUpdated` listener, you'll have to `verify` the purchase either by `acknowledgePurchaseAndroid`, `consumePurchaseAndroid`, `finishTransactionIOS` depending on the purchase types or platforms. You'll have to use `consumePurchaseAndroid` for `consumable` products and `android` and `acknowledgePurchaseAndroid` for `non-consumable` products either `subscription`. For `ios`, there is no differences in `verifying` purchases. You can just call `finishTransaction`. If you do not verify the purchase, it will be refunded within 3 days to users. We recommend you to `verifyReceipt` first before actually finishing transaction. Lastly, if you want to abstract three different methods into one, consider using `finishTransaction` method.
 
 ## Data Types
 * IAPItem
@@ -231,7 +231,7 @@ void checkForAppStoreInitiatedProducts() async {
 Direct to [example readme](example/README.md) which is just a `cp` from example project. You can test this in real example project.
 
 ## ProGuard
-If you have eneabled proguard you will need to add the following rules to your `proguard-rules.pro`
+If you have enabled proguard you will need to add the following rules to your `proguard-rules.pro`
 
 ```
 #In app Purchase

@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:meta/meta.dart';
-import 'package:platform/platform.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:meta/meta.dart';
+import 'package:platform/platform.dart';
 
-import 'utils.dart';
 import 'modules.dart';
+import 'utils.dart';
 
 export 'modules.dart';
 
@@ -309,7 +309,7 @@ class FlutterInappPurchase {
   ///
   /// @returns {Future} will receive result from `purchaseUpdated` listener.
   Future requestProductWithOfferIOS(
-    String sku, String forUser, String withOffer,
+    String sku, String forUser, Map<String, dynamic> withOffer,
   ) async {
     if (_platform.isIOS) {
       return await _channel.invokeMethod('requestProductWithOfferIOS', <String, dynamic>{

@@ -1,9 +1,17 @@
-## 2.3.0
-+ Update android billing client to `2.1.0` from `3.0.0`.
+## 3.0.0
++ Upgrade android billing client to `2.1.0` from `3.0.0`.
 + Removed `deveoperId` and `accountId` when requesting `purchase` or `subscription` in `android`.
 + Added `obfuscatedAccountIdAndroid` and `obfuscatedProfileIdAndroid` when requesting `purchase` or `subscription` in `android`.
 + Removed `developerPayload` in `android`.
 + Added `purchaseTokenAndroid` as an optional parameter to `requestPurchase` and `requestSubscription`.
+
+## 2.3.1
+Republishing since sourcode seems not merged correctly.
+
+## 2.3.0
++ Bugfix IAPItem deserialization [#212](https://github.com/dooboolab/flutter_inapp_purchase/pull/212)
++ Add introductoryPriceNumberIOS [#214](https://github.com/dooboolab/flutter_inapp_purchase/pull/214)
++ Fix iOS promotional offers [#220](https://github.com/dooboolab/flutter_inapp_purchase/pull/220)
 
 ## 2.2.0
 + Implement `endConnection` method to declaratively finish observer in iOS.
