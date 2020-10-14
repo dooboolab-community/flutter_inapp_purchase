@@ -3,7 +3,7 @@
 + Removed `deveoperId` and `accountId` when requesting `purchase` or `subscription` in `android`.
 + Added `obfuscatedAccountIdAndroid` and `obfuscatedProfileIdAndroid` when requesting `purchase` or `subscription` in `android`.
 + Removed `developerPayload` in `android`.
-+ Added `purchaseToken` as an optional parameter to `requestPurchase` and `requestSubscription`.
++ Added `purchaseTokenAndroid` as an optional parameter to `requestPurchase` and `requestSubscription`.
 
 ## 2.2.0
 + Implement `endConnection` method to declaratively finish observer in iOS.
