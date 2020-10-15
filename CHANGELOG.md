@@ -1,3 +1,6 @@
+## 2.3.2
++ Add missing dep 'meta'.
+
 ## 2.3.1
 Republishing since sourcode seems not merged correctly.
 
