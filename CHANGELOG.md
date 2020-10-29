@@ -1,5 +1,9 @@
-## 2.3.2
-+ Add missing dep 'meta'.
+## 3.0.0
++ Upgrade android billing client to `2.1.0` from `3.0.0`.
++ Removed `deveoperId` and `accountId` when requesting `purchase` or `subscription` in `android`.
++ Added `obfuscatedAccountIdAndroid` and `obfuscatedProfileIdAndroid` when requesting `purchase` or `subscription` in `android`.
++ Removed `developerPayload` in `android`.
++ Added `purchaseTokenAndroid` as an optional parameter to `requestPurchase` and `requestSubscription`.
 
 ## 2.3.1
 Republishing since sourcode seems not merged correctly.

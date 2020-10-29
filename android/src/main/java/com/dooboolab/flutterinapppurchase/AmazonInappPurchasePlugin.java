@@ -99,8 +99,8 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       result.success("[]");
     } else if (call.method.equals("buyItemByType")) {
       final String type = call.argument("type");
-      final String accountId = call.argument("accountId");
-      final String developerId = call.argument("developerId");
+      final String obfuscatedAccountId = call.argument("obfuscatedAccountId");
+      final String obfuscatedProfileId = call.argument("obfuscatedProfileId");
       final String sku = call.argument("sku");
       final String oldSku = call.argument("oldSku");
       final int prorationMode = call.argument("prorationMode");
