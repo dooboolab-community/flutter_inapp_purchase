@@ -173,7 +173,7 @@ void main() {
             "subscriptionPeriodUnitIOS": "1",
             "subscriptionPeriodAndroid": "2",
             "subscriptionPeriodNumberIOS": "3",
-            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
@@ -264,7 +264,7 @@ void main() {
             "subscriptionPeriodUnitIOS": "1",
             "subscriptionPeriodAndroid": "2",
             "subscriptionPeriodNumberIOS": "3",
-            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
@@ -356,7 +356,7 @@ void main() {
             "subscriptionPeriodUnitIOS": "1",
             "subscriptionPeriodAndroid": "2",
             "subscriptionPeriodNumberIOS": "3",
-            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
@@ -447,7 +447,7 @@ void main() {
             "subscriptionPeriodUnitIOS": "1",
             "subscriptionPeriodAndroid": "2",
             "subscriptionPeriodNumberIOS": "3",
-            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
@@ -976,8 +976,9 @@ void main() {
                 'sku': sku,
                 'oldSku': null,
                 'prorationMode': -1,
-                'developerId': null,
-                'accountId': null,
+                'obfuscatedAccountId': null,
+                'obfuscatedProfileId': null,
+                'purchaseToken': null,
               },
             ),
           ]);
@@ -1033,8 +1034,9 @@ void main() {
                 'sku': sku,
                 'oldSku': oldSku,
                 'prorationMode': -1,
-                'developerId': null,
-                'accountId': null,
+                'obfuscatedAccountId': null,
+                'obfuscatedProfileId': null,
+                'purchaseToken': null,
               },
             ),
           ]);
@@ -1122,7 +1124,6 @@ void main() {
               'acknowledgePurchase',
               arguments: <String, dynamic>{
               'token': token,
-              'developerPayload': null,
               },
             ),
           ]);
@@ -1160,7 +1161,6 @@ void main() {
           expect(log, <Matcher>[
             isMethodCall('consumeProduct', arguments: <String, dynamic>{
               'token': token,
-              'developerPayload': null,
             }),
           ]);
         });
@@ -1289,7 +1289,7 @@ void main() {
             "subscriptionPeriodUnitIOS": "1",
             "subscriptionPeriodAndroid": "2",
             "subscriptionPeriodNumberIOS": "3",
-            "introductoryPriceCyclesAndroid": "4",
+            "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }

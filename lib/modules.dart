@@ -32,7 +32,7 @@ class IAPItem {
 
   /// android only
   final String subscriptionPeriodAndroid;
-  final String introductoryPriceCyclesAndroid;
+  final int introductoryPriceCyclesAndroid;
   final String introductoryPricePeriodAndroid;
   final String freeTrialPeriodAndroid;
   final String signatureAndroid;
@@ -62,7 +62,7 @@ class IAPItem {
         subscriptionPeriodUnitIOS = json['subscriptionPeriodUnitIOS'] as String,
         subscriptionPeriodAndroid = json['subscriptionPeriodAndroid'] as String,
         introductoryPriceCyclesAndroid =
-            json['introductoryPriceCyclesAndroid'] as String,
+            json['introductoryPriceCyclesAndroid'] as int,
         introductoryPricePeriodAndroid =
             json['introductoryPricePeriodAndroid'] as String,
         freeTrialPeriodAndroid = json['freeTrialPeriodAndroid'] as String,
@@ -214,7 +214,6 @@ class PurchasedItem {
   final bool autoRenewingAndroid;
   final bool isAcknowledgedAndroid;
   final int purchaseStateAndroid;
-  final String developerPayloadAndroid;
   final String originalJsonAndroid;
 
   // iOS only
@@ -236,7 +235,6 @@ class PurchasedItem {
         isAcknowledgedAndroid = json['isAcknowledgedAndroid'] as bool,
         autoRenewingAndroid = json['autoRenewingAndroid'] as bool,
         purchaseStateAndroid = json['purchaseStateAndroid'] as int,
-        developerPayloadAndroid = json['developerPayloadAndroid'] as String,
         originalJsonAndroid = json['originalJsonAndroid'] as String,
 
         originalTransactionDateIOS =
@@ -261,7 +259,6 @@ class PurchasedItem {
         'isAcknowledgedAndroid: $isAcknowledgedAndroid, '
         'autoRenewingAndroid: $autoRenewingAndroid, '
         'purchaseStateAndroid: $purchaseStateAndroid, '
-        'developerPayloadAndroid: $developerPayloadAndroid, '
         'originalJsonAndroid: $originalJsonAndroid, '
         /// ios specific
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
