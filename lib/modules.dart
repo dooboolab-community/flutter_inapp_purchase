@@ -213,7 +213,7 @@ class PurchasedItem {
   final String signatureAndroid;
   final bool autoRenewingAndroid;
   final bool isAcknowledgedAndroid;
-  final int purchaseStateAndroid;
+  final PurchaseState purchaseStateAndroid;
   final String originalJsonAndroid;
 
   // iOS only
@@ -234,7 +234,8 @@ class PurchasedItem {
         signatureAndroid = json['signatureAndroid'] as String,
         isAcknowledgedAndroid = json['isAcknowledgedAndroid'] as bool,
         autoRenewingAndroid = json['autoRenewingAndroid'] as bool,
-        purchaseStateAndroid = json['purchaseStateAndroid'] as int,
+        purchaseStateAndroid =
+            _decodePurchaseStateAndroid(json['purchaseStateAndroid'] as int),
         originalJsonAndroid = json['originalJsonAndroid'] as String,
 
         originalTransactionDateIOS =
@@ -363,6 +364,28 @@ TransactionState _decodeTransactionStateIOS(int rawValue) {
       return TransactionState.restored;
     case 4:
       return TransactionState.deferred;
+    default:
+      return null;
+  }
+}
+
+/// See also https://developer.android.com/reference/com/android/billingclient/api/Purchase.PurchaseState
+enum PurchaseState {
+  pending,
+
+  purchased,
+
+  unspecified,
+}
+
+PurchaseState _decodePurchaseStateAndroid(int rawValue) {
+  switch (rawValue) {
+    case 0:
+      return PurchaseState.unspecified;
+    case 1:
+      return PurchaseState.purchased;
+    case 2:
+      return PurchaseState.pending;
     default:
       return null;
   }
