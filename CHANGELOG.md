@@ -1,3 +1,7 @@
+## 3.0.1
++ Migrate to flutter embedding v2 [#240](https://github.com/dooboolab/flutter_inapp_purchase/pull/240)
++ Expose android purchase state as enum [#243](https://github.com/dooboolab/flutter_inapp_purchase/pull/243)
+
 ## 3.0.0
 + Upgrade android billing client to `2.1.0` from `3.0.0`.
 + Removed `deveoperId` and `accountId` when requesting `purchase` or `subscription` in `android`.
