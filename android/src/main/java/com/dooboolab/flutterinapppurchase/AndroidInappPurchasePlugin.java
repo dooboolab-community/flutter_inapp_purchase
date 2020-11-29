@@ -1,6 +1,11 @@
 package com.dooboolab.flutterinapppurchase;
 
 import androidx.annotation.Nullable;
+
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
@@ -26,27 +31,78 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.FlutterException;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** AndroidInappPurchasePlugin */
-public class AndroidInappPurchasePlugin implements MethodCallHandler {
-  public static Registrar reg;
+public class AndroidInappPurchasePlugin implements MethodCallHandler,  Application.ActivityLifecycleCallbacks {
   static private ArrayList<SkuDetails> skus;
   private final String TAG = "InappPurchasePlugin";
   private BillingClient billingClient;
-  private static MethodChannel channel;
+  private Context context;
+  private Activity activity;
+  private MethodChannel channel;
 
-  /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
-    channel = new MethodChannel(registrar.messenger(), "flutter_inapp");
-    channel.setMethodCallHandler(new FlutterInappPurchasePlugin());
-    reg = registrar;
+  AndroidInappPurchasePlugin() {
     skus = new ArrayList<>();
+  }
+
+  public void setContext(Context context) {
+    this.context = context;
+  }
+
+  public void setActivity(Activity activity) {
+    this.activity = activity;
+  }
+
+  public void setChannel(MethodChannel channel) {
+    this.channel = channel;
+  }
+
+  public void onDetachedFromActivity() {
+    endBillingClientConnection();
+  }
+
+  @Override
+  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+
+  }
+
+  @Override
+  public void onActivityStarted(Activity activity) {
+
+  }
+
+  @Override
+  public void onActivityResumed(Activity activity) {
+
+  }
+
+  @Override
+  public void onActivityPaused(Activity activity) {
+
+  }
+
+  @Override
+  public void onActivityDestroyed(Activity activity) {
+    if (this.activity == activity && this.context != null) {
+      ((Application) this.context).unregisterActivityLifecycleCallbacks(this);
+      endBillingClientConnection();
+    }
+  }
+
+  @Override
+  public void onActivityStopped(Activity activity) {
+
+  }
+
+  @Override
+  public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
   }
 
   @Override
@@ -68,9 +124,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
         return;
       }
 
-      billingClient = BillingClient.newBuilder(reg.context()).setListener(purchasesUpdatedListener)
-          .enablePendingPurchases()
-          .build();
+      billingClient = BillingClient.newBuilder(context).setListener(purchasesUpdatedListener)
+              .enablePendingPurchases()
+              .build();
       billingClient.startConnection(new BillingClientStateListener() {
         private boolean alreadyFinished = false;
 
@@ -389,7 +445,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
 
       builder.setSkuDetails(selectedSku);
       BillingFlowParams flowParams = builder.build();
-      billingClient.launchBillingFlow(reg.activity(), flowParams);
+      if (activity != null) {
+        billingClient.launchBillingFlow(activity, flowParams);
+      }
     }
 
     /*
@@ -528,4 +586,13 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler {
       }
     }
   };
+
+  private void endBillingClientConnection() {
+    if (billingClient != null) {
+      try {
+        billingClient.endConnection();
+        billingClient = null;
+      } catch (Exception ignored) {}
+    }
+  }
 }
