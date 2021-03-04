@@ -5,6 +5,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/dooboolab/flutter_inapp_purchase/badge.svg?branch=master)](https://coveralls.io/github/dooboolab/flutter_inapp_purchase?branch=master)
 
 
+## Flutter V2
+This packages is compatible with flutter v2 from `4.0.0`. For those who use older version please use `< 4.0.0`.
+
 ## Sun Rise :sunrise:
 Since many one of you wanted me to keep working on this plugin in [#93](https://github.com/dooboolab/flutter_inapp_purchase/issues/93), I've decided to keep working on current project. I hope many one of you can help me maintain this. Thank you for all your supports in advance :tada:.
 
