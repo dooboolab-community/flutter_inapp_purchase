@@ -543,7 +543,7 @@ class FlutterInappPurchase {
         ? 'https://sandbox.itunes.apple.com/verifyReceipt'
         : 'https://buy.itunes.apple.com/verifyReceipt';
     return await http.post(
-      url,
+      Uri.parse(url),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -584,7 +584,7 @@ class FlutterInappPurchase {
     final String url =
         'https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
     return await _client.get(
-      url,
+      Uri.parse(url),
       headers: {
         'Accept': 'application/json',
       },
