@@ -1,3 +1,6 @@
+## 4.0.2
++ The dart side requires "introductoryPriceCyclesAndroid" to be a int [#268](https://github.com/dooboolab/flutter_inapp_purchase/pull/268)
+
 ## 4.0.1
 + `platform` dep version `>=2.0.0 <4.0.0`
 
