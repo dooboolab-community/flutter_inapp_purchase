@@ -1,3 +1,6 @@
+## 4.0.1
++ `platform` dep version `>=2.0.0 <4.0.0`
+
 ## 4.0.0
 + Support flutter v2 [#265](https://github.com/dooboolab/flutter_inapp_purchase/pull/265)
 
