@@ -654,9 +654,22 @@ class FlutterInappPurchase {
 /// A list of valid values for ProrationMode parameter
 /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
 class AndroidProrationMode{
+  /// Replacement takes effect when the old plan expires, and the new price will be charged at the same time.
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#DEFERRED
   static const int DEFERRED = 4;
+
+  /// Replacement takes effect immediately, and the billing cycle remains the same. The price for the remaining period will be charged. This option is only available for subscription upgrade.
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#immediate_and_charge_prorated_price
   static const int IMMEDIATE_AND_CHARGE_PRORATED_PRICE = 2;
+
+  /// Replacement takes effect immediately, and the new price will be charged on next recurrence time. The billing cycle stays the same.
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#immediate_without_proration
   static const int IMMEDIATE_WITHOUT_PRORATION = 3;
+
+  /// Replacement takes effect immediately, and the remaining time will be prorated and credited to the user. This is the current default behavior.
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#immediate_with_time_proration
   static const int IMMEDIATE_WITH_TIME_PRORATION = 1;
+
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#unknown_subscription_upgrade_downgrade_policy
   static const int UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY = 0;
 }
