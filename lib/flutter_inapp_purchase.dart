@@ -219,7 +219,8 @@ class FlutterInappPurchase {
 
   /// Request a purchase on `Android` or `iOS`.
   /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
-  ///
+  /// 
+  /// Check [AndroidProrationMode] for valid proration values
   /// Identical to [requestSubscription] on `iOS`.
   Future requestPurchase(String sku, {
     String obfuscatedAccountIdAndroid,
@@ -250,7 +251,8 @@ class FlutterInappPurchase {
   /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
   ///
   /// **NOTICE** second parameter is required on `Android`.
-  ///
+  /// 
+  /// Check [AndroidProrationMode] for valid proration values
   /// Identical to [requestPurchase] on `iOS`.
   Future requestSubscription(String sku,
       {
@@ -647,4 +649,14 @@ class FlutterInappPurchase {
       _purchaseErrorController = null;
     }
   }
+}
+
+/// A list of valid values for ProrationMode parameter
+/// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
+class AndroidProrationMode{
+  static const int DEFERRED = 4;
+  static const int IMMEDIATE_AND_CHARGE_PRORATED_PRICE = 2;
+  static const int IMMEDIATE_WITHOUT_PRORATION = 3;
+  static const int IMMEDIATE_WITH_TIME_PRORATION = 1;
+  static const int UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY = 0;
 }
