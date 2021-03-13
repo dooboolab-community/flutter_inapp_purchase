@@ -1,3 +1,6 @@
+## 5.0.0
++ Support null safety [#275](https://github.com/dooboolab/flutter_inapp_purchase/pull/275)
+
 ## 4.0.2
 + The dart side requires "introductoryPriceCyclesAndroid" to be a int [#268](https://github.com/dooboolab/flutter_inapp_purchase/pull/268)
 
