@@ -639,7 +639,7 @@ class FlutterInappPurchase {
         default:
           throw new ArgumentError('Unknown method ${call.method}');
       }
-      return null;
+      return Future.value(null);
     } as Future<dynamic> Function(MethodCall)?);
   }
 

@@ -594,8 +594,9 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem> actualList = await (FlutterInappPurchase.instance
-              .getPurchaseHistory() as FutureOr<List<PurchasedItem>>);
+          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
+                  .getPurchaseHistory() as FutureOr<List<PurchasedItem>?>) ??
+              [];
           List<PurchasedItem> expectList = ((json.decode(resultInapp) as List) +
                   (json.decode(resultSubs) as List))
               .map((item) => PurchasedItem.fromJSON(item))
@@ -679,8 +680,9 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem> actualList = await (FlutterInappPurchase.instance
-              .getPurchaseHistory() as FutureOr<List<PurchasedItem>>);
+          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
+                  .getPurchaseHistory() as FutureOr<List<PurchasedItem>?>) ??
+              [];
           List<PurchasedItem>? expectList = result
               .map<PurchasedItem>((item) => PurchasedItem.fromJSON(item))
               .toList();
@@ -775,8 +777,9 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem> actualList = await (FlutterInappPurchase.instance
-              .getAvailablePurchases() as FutureOr<List<PurchasedItem>>);
+          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
+                  .getAvailablePurchases() as FutureOr<List<PurchasedItem>?>) ??
+              [];
           List<PurchasedItem> expectList = ((json.decode(resultInapp) as List) +
                   (json.decode(resultSubs) as List))
               .map((item) => PurchasedItem.fromJSON(item))
@@ -860,8 +863,9 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem> actualList = await (FlutterInappPurchase.instance
-              .getAvailablePurchases() as FutureOr<List<PurchasedItem>>);
+          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
+                  .getAvailablePurchases() as FutureOr<List<PurchasedItem>?>) ??
+              [];
           List<PurchasedItem>? expectList = result
               .map<PurchasedItem>((item) =>
                   PurchasedItem.fromJSON(item as Map<String, dynamic>))
