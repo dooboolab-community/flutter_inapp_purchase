@@ -1,3 +1,6 @@
+## 5.0.1
++ Add AndroidProrationMode values [#273](https://github.com/dooboolab/flutter_inapp_purchase/pull/273)
+
 ## 5.0.0
 + Support null safety [#275](https://github.com/dooboolab/flutter_inapp_purchase/pull/275)
 
