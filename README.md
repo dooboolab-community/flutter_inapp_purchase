@@ -5,6 +5,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/dooboolab/flutter_inapp_purchase/badge.svg?branch=master)](https://coveralls.io/github/dooboolab/flutter_inapp_purchase?branch=master)
 
 
+## Flutter V2
+This packages is compatible with flutter v2 from `4.0.0`. For those who use older version please use `< 4.0.0`.
+
 ## Sun Rise :sunrise:
 Since many one of you wanted me to keep working on this plugin in [#93](https://github.com/dooboolab/flutter_inapp_purchase/issues/93), I've decided to keep working on current project. I hope many one of you can help me maintain this. Thank you for all your supports in advance :tada:.
 
@@ -29,6 +32,8 @@ To migrate to `0.9.0` you must migrate your Android app to Android X by followin
 
 ## Getting Started
 Follow the [Medium Blog](https://medium.com/@dooboolab/flutter-in-app-purchase-7a3fb9345e2a) for the configuration.
+
+Follow the [Medium Blog](https://medium.com/bosc-tech-labs-private-limited/how-to-implement-subscriptions-in-app-purchase-in-flutter-7ce8906e608a) to add **subscriptions** in app purchase.
 
 For help getting started with Flutter, view our online
 [documentation](https://flutter.io/).

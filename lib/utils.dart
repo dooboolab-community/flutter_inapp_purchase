@@ -12,8 +12,8 @@ List<IAPItem> extractItems(dynamic result) {
   return products;
 }
 
-List<PurchasedItem> extractPurchased(dynamic result) {
-  List<PurchasedItem> decoded = json
+List<PurchasedItem>? extractPurchased(dynamic result) {
+  List<PurchasedItem>? decoded = json
       .decode(result.toString())
       .map<PurchasedItem>(
         (dynamic product) =>
@@ -25,8 +25,8 @@ List<PurchasedItem> extractPurchased(dynamic result) {
 }
 
 
-List<PurchaseResult> extractResult(dynamic result) {
-  List<PurchaseResult> decoded = json
+List<PurchaseResult>? extractResult(dynamic result) {
+  List<PurchaseResult>? decoded = json
       .decode(result.toString())
       .map<PurchaseResult>(
         (dynamic product) =>

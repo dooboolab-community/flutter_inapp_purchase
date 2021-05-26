@@ -9,6 +9,10 @@ description: Demonstrates how to use the flutter_inapp_purchase plugin.
 # Read more about versioning at semver.org.
 version: 1.0.0+1
 
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=2.0.0 <3.0.0"
+
 dependencies:
   flutter:
     sdk: flutter
