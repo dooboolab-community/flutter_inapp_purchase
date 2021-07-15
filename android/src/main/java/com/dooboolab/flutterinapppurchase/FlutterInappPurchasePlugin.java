@@ -124,7 +124,7 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
   public static final boolean isAppInstalledFrom(Context ctx, String installer) {
     String installerPackageName = ctx.getPackageManager().getInstallerPackageName(
             ctx.getPackageName());
-    if (installer != null && installerPackageName.contains(installer)){
+    if (installer != null && installerPackageName != null && installerPackageName.contains(installer)){
       return true;
     }
     return false;
