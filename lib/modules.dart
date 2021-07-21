@@ -43,22 +43,31 @@ class IAPItem {
 
   /// Create [IAPItem] from a Map that was previously JSON formatted
   IAPItem.fromJSON(Map<String, dynamic> json)
-      : productId = json['productId'] as String?, // Android Apple not null
-        price = json['price'] as String?, // Android Apple  not null
-        currency = json['currency'] as String?, // Android Apple not null
-        localizedPrice = json['localizedPrice'] as String?, // Android not null
-        title = json['title'] as String?, // Android Apple not null
-        description = json['description'] as String?, // Android not null, Apple can be empty (or null check)
+      : productId = json['productId'] as String?,
+        price = json['price'] as String?,
+        currency = json['currency'] as String?,
+        localizedPrice = json['localizedPrice'] as String?,
+        title = json['title'] as String?,
+        description = json['description'] as String?,
         introductoryPrice = json['introductoryPrice'] as String?,
-        introductoryPricePaymentModeIOS = json['introductoryPricePaymentModeIOS'] as String?,
-        introductoryPriceNumberOfPeriodsIOS = json['introductoryPriceNumberOfPeriodsIOS'] as String?,
-        introductoryPriceSubscriptionPeriodIOS = json['introductoryPriceSubscriptionPeriodIOS'] as String?,
-        introductoryPriceNumberIOS = json['introductoryPriceNumberIOS'] as String?,
-        subscriptionPeriodNumberIOS = json['subscriptionPeriodNumberIOS'] as String?,
-        subscriptionPeriodUnitIOS = json['subscriptionPeriodUnitIOS'] as String?,
-        subscriptionPeriodAndroid = json['subscriptionPeriodAndroid'] as String?,
-        introductoryPriceCyclesAndroid = json['introductoryPriceCyclesAndroid'] as int?,
-        introductoryPricePeriodAndroid = json['introductoryPricePeriodAndroid'] as String?,
+        introductoryPricePaymentModeIOS =
+            json['introductoryPricePaymentModeIOS'] as String?,
+        introductoryPriceNumberOfPeriodsIOS =
+            json['introductoryPriceNumberOfPeriodsIOS'] as String?,
+        introductoryPriceSubscriptionPeriodIOS =
+            json['introductoryPriceSubscriptionPeriodIOS'] as String?,
+        introductoryPriceNumberIOS =
+            json['introductoryPriceNumberIOS'] as String?,
+        subscriptionPeriodNumberIOS =
+            json['subscriptionPeriodNumberIOS'] as String?,
+        subscriptionPeriodUnitIOS =
+            json['subscriptionPeriodUnitIOS'] as String?,
+        subscriptionPeriodAndroid =
+            json['subscriptionPeriodAndroid'] as String?,
+        introductoryPriceCyclesAndroid =
+            json['introductoryPriceCyclesAndroid'] as int?,
+        introductoryPricePeriodAndroid =
+            json['introductoryPricePeriodAndroid'] as String?,
         freeTrialPeriodAndroid = json['freeTrialPeriodAndroid'] as String?,
         signatureAndroid = json['signatureAndroid'] as String?,
         iconUrl = json['iconUrl'] as String?,
@@ -87,13 +96,18 @@ class IAPItem {
 
     data['subscriptionPeriodNumberIOS'] = this.subscriptionPeriodNumberIOS;
     data['subscriptionPeriodUnitIOS'] = this.subscriptionPeriodUnitIOS;
-    data['introductoryPricePaymentModeIOS'] = this.introductoryPricePaymentModeIOS;
-    data['introductoryPriceNumberOfPeriodsIOS'] = this.introductoryPriceNumberOfPeriodsIOS;
-    data['introductoryPriceSubscriptionPeriodIOS'] = this.introductoryPriceSubscriptionPeriodIOS;
+    data['introductoryPricePaymentModeIOS'] =
+        this.introductoryPricePaymentModeIOS;
+    data['introductoryPriceNumberOfPeriodsIOS'] =
+        this.introductoryPriceNumberOfPeriodsIOS;
+    data['introductoryPriceSubscriptionPeriodIOS'] =
+        this.introductoryPriceSubscriptionPeriodIOS;
 
     data['subscriptionPeriodAndroid'] = this.subscriptionPeriodAndroid;
-    data['introductoryPriceCyclesAndroid'] = this.introductoryPriceCyclesAndroid;
-    data['introductoryPricePeriodAndroid'] = this.introductoryPricePeriodAndroid;
+    data['introductoryPriceCyclesAndroid'] =
+        this.introductoryPriceCyclesAndroid;
+    data['introductoryPricePeriodAndroid'] =
+        this.introductoryPricePeriodAndroid;
     data['freeTrialPeriodAndroid'] = this.freeTrialPeriodAndroid;
     data['signatureAndroid'] = this.signatureAndroid;
 
@@ -137,7 +151,8 @@ class IAPItem {
     if (list != null) {
       discounts = list
           .map<DiscountIOS>(
-            (dynamic discount) => DiscountIOS.fromJSON(discount as Map<String, dynamic>),
+            (dynamic discount) =>
+                DiscountIOS.fromJSON(discount as Map<String, dynamic>),
           )
           .toList();
     }
@@ -224,11 +239,15 @@ class PurchasedItem {
         signatureAndroid = json['signatureAndroid'] as String?,
         isAcknowledgedAndroid = json['isAcknowledgedAndroid'] as bool?,
         autoRenewingAndroid = json['autoRenewingAndroid'] as bool?,
-        purchaseStateAndroid = _decodePurchaseStateAndroid(json['purchaseStateAndroid'] as int?),
+        purchaseStateAndroid =
+            _decodePurchaseStateAndroid(json['purchaseStateAndroid'] as int?),
         originalJsonAndroid = json['originalJsonAndroid'] as String?,
-        originalTransactionDateIOS = _extractDate(json['originalTransactionDateIOS']),
-        originalTransactionIdentifierIOS = json['originalTransactionIdentifierIOS'] as String?,
-        transactionStateIOS = _decodeTransactionStateIOS(json['transactionStateIOS'] as int?);
+        originalTransactionDateIOS =
+            _extractDate(json['originalTransactionDateIOS']),
+        originalTransactionIdentifierIOS =
+            json['originalTransactionIdentifierIOS'] as String?,
+        transactionStateIOS =
+            _decodeTransactionStateIOS(json['transactionStateIOS'] as int?);
 
   /// This returns transaction dates in ISO 8601 format.
   @override
@@ -305,7 +324,8 @@ class ConnectionResult {
     this.connected,
   });
 
-  ConnectionResult.fromJSON(Map<String, dynamic> json) : connected = json['connected'] as bool?;
+  ConnectionResult.fromJSON(Map<String, dynamic> json)
+      : connected = json['connected'] as bool?;
 
   Map<String, dynamic> toJson() => {
         "connected": connected ?? false,
