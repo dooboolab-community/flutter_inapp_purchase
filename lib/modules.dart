@@ -43,28 +43,22 @@ class IAPItem {
 
   /// Create [IAPItem] from a Map that was previously JSON formatted
   IAPItem.fromJSON(Map<String, dynamic> json)
-      : productId = json['productId'] as String?,
-        price = json['price'] as String?,
-        currency = json['currency'] as String?,
-        localizedPrice = json['localizedPrice'] as String?,
-        title = json['title'] as String?,
-        description = json['description'] as String?,
+      : productId = json['productId'] as String?, // Android Apple not null
+        price = json['price'] as String?, // Android Apple  not null
+        currency = json['currency'] as String?, // Android Apple not null
+        localizedPrice = json['localizedPrice'] as String?, // Android not null
+        title = json['title'] as String?, // Android Apple not null
+        description = json['description'] as String?, // Android not null, Apple can be empty (or null check)
         introductoryPrice = json['introductoryPrice'] as String?,
-        introductoryPricePaymentModeIOS =
-            json['introductoryPricePaymentModeIOS'] as String?,
-        introductoryPriceNumberOfPeriodsIOS =
-            json['introductoryPriceNumberOfPeriodsIOS'] as String?,
-        introductoryPriceSubscriptionPeriodIOS =
-            json['introductoryPriceSubscriptionPeriodIOS'] as String?,
+        introductoryPricePaymentModeIOS = json['introductoryPricePaymentModeIOS'] as String?,
+        introductoryPriceNumberOfPeriodsIOS = json['introductoryPriceNumberOfPeriodsIOS'] as String?,
+        introductoryPriceSubscriptionPeriodIOS = json['introductoryPriceSubscriptionPeriodIOS'] as String?,
         introductoryPriceNumberIOS = json['introductoryPriceNumberIOS'] as String?,
-        subscriptionPeriodNumberIOS =
-            json['subscriptionPeriodNumberIOS'] as String?,
+        subscriptionPeriodNumberIOS = json['subscriptionPeriodNumberIOS'] as String?,
         subscriptionPeriodUnitIOS = json['subscriptionPeriodUnitIOS'] as String?,
         subscriptionPeriodAndroid = json['subscriptionPeriodAndroid'] as String?,
-        introductoryPriceCyclesAndroid =
-            json['introductoryPriceCyclesAndroid'] as int?,
-        introductoryPricePeriodAndroid =
-            json['introductoryPricePeriodAndroid'] as String?,
+        introductoryPriceCyclesAndroid = json['introductoryPriceCyclesAndroid'] as int?,
+        introductoryPricePeriodAndroid = json['introductoryPricePeriodAndroid'] as String?,
         freeTrialPeriodAndroid = json['freeTrialPeriodAndroid'] as String?,
         signatureAndroid = json['signatureAndroid'] as String?,
         iconUrl = json['iconUrl'] as String?,
@@ -133,8 +127,7 @@ class IAPItem {
         'iconUrl: $iconUrl, '
         'originalJson: $originalJson, '
         'originalPrice: $originalPrice, '
-        'discounts: $discountsIOS, '
-    ;
+        'discounts: $discountsIOS, ';
   }
 
   static List<DiscountIOS>? _extractDiscountIOS(dynamic json) {
@@ -145,10 +138,9 @@ class IAPItem {
       discounts = list
           .map<DiscountIOS>(
             (dynamic discount) => DiscountIOS.fromJSON(discount as Map<String, dynamic>),
-      )
+          )
           .toList();
     }
-
 
     return discounts;
   }
@@ -194,8 +186,7 @@ class DiscountIOS {
         'price: $price, '
         'localizedPrice: $localizedPrice, '
         'paymentMode: $paymentMode, '
-        'subscriptionPeriod: $subscriptionPeriod, '
-    ;
+        'subscriptionPeriod: $subscriptionPeriod, ';
   }
 }
 
@@ -229,21 +220,15 @@ class PurchasedItem {
         transactionReceipt = json['transactionReceipt'] as String?,
         purchaseToken = json['purchaseToken'] as String?,
         orderId = json['orderId'] as String?,
-
         dataAndroid = json['dataAndroid'] as String?,
         signatureAndroid = json['signatureAndroid'] as String?,
         isAcknowledgedAndroid = json['isAcknowledgedAndroid'] as bool?,
         autoRenewingAndroid = json['autoRenewingAndroid'] as bool?,
-        purchaseStateAndroid =
-            _decodePurchaseStateAndroid(json['purchaseStateAndroid'] as int?),
+        purchaseStateAndroid = _decodePurchaseStateAndroid(json['purchaseStateAndroid'] as int?),
         originalJsonAndroid = json['originalJsonAndroid'] as String?,
-
-        originalTransactionDateIOS =
-            _extractDate(json['originalTransactionDateIOS']),
-        originalTransactionIdentifierIOS =
-            json['originalTransactionIdentifierIOS'] as String?,
-        transactionStateIOS =
-            _decodeTransactionStateIOS(json['transactionStateIOS'] as int?);
+        originalTransactionDateIOS = _extractDate(json['originalTransactionDateIOS']),
+        originalTransactionIdentifierIOS = json['originalTransactionIdentifierIOS'] as String?,
+        transactionStateIOS = _decodeTransactionStateIOS(json['transactionStateIOS'] as int?);
 
   /// This returns transaction dates in ISO 8601 format.
   @override
@@ -254,6 +239,7 @@ class PurchasedItem {
         'transactionReceipt: $transactionReceipt, '
         'purchaseToken: $purchaseToken, '
         'orderId: $orderId, '
+
         /// android specific
         'dataAndroid: $dataAndroid, '
         'signatureAndroid: $signatureAndroid, '
@@ -261,6 +247,7 @@ class PurchasedItem {
         'autoRenewingAndroid: $autoRenewingAndroid, '
         'purchaseStateAndroid: $purchaseStateAndroid, '
         'originalJsonAndroid: $originalJsonAndroid, '
+
         /// ios specific
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS, '
@@ -286,7 +273,7 @@ class PurchaseResult {
     this.responseCode,
     this.debugMessage,
     this.code,
-    this.message
+    this.message,
   });
 
   PurchaseResult.fromJSON(Map<String, dynamic> json)
@@ -296,22 +283,20 @@ class PurchaseResult {
         message = json['message'] as String?;
 
   Map<String, dynamic> toJson() => {
-    "responseCode": responseCode ?? 0,
-    "debugMessage": debugMessage ?? '',
-    "code": code ?? '',
-    "message": message ?? '',
-  };
+        "responseCode": responseCode ?? 0,
+        "debugMessage": debugMessage ?? '',
+        "code": code ?? '',
+        "message": message ?? '',
+      };
 
   @override
   String toString() {
     return 'responseCode: $responseCode, '
         'debugMessage: $debugMessage, '
         'code: $code, '
-        'message: $message'
-    ;
+        'message: $message';
   }
 }
-
 
 class ConnectionResult {
   final bool? connected;
@@ -320,17 +305,15 @@ class ConnectionResult {
     this.connected,
   });
 
-  ConnectionResult.fromJSON(Map<String, dynamic> json)
-      : connected = json['connected'] as bool?;
+  ConnectionResult.fromJSON(Map<String, dynamic> json) : connected = json['connected'] as bool?;
 
   Map<String, dynamic> toJson() => {
-    "connected": connected ?? false,
-  };
+        "connected": connected ?? false,
+      };
 
   @override
   String toString() {
-    return 'connected: $connected'
-    ;
+    return 'connected: $connected';
   }
 }
 

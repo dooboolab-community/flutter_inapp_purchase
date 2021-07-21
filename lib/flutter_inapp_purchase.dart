@@ -99,7 +99,6 @@ class FlutterInappPurchase {
   ///
   /// `iOS` also returns subscriptions.
   Future<List<IAPItem>> getProducts(List<String> skus) async {
-    if (skus == null || skus.contains(null)) return [];
     skus = skus.toList();
     if (_platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(
@@ -128,7 +127,6 @@ class FlutterInappPurchase {
   ///
   /// `iOS` also returns non-subscription products.
   Future<List<IAPItem>> getSubscriptions(List<String> skus) async {
-    if (skus == null || skus.contains(null)) return [];
     skus = skus.toList();
     if (_platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(
@@ -219,14 +217,14 @@ class FlutterInappPurchase {
 
   /// Request a purchase on `Android` or `iOS`.
   /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
-  /// 
+  ///
   /// Check [AndroidProrationMode] for valid proration values
   /// Identical to [requestSubscription] on `iOS`.
   Future requestPurchase(
     String sku, {
-    String? obfuscatedAccountIdAndroid,
-    String? obfuscatedProfileIdAndroid,
+    String? obfuscatedAccountId,
     String? purchaseTokenAndroid,
+    String? obfuscatedProfileIdAndroid,
   }) async {
     if (_platform.isAndroid) {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
@@ -234,13 +232,14 @@ class FlutterInappPurchase {
         'sku': sku,
         'oldSku': null,
         'prorationMode': -1,
-        'obfuscatedAccountId': obfuscatedAccountIdAndroid,
+        'obfuscatedAccountId': obfuscatedAccountId,
         'obfuscatedProfileId': obfuscatedProfileIdAndroid,
         'purchaseToken': purchaseTokenAndroid,
       });
     } else if (_platform.isIOS) {
       return await _channel.invokeMethod('buyProduct', <String, dynamic>{
         'sku': sku,
+        'forUser': obfuscatedAccountId,
       });
     }
     throw PlatformException(
@@ -251,7 +250,7 @@ class FlutterInappPurchase {
   /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
   ///
   /// **NOTICE** second parameter is required on `Android`.
-  /// 
+  ///
   /// Check [AndroidProrationMode] for valid proration values
   /// Identical to [requestPurchase] on `iOS`.
   Future requestSubscription(
@@ -506,7 +505,6 @@ class FlutterInappPurchase {
     Duration duration: const Duration(days: 30),
     Duration grace: const Duration(days: 3),
   }) async {
-    assert(sku != null);
     if (_platform.isIOS) {
       var history =
           await (getPurchaseHistory() as FutureOr<List<PurchasedItem>>);
@@ -548,9 +546,6 @@ class FlutterInappPurchase {
     required Map<String, String> receiptBody,
     bool isTest = true,
   }) async {
-    assert(receiptBody != null);
-    assert(isTest != null);
-
     final String url = isTest
         ? 'https://sandbox.itunes.apple.com/verifyReceipt'
         : 'https://buy.itunes.apple.com/verifyReceipt';
@@ -587,11 +582,6 @@ class FlutterInappPurchase {
     required String accessToken,
     bool isSubscription = false,
   }) async {
-    assert(packageName != null);
-    assert(productId != null);
-    assert(productToken != null);
-    assert(accessToken != null);
-
     final String type = isSubscription ? 'subscriptions' : 'products';
     final String url =
         'https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
@@ -642,7 +632,7 @@ class FlutterInappPurchase {
           throw new ArgumentError('Unknown method ${call.method}');
       }
       return Future.value(null);
-    } as Future<dynamic> Function(MethodCall)?);
+    });
   }
 
   Future _removePurchaseListener() async {
@@ -663,7 +653,7 @@ class FlutterInappPurchase {
 
 /// A list of valid values for ProrationMode parameter
 /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
-class AndroidProrationMode{
+class AndroidProrationMode {
   /// Replacement takes effect when the old plan expires, and the new price will be charged at the same time.
   /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#DEFERRED
   static const int DEFERRED = 4;
