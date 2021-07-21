@@ -56,11 +56,14 @@ class IAPItem {
             json['introductoryPriceNumberOfPeriodsIOS'] as String?,
         introductoryPriceSubscriptionPeriodIOS =
             json['introductoryPriceSubscriptionPeriodIOS'] as String?,
-        introductoryPriceNumberIOS = json['introductoryPriceNumberIOS'] as String?,
+        introductoryPriceNumberIOS =
+            json['introductoryPriceNumberIOS'] as String?,
         subscriptionPeriodNumberIOS =
             json['subscriptionPeriodNumberIOS'] as String?,
-        subscriptionPeriodUnitIOS = json['subscriptionPeriodUnitIOS'] as String?,
-        subscriptionPeriodAndroid = json['subscriptionPeriodAndroid'] as String?,
+        subscriptionPeriodUnitIOS =
+            json['subscriptionPeriodUnitIOS'] as String?,
+        subscriptionPeriodAndroid =
+            json['subscriptionPeriodAndroid'] as String?,
         introductoryPriceCyclesAndroid =
             json['introductoryPriceCyclesAndroid'] as int?,
         introductoryPricePeriodAndroid =
@@ -93,13 +96,18 @@ class IAPItem {
 
     data['subscriptionPeriodNumberIOS'] = this.subscriptionPeriodNumberIOS;
     data['subscriptionPeriodUnitIOS'] = this.subscriptionPeriodUnitIOS;
-    data['introductoryPricePaymentModeIOS'] = this.introductoryPricePaymentModeIOS;
-    data['introductoryPriceNumberOfPeriodsIOS'] = this.introductoryPriceNumberOfPeriodsIOS;
-    data['introductoryPriceSubscriptionPeriodIOS'] = this.introductoryPriceSubscriptionPeriodIOS;
+    data['introductoryPricePaymentModeIOS'] =
+        this.introductoryPricePaymentModeIOS;
+    data['introductoryPriceNumberOfPeriodsIOS'] =
+        this.introductoryPriceNumberOfPeriodsIOS;
+    data['introductoryPriceSubscriptionPeriodIOS'] =
+        this.introductoryPriceSubscriptionPeriodIOS;
 
     data['subscriptionPeriodAndroid'] = this.subscriptionPeriodAndroid;
-    data['introductoryPriceCyclesAndroid'] = this.introductoryPriceCyclesAndroid;
-    data['introductoryPricePeriodAndroid'] = this.introductoryPricePeriodAndroid;
+    data['introductoryPriceCyclesAndroid'] =
+        this.introductoryPriceCyclesAndroid;
+    data['introductoryPricePeriodAndroid'] =
+        this.introductoryPricePeriodAndroid;
     data['freeTrialPeriodAndroid'] = this.freeTrialPeriodAndroid;
     data['signatureAndroid'] = this.signatureAndroid;
 
@@ -133,8 +141,7 @@ class IAPItem {
         'iconUrl: $iconUrl, '
         'originalJson: $originalJson, '
         'originalPrice: $originalPrice, '
-        'discounts: $discountsIOS, '
-    ;
+        'discounts: $discountsIOS, ';
   }
 
   static List<DiscountIOS>? _extractDiscountIOS(dynamic json) {
@@ -144,11 +151,11 @@ class IAPItem {
     if (list != null) {
       discounts = list
           .map<DiscountIOS>(
-            (dynamic discount) => DiscountIOS.fromJSON(discount as Map<String, dynamic>),
-      )
+            (dynamic discount) =>
+                DiscountIOS.fromJSON(discount as Map<String, dynamic>),
+          )
           .toList();
     }
-
 
     return discounts;
   }
@@ -194,8 +201,7 @@ class DiscountIOS {
         'price: $price, '
         'localizedPrice: $localizedPrice, '
         'paymentMode: $paymentMode, '
-        'subscriptionPeriod: $subscriptionPeriod, '
-    ;
+        'subscriptionPeriod: $subscriptionPeriod, ';
   }
 }
 
@@ -229,7 +235,6 @@ class PurchasedItem {
         transactionReceipt = json['transactionReceipt'] as String?,
         purchaseToken = json['purchaseToken'] as String?,
         orderId = json['orderId'] as String?,
-
         dataAndroid = json['dataAndroid'] as String?,
         signatureAndroid = json['signatureAndroid'] as String?,
         isAcknowledgedAndroid = json['isAcknowledgedAndroid'] as bool?,
@@ -237,7 +242,6 @@ class PurchasedItem {
         purchaseStateAndroid =
             _decodePurchaseStateAndroid(json['purchaseStateAndroid'] as int?),
         originalJsonAndroid = json['originalJsonAndroid'] as String?,
-
         originalTransactionDateIOS =
             _extractDate(json['originalTransactionDateIOS']),
         originalTransactionIdentifierIOS =
@@ -254,6 +258,7 @@ class PurchasedItem {
         'transactionReceipt: $transactionReceipt, '
         'purchaseToken: $purchaseToken, '
         'orderId: $orderId, '
+
         /// android specific
         'dataAndroid: $dataAndroid, '
         'signatureAndroid: $signatureAndroid, '
@@ -261,6 +266,7 @@ class PurchasedItem {
         'autoRenewingAndroid: $autoRenewingAndroid, '
         'purchaseStateAndroid: $purchaseStateAndroid, '
         'originalJsonAndroid: $originalJsonAndroid, '
+
         /// ios specific
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS, '
@@ -286,7 +292,7 @@ class PurchaseResult {
     this.responseCode,
     this.debugMessage,
     this.code,
-    this.message
+    this.message,
   });
 
   PurchaseResult.fromJSON(Map<String, dynamic> json)
@@ -296,22 +302,20 @@ class PurchaseResult {
         message = json['message'] as String?;
 
   Map<String, dynamic> toJson() => {
-    "responseCode": responseCode ?? 0,
-    "debugMessage": debugMessage ?? '',
-    "code": code ?? '',
-    "message": message ?? '',
-  };
+        "responseCode": responseCode ?? 0,
+        "debugMessage": debugMessage ?? '',
+        "code": code ?? '',
+        "message": message ?? '',
+      };
 
   @override
   String toString() {
     return 'responseCode: $responseCode, '
         'debugMessage: $debugMessage, '
         'code: $code, '
-        'message: $message'
-    ;
+        'message: $message';
   }
 }
-
 
 class ConnectionResult {
   final bool? connected;
@@ -324,13 +328,12 @@ class ConnectionResult {
       : connected = json['connected'] as bool?;
 
   Map<String, dynamic> toJson() => {
-    "connected": connected ?? false,
-  };
+        "connected": connected ?? false,
+      };
 
   @override
   String toString() {
-    return 'connected: $connected'
-    ;
+    return 'connected: $connected';
   }
 }
 

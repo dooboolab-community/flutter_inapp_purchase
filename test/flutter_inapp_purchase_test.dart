@@ -910,6 +910,7 @@ void main() {
         };
 
         final String sku = "testsku";
+        final String forUser = "testObfuscatedUser";
 
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
@@ -927,12 +928,16 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
+          await FlutterInappPurchase.instance.requestPurchase(
+            sku,
+            obfuscatedAccountId: forUser,
+          );
           expect(log, <Matcher>[
             isMethodCall(
               'buyProduct',
               arguments: <String, dynamic>{
                 'sku': sku,
+                'forUser': forUser,
               },
             ),
           ]);
@@ -1063,6 +1068,7 @@ void main() {
       group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
         final String sku = "testsku";
+        final String forUser = "testObfuscatedUser";
         final dynamic result = {
           "transactionDate": "1552824902000",
           "transactionId": "testTransactionId",
@@ -1093,12 +1099,16 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
+          await FlutterInappPurchase.instance.requestPurchase(
+            sku,
+            obfuscatedAccountId: forUser,
+          );
           expect(log, <Matcher>[
             isMethodCall(
               'buyProduct',
               arguments: <String, dynamic>{
                 'sku': sku,
+                'forUser': forUser,
               },
             ),
           ]);

@@ -1,9 +1,9 @@
 name: flutter_inapp_purchase
 description: In App Purchase plugin for flutter. This project has been forked by react-native-iap and we are willing to share same experience with that on react-native.
-version: 5.0.1
+version: 5.0.2
 homepage: https://github.com/dooboolab/flutter_inapp_purchase/blob/master/pubspec.yaml
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=2.0.0 <3.0.0"
 
 dependencies:
@@ -20,7 +20,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
@@ -33,7 +32,6 @@ flutter:
         pluginClass: FlutterInappPurchasePlugin
       ios:
         pluginClass: FlutterInappPurchasePlugin
-
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg
@@ -44,7 +42,6 @@ flutter:
   #
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
-
   # To add custom fonts to your plugin package, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
