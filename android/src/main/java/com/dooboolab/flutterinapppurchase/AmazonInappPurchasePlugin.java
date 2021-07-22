@@ -4,32 +4,28 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.amazon.device.iap.PurchasingListener;
 import com.amazon.device.iap.PurchasingService;
 import com.amazon.device.iap.model.FulfillmentResult;
 import com.amazon.device.iap.model.Product;
 import com.amazon.device.iap.model.ProductDataResponse;
-import com.amazon.device.iap.model.ProductType;
 import com.amazon.device.iap.model.PurchaseResponse;
 import com.amazon.device.iap.model.PurchaseUpdatesResponse;
 import com.amazon.device.iap.model.Receipt;
 import com.amazon.device.iap.model.RequestId;
 import com.amazon.device.iap.model.UserDataResponse;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -57,14 +53,14 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(final MethodCall call, final Result result) {
+  public void onMethodCall(final @NonNull MethodCall call, final @NonNull Result result) {
     this.result=result;
     try {
       PurchasingService.registerListener(context, purchasesUpdatedListener);
-
     } catch (Exception e) {
       result.error(call.method, "Call endConnection method if you want to start over.", e.getMessage());
     }
+
     if (call.method.equals("getPlatformVersion")) {
       try {
         result.success("Android " + android.os.Build.VERSION.RELEASE);
@@ -78,7 +74,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       result.success("Billing client has ended.");
     } else if (call.method.equals("consumeAllItems")) {
       // consumable is a separate type in amazon
-      result.success("no-ops in amazon");
+      result.error("AMAZON_NOT_USED","no-ops in amazon",null);
     } else if (call.method.equals("getItemsByType")) {
       Log.d(TAG, "getItemsByType");
       String type = call.argument("type");
@@ -91,21 +87,27 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       }
       PurchasingService.getProductData(productSkus);
 
+      final ArrayList<HashMap<String, Object>> list = new ArrayList<>();
+      result.success(list);
     } else if (call.method.equals("getAvailableItemsByType")) {
       String type = call.argument("type");
       Log.d(TAG, "gaibt="+type);
+
+      final ArrayList<HashMap<String, Object>> list = new ArrayList<>();
       // NOTE: getPurchaseUpdates doesnt return Consumables which are FULFILLED
       if(type.equals("inapp")) {
           PurchasingService.getPurchaseUpdates(true);
+          result.success(list);
       } else if(type.equals("subs")) {
         // Subscriptions are retrieved during inapp, so we just return empty list
-        result.success("[]");
+        result.success(list);
       } else {
         result.notImplemented();
       }
     } else if (call.method.equals("getPurchaseHistoryByType")) {
+      final ArrayList<HashMap<String, Object>> list = new ArrayList<>();
       // No equivalent
-      result.success("[]");
+      result.success(list);
     } else if (call.method.equals("buyItemByType")) {
       final String type = call.argument("type");
       final String obfuscatedAccountId = call.argument("obfuscatedAccountId");
@@ -113,12 +115,15 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       final String sku = call.argument("sku");
       final String oldSku = call.argument("oldSku");
       final int prorationMode = call.argument("prorationMode");
+
       Log.d(TAG, "type="+type+"||sku="+sku+"||oldsku="+oldSku);
       final RequestId requestId = PurchasingService.purchase(sku);
       Log.d(TAG, "resid="+requestId.toString());
+
+      result.success(null);
     } else if (call.method.equals("consumeProduct")) {
       // consumable is a separate type in amazon
-      result.success("no-ops in amazon");
+      result.error("AMAZON_NOT_USED","no-ops in amazon",null);
     } else {
       result.notImplemented();
     }
@@ -147,49 +152,27 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
           final Set<String> unavailableSkus = response.getUnavailableSkus();
           Log.d(TAG, "onProductDataResponse: " + unavailableSkus.size() + " unavailable skus");
           Log.d(TAG, "unavailableSkus="+unavailableSkus.toString());
-          JSONArray items = new JSONArray();
-          try {
-            for (Map.Entry<String, Product> skuDetails : productData.entrySet()) {
-              Product product=skuDetails.getValue();
-              NumberFormat format = NumberFormat.getCurrencyInstance();
+          ArrayList<HashMap<String,Object>> items = new ArrayList<>();
 
-              Number number;
-              try {
-                number = format.parse(product.getPrice());
-              } catch (ParseException e) {
-                result.error(TAG, "Price Parsing error", e.getMessage());
-                return;
-              }
-              JSONObject item = new JSONObject();
-              item.put("productId", product.getSku());
-              item.put("price", number.toString());
-              item.put("currency", null);
-              ProductType productType = product.getProductType();
-              switch (productType) {
-                case ENTITLED:
-                case CONSUMABLE:
-                  item.put("type", "inapp");
-                  break;
-                case SUBSCRIPTION:
-                  item.put("type", "subs");
-                  break;
-              }
-              item.put("localizedPrice", product.getPrice());
-              item.put("title", product.getTitle());
-              item.put("description", product.getDescription());
-              item.put("introductoryPrice", "");
-              item.put("subscriptionPeriodAndroid", "");
-              item.put("freeTrialPeriodAndroid", "");
-              item.put("introductoryPriceCyclesAndroid", 0);
-              item.put("introductoryPricePeriodAndroid", "");
-              Log.d(TAG, "opdr Putting "+item.toString());
-              items.put(item);
+          for (Map.Entry<String, Product> skuDetails : productData.entrySet()) {
+            Product product=skuDetails.getValue();
+            NumberFormat format = NumberFormat.getCurrencyInstance();
+
+            Number number;
+            try {
+              number = format.parse(product.getPrice());
+            } catch (ParseException e) {
+              result.error(TAG, "Price Parsing error", e.getMessage());
+              return;
             }
-            //System.err.println("Sending "+items.toString());
-            result.success(items.toString());
-          } catch (JSONException e) {
-            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
+
+            final HashMap<String,Object> item = FlutterEntitiesBuilder.buildSkuDetailsMap(product);
+            Log.d(TAG, "opdr Putting "+item.toString());
+            items.add(item);
           }
+          //System.err.println("Sending "+items.toString());
+          result.success(items);
+
           break;
         case FAILED:
           result.error(TAG,"FAILED",null);
@@ -209,19 +192,12 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
         case SUCCESSFUL:
           Receipt receipt = response.getReceipt();
           PurchasingService.notifyFulfillment(receipt.getReceiptId(), FulfillmentResult.FULFILLED);
-          Date date = receipt.getPurchaseDate();
-          Long transactionDate=date.getTime();
-          try {
-            JSONObject item = getPurchaseData(receipt.getSku(),
-                  receipt.getReceiptId(),
-                  receipt.getReceiptId(),
-                  transactionDate.doubleValue());
-            Log.d(TAG, "opr Putting "+item.toString());
-            result.success(item.toString());
-            channel.invokeMethod("purchase-updated", item.toString());
-          } catch (JSONException e) {
-            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
-          }
+
+          final HashMap<String,Object> item = FlutterEntitiesBuilder.buildPurchaseMap(receipt);
+          Log.d(TAG, "opr Putting "+item.toString());
+          result.success(item);
+          channel.invokeMethod("purchase-updated", item);
+
           break;
         case FAILED:
           result.error(TAG, "buyItemByType", "billingResponse is not ok: " + status);
@@ -237,24 +213,16 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
 
       switch(status) {
         case SUCCESSFUL:
-          JSONArray items = new JSONArray();
-          try {
-            List<Receipt> receipts = response.getReceipts();
-            for(Receipt receipt : receipts) {
-              Date date = receipt.getPurchaseDate();
-              Long transactionDate=date.getTime();
-              JSONObject item = getPurchaseData(receipt.getSku(),
-                      receipt.getReceiptId(),
-                      receipt.getReceiptId(),
-                      transactionDate.doubleValue());
+          ArrayList<HashMap<String,Object>> items = new ArrayList<>();
 
-              Log.d(TAG, "opudr Putting "+item.toString());
-              items.put(item);
-            }
-            result.success(items.toString());
-          } catch (JSONException e) {
-            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
+          List<Receipt> receipts = response.getReceipts();
+          for(Receipt receipt : receipts) {
+            final HashMap<String,Object> item = FlutterEntitiesBuilder.buildPurchaseMap(receipt);
+            Log.d(TAG, "opudr Putting "+item.toString());
+            items.add(item);
           }
+          result.success(items);
+
           break;
         case FAILED:
           result.error(TAG,"FAILED",null);
@@ -267,16 +235,4 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
     }
   };
 
-  JSONObject getPurchaseData(String productId, String transactionId, String transactionReceipt,
-                             Double transactionDate) throws JSONException {
-    JSONObject item = new JSONObject();
-    item.put("productId", productId);
-    item.put("transactionId", transactionId);
-    item.put("transactionReceipt", transactionReceipt);
-    item.put("transactionDate", Double.toString(transactionDate));
-    item.put("dataAndroid",null);
-    item.put("signatureAndroid",null);
-    item.put("purchaseToken",null);
-    return item;
-  }
 }

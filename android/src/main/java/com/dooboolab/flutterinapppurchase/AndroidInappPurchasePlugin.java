@@ -9,6 +9,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.android.billingclient.api.AccountIdentifiers;
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
@@ -241,20 +242,15 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
           }
 
           for (SkuDetails sku : skuDetailsList) {
-            if (!skus.contains(sku)) {
-              skus.add(sku);
-            }
+            if (!skus.contains(sku)) skus.add(sku);
           }
 
-          try {
-            ArrayList<HashMap<String, Object>> items = new ArrayList<>();
-            for (SkuDetails skuDetails : skuDetailsList) {
-              items.add(buildSkuDetailsMap(skuDetails));
-            }
-            result.success(items);
-          } catch (FlutterException fe) {
-            result.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
+
+          ArrayList<HashMap<String, Object>> items = new ArrayList<>();
+          for (SkuDetails skuDetails : skuDetailsList) {
+            items.add(FlutterEntitiesBuilder.buildSkuDetailsMap(skuDetails));
           }
+          result.success(items);
         }
       });
     }
@@ -270,23 +266,18 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
       }
 
       final String type = call.argument("type");
-
       final Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(type.equals("subs") ? BillingClient.SkuType.SUBS : BillingClient.SkuType.INAPP);
       final List<Purchase> purchases = purchasesResult.getPurchasesList();
 
-      try {
-        if (purchases != null) {
-          ArrayList<HashMap<String, Object>> items = new ArrayList<>();
+      ArrayList<HashMap<String, Object>> items = new ArrayList<>();
 
-          for (Purchase purchase : purchases) {
-            items.add(buildPurchaseMap(purchase));
-          }
-
-          result.success(items);
+      if (purchases != null) {
+        for (Purchase purchase : purchases) {
+          items.add(FlutterEntitiesBuilder.buildPurchaseMap(purchase));
         }
-      } catch (FlutterException fe) {
-        result.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
       }
+
+      result.success(items);
     }
 
     /*
@@ -307,7 +298,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
 
           ArrayList<HashMap<String, Object>> items = new ArrayList<>();
           for (PurchaseHistoryRecord record : purchaseHistoryRecordList) {
-            items.add(buildPurchaseHistoryRecordMap(record));
+            items.add(FlutterEntitiesBuilder.buildPurchaseHistoryRecordMap(record));
           }
 
           result.success(items);
@@ -329,7 +320,6 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
       final String sku = call.argument("sku");
       final String type = call.argument("type");
       final int prorationMode = call.argument("prorationMode");
-
 
       final String obfuscatedAccountId = call.argument("obfuscatedAccountId");
       final String obfuscatedProfileId = call.argument("obfuscatedProfileId");
@@ -372,6 +362,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
       if (activity != null) {
         billingClient.launchBillingFlow(activity, flowParams);
       }
+
+      // Releases async invokeMethod on Flutter side
+      result.success(null);
     }
 
     /*
@@ -397,7 +390,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
             result.error(call.method, errorData[0], errorData[1]);
           } else {
-            final HashMap<String,Object> resultMap = buildBillingResultMap(billingResult);
+            final HashMap<String,Object> resultMap = FlutterEntitiesBuilder.buildBillingResultMap(billingResult);
             result.success(resultMap);
           }
         }
@@ -426,7 +419,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
             result.error(call.method, errorData[0], errorData[1]);
           } else{
-            final HashMap<String,Object> resultMap = buildBillingResultMap(billingResult);
+            final HashMap<String,Object> resultMap = FlutterEntitiesBuilder.buildBillingResultMap(billingResult);
             result.success(resultMap);
           }
         }
@@ -442,20 +435,20 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
     public void onPurchasesUpdated(BillingResult billingResult, @Nullable List<Purchase> purchases) {
 
       if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-        final HashMap<String,Object> resultMap = buildBillingResultMap(billingResult);
+        final HashMap<String,Object> resultMap = FlutterEntitiesBuilder.buildBillingResultMap(billingResult);
         channel.invokeMethod("purchase-error", resultMap);
         return;
       }
 
       if (purchases == null){
         String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-        final HashMap<String,Object> resultMap = buildBillingResultMap(billingResult,errorData[0],"purchases returns null");
+        final HashMap<String,Object> resultMap = FlutterEntitiesBuilder.buildBillingResultMap(billingResult,errorData[0],"purchases returns null");
         channel.invokeMethod("purchase-error", resultMap);
         return;
       }
 
       for (Purchase purchase : purchases) {
-        channel.invokeMethod("purchase-updated", buildPurchaseMap(purchase));
+        channel.invokeMethod("purchase-updated", FlutterEntitiesBuilder.buildPurchaseMap(purchase));
       }
     }
   };
@@ -471,73 +464,5 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
     }
   }
 
-  private HashMap<String, Object> buildPurchaseMap(Purchase purchase){
-    HashMap<String,Object> map = new HashMap<>();
 
-    // part of PurchaseHistory object
-    map.put("productId", purchase.getSku());
-    map.put("signatureAndroid", purchase.getSignature());
-    map.put("purchaseToken", purchase.getPurchaseToken());
-    map.put("transactionDate", purchase.getPurchaseTime());
-    map.put("transactionReceipt", purchase.getOriginalJson());
-
-    // additional fields for purchase
-    map.put("orderId", purchase.getOrderId());
-    map.put("transactionId", purchase.getOrderId());
-    map.put("autoRenewingAndroid", purchase.isAutoRenewing());
-    map.put("isAcknowledgedAndroid", purchase.isAcknowledged());
-    map.put("purchaseStateAndroid", purchase.getPurchaseState());
-
-    return map;
-  }
-
-  private HashMap<String, Object> buildPurchaseHistoryRecordMap(PurchaseHistoryRecord record){
-    HashMap<String,Object> map = new HashMap<>();
-
-    map.put("productId", record.getSku());
-    map.put("signatureAndroid", record.getSignature());
-    map.put("purchaseToken", record.getPurchaseToken());
-    map.put("transactionDate", record.getPurchaseTime());
-    map.put("transactionReceipt", record.getOriginalJson());
-
-    return map;
-  }
-
-  private HashMap<String, Object> buildSkuDetailsMap(SkuDetails skuDetails){
-    HashMap<String,Object> map = new HashMap<>();
-
-    map.put("productId", skuDetails.getSku());
-    map.put("price", String.valueOf(skuDetails.getPriceAmountMicros() / 1000000f));
-    map.put("currency", skuDetails.getPriceCurrencyCode());
-    map.put("type", skuDetails.getType());
-    map.put("localizedPrice", skuDetails.getPrice());
-    map.put("title", skuDetails.getTitle());
-    map.put("description", skuDetails.getDescription());
-    map.put("introductoryPrice", skuDetails.getIntroductoryPrice());
-    map.put("subscriptionPeriodAndroid", skuDetails.getSubscriptionPeriod());
-    map.put("freeTrialPeriodAndroid", skuDetails.getFreeTrialPeriod());
-    map.put("introductoryPriceCyclesAndroid", skuDetails.getIntroductoryPriceCycles());
-    map.put("introductoryPricePeriodAndroid", skuDetails.getIntroductoryPricePeriod());
-    map.put("iconUrl", skuDetails.getIconUrl());
-    map.put("originalJson", skuDetails.getOriginalJson());
-    map.put("originalPrice", skuDetails.getOriginalPriceAmountMicros() / 1000000f);
-
-    return map;
-  }
-
-  private HashMap<String, Object> buildBillingResultMap(BillingResult billingResult){
-    String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-    return buildBillingResultMap(billingResult, errorData[0], errorData[1]);
-  }
-
-  private HashMap<String, Object> buildBillingResultMap(BillingResult billingResult, String errorCode, String message){
-    HashMap<String,Object> map = new HashMap<>();
-
-    map.put("responseCode", billingResult.getResponseCode());
-    map.put("debugMessage", billingResult.getDebugMessage());
-    map.put("message",  message);
-    map.put("code", errorCode);
-
-    return map;
-  }
  }
