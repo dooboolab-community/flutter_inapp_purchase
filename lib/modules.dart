@@ -39,7 +39,7 @@ class IAPItem {
 
   final String? iconUrl;
   final String? originalJson;
-  final String originalPrice;
+  final double originalPrice;
 
   /// Create [IAPItem] from a Map that was previously JSON formatted
   IAPItem.fromJSON(Map<String, dynamic> json)
@@ -72,7 +72,7 @@ class IAPItem {
         signatureAndroid = json['signatureAndroid'] as String?,
         iconUrl = json['iconUrl'] as String?,
         originalJson = json['originalJson'] as String?,
-        originalPrice = json['originalPrice'].toString(),
+        originalPrice = json['originalPrice'],
         discountsIOS = _extractDiscountIOS(json['discounts']);
 
   /// wow, i find if i want to save a IAPItem, there is not "toJson" to cast it into String...
@@ -215,12 +215,14 @@ class PurchasedItem {
   final String? orderId;
 
   // Android only
-  final String? dataAndroid;
   final String? signatureAndroid;
   final bool? autoRenewingAndroid;
   final bool? isAcknowledgedAndroid;
   final PurchaseState? purchaseStateAndroid;
-  final String? originalJsonAndroid;
+  @deprecated
+  String? get originalJsonAndroid => transactionReceipt;
+  @deprecated
+  String? get dataAndroid => transactionReceipt;
 
   // iOS only
   final DateTime? originalTransactionDateIOS;
@@ -235,13 +237,11 @@ class PurchasedItem {
         transactionReceipt = json['transactionReceipt'] as String?,
         purchaseToken = json['purchaseToken'] as String?,
         orderId = json['orderId'] as String?,
-        dataAndroid = json['dataAndroid'] as String?,
         signatureAndroid = json['signatureAndroid'] as String?,
         isAcknowledgedAndroid = json['isAcknowledgedAndroid'] as bool?,
         autoRenewingAndroid = json['autoRenewingAndroid'] as bool?,
         purchaseStateAndroid =
             _decodePurchaseStateAndroid(json['purchaseStateAndroid'] as int?),
-        originalJsonAndroid = json['originalJsonAndroid'] as String?,
         originalTransactionDateIOS =
             _extractDate(json['originalTransactionDateIOS']),
         originalTransactionIdentifierIOS =
@@ -260,12 +260,10 @@ class PurchasedItem {
         'orderId: $orderId, '
 
         /// android specific
-        'dataAndroid: $dataAndroid, '
         'signatureAndroid: $signatureAndroid, '
         'isAcknowledgedAndroid: $isAcknowledgedAndroid, '
         'autoRenewingAndroid: $autoRenewingAndroid, '
         'purchaseStateAndroid: $purchaseStateAndroid, '
-        'originalJsonAndroid: $originalJsonAndroid, '
 
         /// ios specific
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
@@ -275,10 +273,9 @@ class PurchasedItem {
 
   /// Coerce miliseconds since epoch in double, int, or String into DateTime format
   static DateTime? _extractDate(dynamic timestamp) {
-    if (timestamp == null) return null;
+    if (timestamp == null || timestamp is! int) return null;
 
-    int _toInt() => double.parse(timestamp.toString()).toInt();
-    return DateTime.fromMillisecondsSinceEpoch(_toInt());
+    return DateTime.fromMillisecondsSinceEpoch(timestamp);
   }
 }
 

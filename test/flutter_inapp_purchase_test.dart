@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -161,13 +160,14 @@ void main() {
         final List<MethodCall> log = <MethodCall>[];
         List<String> skus = []..add("testsku");
 
-        final dynamic result = """[
+        final result = <Map>[
           {
             "productId": "com.cooni.point1000",
             "price": "120",
             "currency": "JPY",
             "localizedPrice": "¥120",
             "title": "1,000",
+            "originalPrice": 1.235862359273509,
             "description": "1000 points 1000P",
             "introductoryPrice": "1001",
             "introductoryPricePaymentModeIOS": "1002",
@@ -180,7 +180,7 @@ void main() {
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
-        ]""";
+        ];
 
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
@@ -213,9 +213,11 @@ void main() {
         test('returns correct result', () async {
           List<IAPItem> products =
               await FlutterInappPurchase.instance.getProducts(skus);
-          List<IAPItem> expected = (json.decode(result) as List)
+          List<IAPItem> expected = (result)
               .map<IAPItem>(
-                (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
+                (product) => IAPItem.fromJSON(
+                  Map<String, dynamic>.from(product),
+                ),
               )
               .toList();
           for (var i = 0; i < products.length; ++i) {
@@ -260,6 +262,7 @@ void main() {
             "currency": "JPY",
             "localizedPrice": "¥120",
             "title": "1,000",
+            "originalPrice": 1.235862359273509,
             "description": "1000 points 1000P",
             "introductoryPrice": "1001",
             "introductoryPricePaymentModeIOS": "1002",
@@ -306,7 +309,9 @@ void main() {
               await FlutterInappPurchase.instance.getProducts(skus);
           List<IAPItem>? expected = result
               .map<IAPItem>(
-                (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
+                (product) => IAPItem.fromJSON(
+                  Map<String, dynamic>.from(product),
+                ),
               )
               .toList();
           for (var i = 0; i < products.length; ++i) {
@@ -346,13 +351,14 @@ void main() {
         final List<MethodCall> log = <MethodCall>[];
         List<String> skus = []..add("testsku");
 
-        final dynamic result = """[
+        final result = <Map>[
           {
             "productId": "com.cooni.point1000",
             "price": "120",
             "currency": "JPY",
             "localizedPrice": "¥120",
             "title": "1,000",
+            "originalPrice": 1.235862359273509,
             "description": "1000 points 1000P",
             "introductoryPrice": "1001",
             "introductoryPricePaymentModeIOS": "1002",
@@ -365,7 +371,7 @@ void main() {
             "introductoryPricePeriodAndroid": "5",
             "freeTrialPeriodAndroid": "6"
           }
-        ]""";
+        ];
 
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
@@ -397,9 +403,10 @@ void main() {
         test('returns correct result', () async {
           List<IAPItem> products =
               await FlutterInappPurchase.instance.getSubscriptions(skus);
-          List<IAPItem> expected = (json.decode(result) as List)
+          List<IAPItem> expected = result
               .map<IAPItem>(
-                (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
+                (product) =>
+                    IAPItem.fromJSON(Map<String, dynamic>.from(product)),
               )
               .toList();
           for (var i = 0; i < products.length; ++i) {
@@ -444,6 +451,7 @@ void main() {
             "currency": "JPY",
             "localizedPrice": "¥120",
             "title": "1,000",
+            "originalPrice": 1.235862359273509,
             "description": "1000 points 1000P",
             "introductoryPrice": "1001",
             "introductoryPricePaymentModeIOS": "1002",
@@ -490,7 +498,9 @@ void main() {
               await FlutterInappPurchase.instance.getSubscriptions(skus);
           List<IAPItem>? expected = result
               .map<IAPItem>(
-                (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
+                (product) => IAPItem.fromJSON(
+                  Map<String, dynamic>.from(product),
+                ),
               )
               .toList();
           for (var i = 0; i < products.length; ++i) {
@@ -529,30 +539,36 @@ void main() {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
 
-        final String resultInapp = """[{
-            "transactionDate":"1552824902000",
-            "transactionId":"testTransactionId",
-            "productId":"com.cooni.point1000",
-            "transactionReceipt":"testTransactionReciept",
-            "purchaseToken":"testPurchaseToken",
-            "autoRenewingAndroid":true,
-            "dataAndroid":"testDataAndroid",
-            "signatureAndroid":"testSignatureAndroid",
-            "originalTransactionDateIOS":"1552831136000",
-            "originalTransactionIdentifierIOS":"testOriginalTransactionIdentifierIOS"
-          }]""";
-        final String resultSubs = """[{
-            "transactionDate":"1552824902000",
-            "transactionId":"testSubsTransactionId",
-            "productId":"com.cooni.point1000.subs",
-            "transactionReceipt":"testSubsTransactionReciept",
-            "purchaseToken":"testSubsPurchaseToken",
-            "autoRenewingAndroid":true,
-            "dataAndroid":"testSubsDataAndroid",
-            "signatureAndroid":"testSubsSignatureAndroid",
-            "originalTransactionDateIOS":"1552831136000",
-            "originalTransactionIdentifierIOS":"testSubsOriginalTransactionIdentifierIOS"
-          }]""";
+        final resultInApp = <Map>[
+          {
+            "transactionDate": 1552824902000,
+            "transactionId": "testTransactionId",
+            "productId": "com.cooni.point1000",
+            "transactionReceipt": "testTransactionReciept",
+            "purchaseToken": "testPurchaseToken",
+            "autoRenewingAndroid": true,
+            "dataAndroid": "testDataAndroid",
+            "signatureAndroid": "testSignatureAndroid",
+            "originalTransactionDateIOS": 1552831136000,
+            "originalTransactionIdentifierIOS":
+                "testOriginalTransactionIdentifierIOS"
+          }
+        ];
+        final resultSubs = <Map>[
+          {
+            "transactionDate": 1552824902000,
+            "transactionId": "testSubsTransactionId",
+            "productId": "com.cooni.point1000.subs",
+            "transactionReceipt": "testSubsTransactionReciept",
+            "purchaseToken": "testSubsPurchaseToken",
+            "autoRenewingAndroid": true,
+            "dataAndroid": "testSubsDataAndroid",
+            "signatureAndroid": "testSubsSignatureAndroid",
+            "originalTransactionDateIOS": 1552831136000,
+            "originalTransactionIdentifierIOS":
+                "testSubsOriginalTransactionIdentifierIOS"
+          }
+        ];
 
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
@@ -563,7 +579,7 @@ void main() {
             log.add(methodCall);
             var m = methodCall.arguments as Map<dynamic, dynamic>;
             if (m['type'] == 'inapp') {
-              return resultInapp;
+              return resultInApp;
             } else if (m['type'] == 'subs') {
               return resultSubs;
             }
@@ -580,26 +596,21 @@ void main() {
           expect(log, <Matcher>[
             isMethodCall(
               'getPurchaseHistoryByType',
-              arguments: <String, dynamic>{
-                'type': 'inapp',
-              },
+              arguments: <String, dynamic>{'type': 'inapp'},
             ),
             isMethodCall(
               'getPurchaseHistoryByType',
-              arguments: <String, dynamic>{
-                'type': 'subs',
-              },
+              arguments: <String, dynamic>{'type': 'subs'},
             ),
           ]);
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
-                  .getPurchaseHistory() as FutureOr<List<PurchasedItem>?>) ??
-              [];
-          List<PurchasedItem> expectList = ((json.decode(resultInapp) as List) +
-                  (json.decode(resultSubs) as List))
-              .map((item) => PurchasedItem.fromJSON(item))
+          List<PurchasedItem>? actualList =
+              await FlutterInappPurchase.instance.getPurchaseHistory();
+          List<PurchasedItem> expectList = (resultInApp + resultSubs)
+              .map((item) =>
+                  PurchasedItem.fromJSON(Map<String, dynamic>.from(item)))
               .toList();
 
           for (var i = 0; i < actualList.length; ++i) {
@@ -612,7 +623,6 @@ void main() {
             expect(actual.transactionReceipt, expected.transactionReceipt);
             expect(actual.purchaseToken, expected.purchaseToken);
             expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-            expect(actual.dataAndroid, expected.dataAndroid);
             expect(actual.signatureAndroid, expected.signatureAndroid);
             expect(actual.originalTransactionDateIOS,
                 expected.originalTransactionDateIOS);
@@ -680,9 +690,8 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
-                  .getPurchaseHistory() as FutureOr<List<PurchasedItem>?>) ??
-              [];
+          List<PurchasedItem>? actualList =
+              await FlutterInappPurchase.instance.getPurchaseHistory();
           List<PurchasedItem>? expectList = result
               .map<PurchasedItem>((item) => PurchasedItem.fromJSON(item))
               .toList();
@@ -697,7 +706,6 @@ void main() {
             expect(actual.transactionReceipt, expected.transactionReceipt);
             expect(actual.purchaseToken, expected.purchaseToken);
             expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-            expect(actual.dataAndroid, expected.dataAndroid);
             expect(actual.signatureAndroid, expected.signatureAndroid);
             expect(actual.originalTransactionDateIOS,
                 expected.originalTransactionDateIOS);
@@ -711,31 +719,36 @@ void main() {
     group('getAvailablePurchases', () {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
-
-        final String resultInapp = """[{
-            "transactionDate":"1552824902000",
-            "transactionId":"testTransactionId",
-            "productId":"com.cooni.point1000",
-            "transactionReceipt":"testTransactionReciept",
-            "purchaseToken":"testPurchaseToken",
-            "autoRenewingAndroid":true,
-            "dataAndroid":"testDataAndroid",
-            "signatureAndroid":"testSignatureAndroid",
-            "originalTransactionDateIOS":"1552831136000",
-            "originalTransactionIdentifierIOS":"testOriginalTransactionIdentifierIOS"
-          }]""";
-        final String resultSubs = """[{
-            "transactionDate":"1552824902000",
-            "transactionId":"testSubsTransactionId",
-            "productId":"com.cooni.point1000.subs",
-            "transactionReceipt":"testSubsTransactionReciept",
-            "purchaseToken":"testSubsPurchaseToken",
-            "autoRenewingAndroid":true,
-            "dataAndroid":"testSubsDataAndroid",
-            "signatureAndroid":"testSubsSignatureAndroid",
-            "originalTransactionDateIOS":"1552831136000",
-            "originalTransactionIdentifierIOS":"testSubsOriginalTransactionIdentifierIOS"
-          }]""";
+        final resultInApp = <Map>[
+          {
+            "transactionDate": 1552824902000,
+            "transactionId": "testTransactionId",
+            "productId": "com.cooni.point1000",
+            "transactionReceipt": "testTransactionReciept",
+            "purchaseToken": "testPurchaseToken",
+            "autoRenewingAndroid": true,
+            "dataAndroid": "testDataAndroid",
+            "signatureAndroid": "testSignatureAndroid",
+            "originalTransactionDateIOS": 1552831136000,
+            "originalTransactionIdentifierIOS":
+                "testOriginalTransactionIdentifierIOS"
+          }
+        ];
+        final resultSubs = <Map>[
+          {
+            "transactionDate": 1552824902000,
+            "transactionId": "testSubsTransactionId",
+            "productId": "com.cooni.point1000.subs",
+            "transactionReceipt": "testSubsTransactionReciept",
+            "purchaseToken": "testSubsPurchaseToken",
+            "autoRenewingAndroid": true,
+            "dataAndroid": "testSubsDataAndroid",
+            "signatureAndroid": "testSubsSignatureAndroid",
+            "originalTransactionDateIOS": 1552831136000,
+            "originalTransactionIdentifierIOS":
+                "testSubsOriginalTransactionIdentifierIOS"
+          }
+        ];
 
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
@@ -746,7 +759,7 @@ void main() {
             log.add(methodCall);
             var m = methodCall.arguments as Map<dynamic, dynamic>;
             if (m['type'] == 'inapp') {
-              return resultInapp;
+              return resultInApp;
             } else if (m['type'] == 'subs') {
               return resultSubs;
             }
@@ -777,12 +790,11 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
-                  .getAvailablePurchases() as FutureOr<List<PurchasedItem>?>) ??
-              [];
-          List<PurchasedItem> expectList = ((json.decode(resultInapp) as List) +
-                  (json.decode(resultSubs) as List))
-              .map((item) => PurchasedItem.fromJSON(item))
+          List<PurchasedItem> actualList =
+              await FlutterInappPurchase.instance.getAvailablePurchases();
+          List<PurchasedItem> expectList = (resultInApp + resultSubs)
+              .map((item) =>
+                  PurchasedItem.fromJSON(Map<String, dynamic>.from(item)))
               .toList();
 
           for (var i = 0; i < actualList.length; ++i) {
@@ -795,7 +807,6 @@ void main() {
             expect(actual.transactionReceipt, expected.transactionReceipt);
             expect(actual.purchaseToken, expected.purchaseToken);
             expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-            expect(actual.dataAndroid, expected.dataAndroid);
             expect(actual.signatureAndroid, expected.signatureAndroid);
             expect(actual.originalTransactionDateIOS,
                 expected.originalTransactionDateIOS);
@@ -863,9 +874,8 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
-                  .getAvailablePurchases() as FutureOr<List<PurchasedItem>?>) ??
-              [];
+          List<PurchasedItem>? actualList =
+              await FlutterInappPurchase.instance.getAvailablePurchases();
           List<PurchasedItem>? expectList = result
               .map<PurchasedItem>((item) =>
                   PurchasedItem.fromJSON(item as Map<String, dynamic>))
@@ -881,7 +891,6 @@ void main() {
             expect(actual.transactionReceipt, expected.transactionReceipt);
             expect(actual.purchaseToken, expected.purchaseToken);
             expect(actual.autoRenewingAndroid, expected.autoRenewingAndroid);
-            expect(actual.dataAndroid, expected.dataAndroid);
             expect(actual.signatureAndroid, expected.signatureAndroid);
             expect(actual.originalTransactionDateIOS,
                 expected.originalTransactionDateIOS);
@@ -1315,6 +1324,7 @@ void main() {
             "title": "1,000",
             "description": "1000 points 1000P",
             "introductoryPrice": "1001",
+            "originalPrice": 1.235862359273509,
             "introductoryPricePaymentModeIOS": "1002",
             "introductoryPriceNumberOfPeriodsIOS": "1003",
             "introductoryPriceSubscriptionPeriodIOS": "1004",
@@ -1353,7 +1363,9 @@ void main() {
               .getAppStoreInitiatedProducts();
           List<IAPItem>? expected = result
               .map<IAPItem>(
-                (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
+                (product) => IAPItem.fromJSON(
+                  Map<String, dynamic>.from(product),
+                ),
               )
               .toList();
           for (var i = 0; i < products.length; ++i) {

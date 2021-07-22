@@ -1,42 +1,22 @@
 import 'modules.dart';
-import 'dart:convert';
 
-List<IAPItem> extractItems(dynamic result) {
-  List list = json.decode(result.toString());
-  List<IAPItem> products = list
-      .map<IAPItem>(
-        (dynamic product) => IAPItem.fromJSON(product as Map<String, dynamic>),
-      )
+List<IAPItem> extractItems(List<dynamic> result) {
+  List<IAPItem> products = result
+      .map<IAPItem>((map) => IAPItem.fromJSON(Map<String, dynamic>.from(map)))
       .toList();
 
   return products;
 }
 
-List<PurchasedItem>? extractPurchased(dynamic result) {
-  List<PurchasedItem>? decoded = json
-      .decode(result.toString())
+List<PurchasedItem> extractPurchased(List<dynamic> result) {
+  final purhcased = result
       .map<PurchasedItem>(
-        (dynamic product) =>
-            PurchasedItem.fromJSON(product as Map<String, dynamic>),
+        (product) => PurchasedItem.fromJSON(Map<String, dynamic>.from(product)),
       )
       .toList();
 
-  return decoded;
+  return purhcased;
 }
-
-
-List<PurchaseResult>? extractResult(dynamic result) {
-  List<PurchaseResult>? decoded = json
-      .decode(result.toString())
-      .map<PurchaseResult>(
-        (dynamic product) =>
-            PurchaseResult.fromJSON(product as Map<String, dynamic>),
-      )
-      .toList();
-
-  return decoded;
-}
-
 
 class EnumUtil {
   /// return enum value
@@ -44,5 +24,6 @@ class EnumUtil {
   /// example: enum Type {Hoge},
   /// String value = EnumUtil.getValueString(Type.Hoge);
   /// assert(value == "Hoge");
-  static String getValueString(dynamic enumType) => enumType.toString().split('.')[1];
+  static String getValueString(dynamic enumType) =>
+      enumType.toString().split('.')[1];
 }
