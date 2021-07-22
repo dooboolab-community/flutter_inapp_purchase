@@ -1,5 +1,6 @@
 package com.dooboolab.flutterinapppurchase;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.app.Activity;
@@ -24,14 +25,10 @@ import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.FlutterException;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -106,7 +103,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
   }
 
   @Override
-  public void onMethodCall(final MethodCall call, final Result result) {
+  public void onMethodCall(final MethodCall call, final @NonNull Result result) {
     if (call.method.equals("getPlatformVersion")) {
       try {
         result.success("Android " + android.os.Build.VERSION.RELEASE);
@@ -127,44 +124,35 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
       billingClient = BillingClient.newBuilder(context).setListener(purchasesUpdatedListener)
               .enablePendingPurchases()
               .build();
+
       billingClient.startConnection(new BillingClientStateListener() {
         private boolean alreadyFinished = false;
 
         @Override
-        public void onBillingSetupFinished(BillingResult billingResult) {
-          try {
-            int responseCode = billingResult.getResponseCode();
+        public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+          int responseCode = billingResult.getResponseCode();
 
-            if (responseCode == BillingClient.BillingResponseCode.OK) {
-              JSONObject item = new JSONObject();
-              item.put("connected", true);
-              channel.invokeMethod("connection-updated", item.toString());
-              if (alreadyFinished) return;
-              alreadyFinished = true;
-              result.success("Billing client ready");
-            } else {
-              JSONObject item = new JSONObject();
-              item.put("connected", false);
-              channel.invokeMethod("connection-updated", item.toString());
-              if (alreadyFinished) return;
-              alreadyFinished = true;
-              result.error(call.method, "responseCode: " + responseCode, "");
-            }
-          } catch (JSONException je) {
-            je.printStackTrace();
+          HashMap<String, Boolean> item = new HashMap<>();
+          if (responseCode == BillingClient.BillingResponseCode.OK) {
+            item.put("connected", true);
+            channel.invokeMethod("connection-updated", item);
+            if (alreadyFinished) return;
+            alreadyFinished = true;
+            result.success("Billing client ready");
+          } else {
+            item.put("connected", false);
+            channel.invokeMethod("connection-updated", item);
+            if (alreadyFinished) return;
+            alreadyFinished = true;
+            result.error(call.method, "responseCode: " + responseCode, "");
           }
-
         }
 
         @Override
         public void onBillingServiceDisconnected() {
-          try {
-            JSONObject item = new JSONObject();
+            HashMap<String,Boolean> item = new HashMap<>();
             item.put("connected", false);
-            channel.invokeMethod("connection-updated", item.toString());
-          } catch (JSONException je) {
-            je.printStackTrace();
-          }
+            channel.invokeMethod("connection-updated", item);
         }
       });
     }
@@ -208,11 +196,11 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
 
           final ConsumeResponseListener listener = new ConsumeResponseListener() {
             @Override
-            public void onConsumeResponse(BillingResult billingResult, String outToken) {
+            public void onConsumeResponse(@NonNull BillingResult billingResult, @NonNull String outToken) {
               array.add(outToken);
               if (purchases.size() == array.size()) {
                 try {
-                  result.success(array.toString());
+                  result.success(array);
                 } catch (FlutterException e) {
                   Log.e(TAG, e.getMessage());
                 }
@@ -236,22 +224,15 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
         return;
       }
 
-      String type = call.argument("type");
-      final ArrayList<String> skuArr = call.argument("skus");
-
-
-      ArrayList<String> skuList = new ArrayList<>();
-
-      for (int i = 0; i < skuArr.size(); i++) {
-        skuList.add(skuArr.get(i));
-      }
+      final String type = call.argument("type");
+      final ArrayList<String> skuList = call.argument("skus");
 
       SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
       params.setSkusList(skuList).setType(type);
 
       billingClient.querySkuDetailsAsync(params.build(), new SkuDetailsResponseListener() {
         @Override
-        public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
+        public void onSkuDetailsResponse(@NonNull BillingResult billingResult, List<SkuDetails> skuDetailsList) {
           int responseCode = billingResult.getResponseCode();
           if (responseCode != BillingClient.BillingResponseCode.OK) {
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
@@ -266,30 +247,11 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
           }
 
           try {
-            JSONArray items = new JSONArray();
+            ArrayList<HashMap<String, Object>> items = new ArrayList<>();
             for (SkuDetails skuDetails : skuDetailsList) {
-              JSONObject item = new JSONObject();
-              item.put("productId", skuDetails.getSku());
-              item.put("price", String.valueOf(skuDetails.getPriceAmountMicros() / 1000000f));
-              item.put("currency", skuDetails.getPriceCurrencyCode());
-              item.put("type", skuDetails.getType());
-              item.put("localizedPrice", skuDetails.getPrice());
-              item.put("title", skuDetails.getTitle());
-              item.put("description", skuDetails.getDescription());
-              item.put("introductoryPrice", skuDetails.getIntroductoryPrice());
-              item.put("subscriptionPeriodAndroid", skuDetails.getSubscriptionPeriod());
-              item.put("freeTrialPeriodAndroid", skuDetails.getFreeTrialPeriod());
-              item.put("introductoryPriceCyclesAndroid", skuDetails.getIntroductoryPriceCycles());
-              item.put("introductoryPricePeriodAndroid", skuDetails.getIntroductoryPricePeriod());
-              // new
-              item.put("iconUrl", skuDetails.getIconUrl());
-              item.put("originalJson", skuDetails.getOriginalJson());
-              item.put("originalPrice", skuDetails.getOriginalPriceAmountMicros() / 1000000f);
-              items.put(item);
+              items.add(buildSkuDetailsMap(skuDetails));
             }
-            result.success(items.toString());
-          } catch (JSONException je) {
-            je.printStackTrace();
+            result.success(items);
           } catch (FlutterException fe) {
             result.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
           }
@@ -308,34 +270,20 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
       }
 
       final String type = call.argument("type");
-      final JSONArray items = new JSONArray();
-      Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(type.equals("subs") ? BillingClient.SkuType.SUBS : BillingClient.SkuType.INAPP);
+
+      final Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(type.equals("subs") ? BillingClient.SkuType.SUBS : BillingClient.SkuType.INAPP);
       final List<Purchase> purchases = purchasesResult.getPurchasesList();
 
       try {
         if (purchases != null) {
-          for (Purchase purchase : purchases) {
-            JSONObject item = new JSONObject();
-            item.put("productId", purchase.getSku());
-            item.put("transactionId", purchase.getOrderId());
-            item.put("transactionDate", purchase.getPurchaseTime());
-            item.put("transactionReceipt", purchase.getOriginalJson());
-            item.put("orderId", purchase.getOrderId());
-            item.put("purchaseToken", purchase.getPurchaseToken());
-            item.put("signatureAndroid", purchase.getSignature());
-            item.put("purchaseStateAndroid", purchase.getPurchaseState());
+          ArrayList<HashMap<String, Object>> items = new ArrayList<>();
 
-            if (type.equals(BillingClient.SkuType.INAPP)) {
-              item.put("isAcknowledgedAndroid", purchase.isAcknowledged());
-            } else if (type.equals(BillingClient.SkuType.SUBS)) {
-              item.put("autoRenewingAndroid", purchase.isAutoRenewing());
-            }
-            items.put(item);
+          for (Purchase purchase : purchases) {
+            items.add(buildPurchaseMap(purchase));
           }
-          result.success(items.toString());
+
+          result.success(items);
         }
-      } catch (JSONException je) {
-        result.error(call.method, je.getMessage(), je.getLocalizedMessage());
       } catch (FlutterException fe) {
         result.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
       }
@@ -350,30 +298,19 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
 
       billingClient.queryPurchaseHistoryAsync(type.equals("subs") ? BillingClient.SkuType.SUBS : BillingClient.SkuType.INAPP, new PurchaseHistoryResponseListener() {
         @Override
-        public void onPurchaseHistoryResponse(BillingResult billingResult, List<PurchaseHistoryRecord> purchaseHistoryRecordList) {
+        public void onPurchaseHistoryResponse(@NonNull BillingResult billingResult, List<PurchaseHistoryRecord> purchaseHistoryRecordList) {
           if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
             result.error(call.method, errorData[0], errorData[1]);
             return;
           }
 
-          JSONArray items = new JSONArray();
-
-          try {
-            for (PurchaseHistoryRecord purchase : purchaseHistoryRecordList) {
-              JSONObject item = new JSONObject();
-              item.put("productId", purchase.getSku());
-              item.put("transactionDate", purchase.getPurchaseTime());
-              item.put("transactionReceipt", purchase.getOriginalJson());
-              item.put("purchaseToken", purchase.getPurchaseToken());
-              item.put("dataAndroid", purchase.getOriginalJson());
-              item.put("signatureAndroid", purchase.getSignature());
-              items.put(item);
-            }
-            result.success(items.toString());
-          } catch (JSONException je) {
-            je.printStackTrace();
+          ArrayList<HashMap<String, Object>> items = new ArrayList<>();
+          for (PurchaseHistoryRecord record : purchaseHistoryRecordList) {
+            items.add(buildPurchaseHistoryRecordMap(record));
           }
+
+          result.success(items);
         }
       });
     }
@@ -388,40 +325,16 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
         return;
       }
 
+      // Not null
+      final String sku = call.argument("sku");
       final String type = call.argument("type");
+      final int prorationMode = call.argument("prorationMode");
+
+
       final String obfuscatedAccountId = call.argument("obfuscatedAccountId");
       final String obfuscatedProfileId = call.argument("obfuscatedProfileId");
-      final String sku = call.argument("sku");
       final String oldSku = call.argument("oldSku");
-      final int prorationMode = call.argument("prorationMode");
       final String purchaseToken = call.argument("purchaseToken");
-
-      BillingFlowParams.Builder builder = BillingFlowParams.newBuilder();
-
-      if (type.equals(BillingClient.SkuType.SUBS) && oldSku != null && !oldSku.isEmpty()) {
-        // Subscription upgrade/downgrade
-        builder.setOldSku(oldSku, purchaseToken);
-      }
-
-      if (type.equals(BillingClient.SkuType.SUBS) && oldSku != null && !oldSku.isEmpty()) {
-        // Subscription upgrade/downgrade
-        if (prorationMode != -1) {
-          builder.setOldSku(oldSku, purchaseToken);
-          if (prorationMode == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE) {
-            builder.setReplaceSkusProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE);
-          } else if (prorationMode == BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION) {
-            builder.setReplaceSkusProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
-          } else {
-            builder.setOldSku(oldSku, purchaseToken);
-          }
-        } else {
-          builder.setOldSku(oldSku, purchaseToken);
-        }
-      }
-
-      if (prorationMode != 0 && prorationMode != -1) {
-        builder.setReplaceSkusProrationMode(prorationMode);
-      }
 
       SkuDetails selectedSku = null;
       for (SkuDetails skuDetail : skus) {
@@ -430,12 +343,22 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
           break;
         }
       }
+
       if (selectedSku == null) {
         String debugMessage = "The sku was not found. Please fetch products first by calling getItems";
         result.error(TAG, "buyItemByType", debugMessage);
         return;
       }
 
+      BillingFlowParams.Builder builder = BillingFlowParams.newBuilder();
+
+      // Subscription upgrade/downgrade
+      if (type.equals(BillingClient.SkuType.SUBS) && oldSku != null && !oldSku.isEmpty() && purchaseToken!=null && !purchaseToken.isEmpty()) {
+        builder.setOldSku(oldSku, purchaseToken);
+      }
+      if (prorationMode > 0) {
+        builder.setReplaceSkusProrationMode(prorationMode);
+      }
       if (obfuscatedAccountId != null) {
         builder.setObfuscatedAccountId(obfuscatedAccountId);
       }
@@ -445,6 +368,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
 
       builder.setSkuDetails(selectedSku);
       BillingFlowParams flowParams = builder.build();
+
       if (activity != null) {
         billingClient.launchBillingFlow(activity, flowParams);
       }
@@ -455,35 +379,26 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
      * arguments: token
      */
     else if (call.method.equals("acknowledgePurchase")) {
-      final String token = call.argument("token");
-
       if (billingClient == null || !billingClient.isReady()) {
         result.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
         return;
       }
 
+      final String token = call.argument("token");
       AcknowledgePurchaseParams acknowledgePurchaseParams =
           AcknowledgePurchaseParams.newBuilder()
               .setPurchaseToken(token)
               .build();
+
       billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
         @Override
-        public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
-        if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-          String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-          result.error(call.method, errorData[0], errorData[1]);
-          return;
-        }
-          try {
-            JSONObject item = new JSONObject();
-            item.put("responseCode", billingResult.getResponseCode());
-            item.put("debugMessage", billingResult.getDebugMessage());
+        public void onAcknowledgePurchaseResponse(@NonNull BillingResult billingResult) {
+          if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            item.put("code", errorData[0]);
-            item.put("message", errorData[1]);
-            result.success(item.toString());
-          } catch (JSONException je) {
-            je.printStackTrace();
+            result.error(call.method, errorData[0], errorData[1]);
+          } else {
+            final HashMap<String,Object> resultMap = buildBillingResultMap(billingResult);
+            result.success(resultMap);
           }
         }
       });
@@ -500,89 +415,47 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
       }
 
       final String token = call.argument("token");
-
       final ConsumeParams params = ConsumeParams.newBuilder()
           .setPurchaseToken(token)
           .build();
+
       billingClient.consumeAsync(params, new ConsumeResponseListener() {
         @Override
-        public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
+        public void onConsumeResponse(@NonNull BillingResult billingResult,@NonNull String purchaseToken) {
           if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
             result.error(call.method, errorData[0], errorData[1]);
-            return;
-          }
-
-          try {
-            JSONObject item = new JSONObject();
-            item.put("responseCode", billingResult.getResponseCode());
-            item.put("debugMessage", billingResult.getDebugMessage());
-            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            item.put("code", errorData[0]);
-            item.put("message", errorData[1]);
-            result.success(item.toString());
-          } catch (JSONException je) {
-            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
+          } else{
+            final HashMap<String,Object> resultMap = buildBillingResultMap(billingResult);
+            result.success(resultMap);
           }
         }
       });
     }
-
-    /*
-     * else
-     */
     else {
       result.notImplemented();
     }
   }
 
-  private PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
+  private final PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
     @Override
     public void onPurchasesUpdated(BillingResult billingResult, @Nullable List<Purchase> purchases) {
 
-      try {
-        if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-          JSONObject json = new JSONObject();
-          json.put("responseCode", billingResult.getResponseCode());
-          json.put("debugMessage", billingResult.getDebugMessage());
-          String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-          json.put("code", errorData[0]);
-          json.put("message", errorData[1]);
-          channel.invokeMethod("purchase-error", json.toString());
-          return;
-        }
+      if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
+        final HashMap<String,Object> resultMap = buildBillingResultMap(billingResult);
+        channel.invokeMethod("purchase-error", resultMap);
+        return;
+      }
 
-        if (purchases != null) {
-          for (Purchase purchase : purchases) {
-            JSONObject item = new JSONObject();
-            item.put("productId", purchase.getSku());
-            item.put("transactionId", purchase.getOrderId());
-            item.put("transactionDate", purchase.getPurchaseTime());
-            item.put("transactionReceipt", purchase.getOriginalJson());
-            item.put("purchaseToken", purchase.getPurchaseToken());
-            item.put("orderId", purchase.getOrderId());
+      if (purchases == null){
+        String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+        final HashMap<String,Object> resultMap = buildBillingResultMap(billingResult,errorData[0],"purchases returns null");
+        channel.invokeMethod("purchase-error", resultMap);
+        return;
+      }
 
-            item.put("dataAndroid", purchase.getOriginalJson());
-            item.put("signatureAndroid", purchase.getSignature());
-            item.put("autoRenewingAndroid", purchase.isAutoRenewing());
-            item.put("isAcknowledgedAndroid", purchase.isAcknowledged());
-            item.put("purchaseStateAndroid", purchase.getPurchaseState());
-            item.put("originalJsonAndroid", purchase.getOriginalJson());
-
-
-            channel.invokeMethod("purchase-updated", item.toString());
-          }
-        } else {
-          JSONObject json = new JSONObject();
-          json.put("responseCode", billingResult.getResponseCode());
-          json.put("debugMessage", billingResult.getDebugMessage());
-          String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-          json.put("code", errorData[0]);
-          json.put("message", "purchases returns null.");
-          channel.invokeMethod("purchase-error", json.toString());
-        }
-      } catch (JSONException je) {
-        channel.invokeMethod("purchase-error", je.getMessage());
+      for (Purchase purchase : purchases) {
+        channel.invokeMethod("purchase-updated", buildPurchaseMap(purchase));
       }
     }
   };
@@ -592,7 +465,79 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
       try {
         billingClient.endConnection();
         billingClient = null;
-      } catch (Exception ignored) {}
+      } catch (Exception ignored) {
+
+      }
     }
   }
-}
+
+  private HashMap<String, Object> buildPurchaseMap(Purchase purchase){
+    HashMap<String,Object> map = new HashMap<>();
+
+    // part of PurchaseHistory object
+    map.put("productId", purchase.getSku());
+    map.put("signatureAndroid", purchase.getSignature());
+    map.put("purchaseToken", purchase.getPurchaseToken());
+    map.put("transactionDate", purchase.getPurchaseTime());
+    map.put("transactionReceipt", purchase.getOriginalJson());
+
+    // additional fields for purchase
+    map.put("orderId", purchase.getOrderId());
+    map.put("transactionId", purchase.getOrderId());
+    map.put("autoRenewingAndroid", purchase.isAutoRenewing());
+    map.put("isAcknowledgedAndroid", purchase.isAcknowledged());
+    map.put("purchaseStateAndroid", purchase.getPurchaseState());
+
+    return map;
+  }
+
+  private HashMap<String, Object> buildPurchaseHistoryRecordMap(PurchaseHistoryRecord record){
+    HashMap<String,Object> map = new HashMap<>();
+
+    map.put("productId", record.getSku());
+    map.put("signatureAndroid", record.getSignature());
+    map.put("purchaseToken", record.getPurchaseToken());
+    map.put("transactionDate", record.getPurchaseTime());
+    map.put("transactionReceipt", record.getOriginalJson());
+
+    return map;
+  }
+
+  private HashMap<String, Object> buildSkuDetailsMap(SkuDetails skuDetails){
+    HashMap<String,Object> map = new HashMap<>();
+
+    map.put("productId", skuDetails.getSku());
+    map.put("price", String.valueOf(skuDetails.getPriceAmountMicros() / 1000000f));
+    map.put("currency", skuDetails.getPriceCurrencyCode());
+    map.put("type", skuDetails.getType());
+    map.put("localizedPrice", skuDetails.getPrice());
+    map.put("title", skuDetails.getTitle());
+    map.put("description", skuDetails.getDescription());
+    map.put("introductoryPrice", skuDetails.getIntroductoryPrice());
+    map.put("subscriptionPeriodAndroid", skuDetails.getSubscriptionPeriod());
+    map.put("freeTrialPeriodAndroid", skuDetails.getFreeTrialPeriod());
+    map.put("introductoryPriceCyclesAndroid", skuDetails.getIntroductoryPriceCycles());
+    map.put("introductoryPricePeriodAndroid", skuDetails.getIntroductoryPricePeriod());
+    map.put("iconUrl", skuDetails.getIconUrl());
+    map.put("originalJson", skuDetails.getOriginalJson());
+    map.put("originalPrice", skuDetails.getOriginalPriceAmountMicros() / 1000000f);
+
+    return map;
+  }
+
+  private HashMap<String, Object> buildBillingResultMap(BillingResult billingResult){
+    String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+    return buildBillingResultMap(billingResult, errorData[0], errorData[1]);
+  }
+
+  private HashMap<String, Object> buildBillingResultMap(BillingResult billingResult, String errorCode, String message){
+    HashMap<String,Object> map = new HashMap<>();
+
+    map.put("responseCode", billingResult.getResponseCode());
+    map.put("debugMessage", billingResult.getDebugMessage());
+    map.put("message",  message);
+    map.put("code", errorCode);
+
+    return map;
+  }
+ }

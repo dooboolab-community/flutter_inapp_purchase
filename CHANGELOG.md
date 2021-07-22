@@ -1,5 +1,5 @@
 ## 5.5.0
-+ DEPRECATED: removed dataAndroid and originalJsonAndroid from PurchasedItem. Use transaction receipt instead as it is the same object.
++ DEPRECATED: removed dataAndroid and originalJsonAndroid from PurchasedItem. Use transactionReceipt instead as it is the same object.
 
 ## 5.0.2
 + Replaced obfuscatedAccountIdAndroid with obfuscatedAccountId in request purchase method [#299](https://github.com/dooboolab/flutter_inapp_purchase/pull/299)
