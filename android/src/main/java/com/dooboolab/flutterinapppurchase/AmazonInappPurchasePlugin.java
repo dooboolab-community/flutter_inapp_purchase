@@ -74,7 +74,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       result.success("Billing client has ended.");
     } else if (call.method.equals("consumeAllItems")) {
       // consumable is a separate type in amazon
-      result.error("AMAZON_NOT_USED","no-ops in amazon",null);
+      result.error("E_NO_OP_IN_AMAZON","no-ops in amazon",null);
     } else if (call.method.equals("getItemsByType")) {
       Log.d(TAG, "getItemsByType");
       String type = call.argument("type");
@@ -123,7 +123,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       result.success(null);
     } else if (call.method.equals("consumeProduct")) {
       // consumable is a separate type in amazon
-      result.error("AMAZON_NOT_USED","no-ops in amazon",null);
+      result.error("E_NO_OP_IN_AMAZON","no-ops in amazon",null);
     } else {
       result.notImplemented();
     }
