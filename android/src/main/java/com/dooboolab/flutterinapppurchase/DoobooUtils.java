@@ -19,7 +19,7 @@ public class DoobooUtils {
   public static final String E_DEVELOPER_ERROR = "E_DEVELOPER_ERROR";
   public static final String E_BILLING_RESPONSE_JSON_PARSE_ERROR = "E_BILLING_RESPONSE_JSON_PARSE_ERROR";
 
-  private static DoobooUtils instance = new DoobooUtils();
+  private static final DoobooUtils instance = new DoobooUtils();
 
   public static DoobooUtils getInstance() {
     return instance;

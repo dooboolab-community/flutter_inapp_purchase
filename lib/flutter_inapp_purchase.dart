@@ -563,49 +563,47 @@ class FlutterInappPurchase {
         'https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
     return await _client!.get(
       Uri.parse(url),
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers: {'Accept': 'application/json'},
     );
   }
 
   Future _setPurchaseListener() async {
     if (_purchaseController == null) {
-      _purchaseController = new StreamController.broadcast();
+      _purchaseController = StreamController.broadcast();
     }
 
     if (_purchaseErrorController == null) {
-      _purchaseErrorController = new StreamController.broadcast();
+      _purchaseErrorController = StreamController.broadcast();
     }
 
     if (_connectionController == null) {
-      _connectionController = new StreamController.broadcast();
+      _connectionController = StreamController.broadcast();
     }
 
     if (_purchasePromotedController == null) {
-      _purchasePromotedController = new StreamController.broadcast();
+      _purchasePromotedController = StreamController.broadcast();
     }
 
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
         case "purchase-updated":
           final result = Map<String, dynamic>.from(call.arguments ?? {});
-          _purchaseController!.add(new PurchasedItem.fromJSON(result));
+          _purchaseController!.add(PurchasedItem.fromJSON(result));
           break;
         case "purchase-error":
           final result = Map<String, dynamic>.from(call.arguments ?? {});
-          _purchaseErrorController!.add(new PurchaseResult.fromJSON(result));
+          _purchaseErrorController!.add(PurchaseResult.fromJSON(result));
           break;
         case "connection-updated":
           final result = Map<String, dynamic>.from(call.arguments ?? {});
-          _connectionController!.add(new ConnectionResult.fromJSON(result));
+          _connectionController!.add(ConnectionResult.fromJSON(result));
           break;
         case "iap-promoted-product":
           String? productId = call.arguments;
           _purchasePromotedController!.add(productId);
           break;
         default:
-          throw new ArgumentError('Unknown method ${call.method}');
+          throw ArgumentError('Unknown method ${call.method}');
       }
       return Future.value(null);
     });

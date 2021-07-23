@@ -3,8 +3,6 @@ package com.dooboolab.flutterinapppurchase;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import java.util.ArrayList;
-
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -54,6 +52,7 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
   }
 
   /** Plugin registration. */
+  @SuppressWarnings("deprecation")
   public static void registerWith(Registrar registrar) {
     FlutterInappPurchasePlugin plugin = new FlutterInappPurchasePlugin();
     if(isAndroid) {
