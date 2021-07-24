@@ -90,9 +90,9 @@
                                  @"Invalid product ID.", @"message",
                                  nil
                                  ];
-            NSString* result = [self convertDicToJsonString:err];
-            [self.channel invokeMethod:@"purchase-error" arguments:result];
+            [self.channel invokeMethod:@"purchase-error" arguments:err];
         }
+        result(nil);
     } else if ([@"requestProductWithOfferIOS" isEqualToString:call.method]) {
         NSString* sku = (NSString*)call.arguments[@"sku"];
         NSDictionary* discountOffer = (NSDictionary*)call.arguments[@"withOffer"];
@@ -129,12 +129,14 @@
                                  @"E_DEVELOPER_ERROR", @"code",
                                  nil
                                  ];
-            NSString* result = [self convertDicToJsonString:err];
-            [self.channel invokeMethod:@"purchase-error" arguments:result];
+
+            [self.channel invokeMethod:@"purchase-error" arguments:err];
         }
+        result(nil);
     } else if ([@"requestProductWithQuantityIOS" isEqualToString:call.method]) {
         NSString* sku = (NSString*)call.arguments[@"sku"];
         long quantity = (long)call.arguments[@"quantity"];
+        NSString* usernameHash = (NSString*)call.arguments[@"forUser"];
 
         SKProduct *product;
         for (SKProduct *p in validProducts) {
@@ -146,6 +148,7 @@
         if (product) {
             SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
             payment.quantity = quantity;
+            payment.applicationUsername = usernameHash;
             [[SKPaymentQueue defaultQueue] addPayment:payment];
         } else {
             NSDictionary *err = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -154,8 +157,7 @@
                                  @"E_DEVELOPER_ERROR", @"code",
                                  nil
                                  ];
-            NSString* result = [self convertDicToJsonString:err];
-            [self.channel invokeMethod:@"purchase-error" arguments:result];
+            [self.channel invokeMethod:@"purchase-error" arguments:err];
         }
     } else if ([@"getPromotedProduct" isEqualToString:call.method]) {
         SKProduct *promotedProduct = [IAPPromotionObserver sharedObserver].product;
@@ -195,7 +197,7 @@
                 
                 for (SKPaymentTransaction *item in transactions) {
                     NSMutableDictionary *purchase = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                                     @(item.transactionDate.timeIntervalSince1970 * 1000), @"transactionDate",
+                                                     @(lround(item.transactionDate.timeIntervalSince1970 * 1000)), @"transactionDate",
                                                      item.transactionIdentifier, @"transactionId",
                                                      item.payment.productIdentifier, @"productId",
                                                      [receiptData base64EncodedStringWithOptions:0], @"transactionReceipt",
@@ -222,8 +224,7 @@
                                 @"finished", @"message",
                                 nil
                                 ];
-        NSString* strResult = [self convertDicToJsonString:err];
-        result(strResult);
+        result(err);
     } else if ([@"clearTransaction" isEqualToString:call.method]) {
         NSArray *pendingTrans = [[SKPaymentQueue defaultQueue] transactions];
         NSLog(@"\n\n\n  ***  clear remaining Transactions. Call this before make a new transaction   \n\n.");
@@ -314,10 +315,10 @@
     formatter.locale = product.priceLocale;
     NSString* localizedPrice = [formatter stringFromNumber:product.price];
     NSString* introductoryPrice;
-    NSString* introductoryPriceNumber = @"";
-    NSString* introductoryPricePaymentMode = @"";
-    NSString* introductoryPriceNumberOfPeriods = @"";
-    NSString* introductoryPriceSubscriptionPeriod = @"";
+    NSString* introductoryPriceNumber;
+    NSString* introductoryPricePaymentMode;
+    NSString* introductoryPriceNumberOfPeriods;
+    NSString* introductoryPriceSubscriptionPeriod;
 
     // NSString* itemType = @"Do not use this. It returned sub only before";
 
@@ -330,27 +331,25 @@
         formatter.locale = product.introductoryPrice.priceLocale;
         introductoryPrice = [formatter stringFromNumber:product.introductoryPrice.price];
 
-        // itemType = product.subscriptionPeriod ? @"sub" : @"iap";
         unsigned long numOfUnits = (unsigned long) product.subscriptionPeriod.numberOfUnits;
-        SKProductPeriodUnit unit = product.subscriptionPeriod.unit;
-        
-        if (unit == SKProductPeriodUnitYear) {
-            periodUnitIOS = @"YEAR";
-        } else if (unit == SKProductPeriodUnitMonth) {
-            periodUnitIOS = @"MONTH";
-        } else if (unit == SKProductPeriodUnitWeek) {
-            periodUnitIOS = @"WEEK";
-        } else if (unit == SKProductPeriodUnitDay) {
-            periodUnitIOS = @"DAY";
+        periodNumberIOS = [NSString stringWithFormat:@"%lu", numOfUnits];
+        switch (product.subscriptionPeriod.unit) {
+            case SKProductPeriodUnitYear:
+                periodUnitIOS = @"YEAR";
+                break;
+            case  SKProductPeriodUnitMonth:
+                periodUnitIOS = @"MONTH";
+                break;
+            case SKProductPeriodUnitWeek:
+                periodUnitIOS = @"WEEK";
+                break;
+            case SKProductPeriodUnitDay:
+                periodUnitIOS = @"DAY";
+                break;
         }
         
-        periodNumberIOS = [NSString stringWithFormat:@"%lu", numOfUnits];
 
-        // subscriptionPeriod = product.subscriptionPeriod ? [product.subscriptionPeriod stringValue] : @"";
-        // introductoryPrice = product.introductoryPrice != nil ? [NSString stringWithFormat:@"%@", product.introductoryPrice] : @"";
         if (product.introductoryPrice != nil) {
-
-          //SKProductDiscount introductoryPriceObj = product.introductoryPrice;
           formatter.locale = product.introductoryPrice.priceLocale;
           introductoryPrice = [formatter stringFromNumber:product.introductoryPrice.price];
           introductoryPriceNumber = [product.introductoryPrice.price stringValue];
@@ -368,30 +367,23 @@
                   introductoryPricePaymentMode = @"PAYUPFRONT";
                   introductoryPriceNumberOfPeriods = [@(product.introductoryPrice.subscriptionPeriod.numberOfUnits) stringValue];
                   break;
-              default:
-                  introductoryPricePaymentMode = @"";
-                  introductoryPriceNumberOfPeriods = @"0";
+          }
+            
+          switch (product.introductoryPrice.subscriptionPeriod.unit) {
+              case SKProductPeriodUnitDay:
+                  introductoryPriceSubscriptionPeriod = @"DAY";
+                  break;
+              case SKProductPeriodUnitWeek:
+                  introductoryPriceSubscriptionPeriod = @"WEEK";
+                  break;
+              case SKProductPeriodUnitMonth:
+                  introductoryPriceSubscriptionPeriod = @"MONTH";
+                  break;
+              case SKProductPeriodUnitYear:
+                  introductoryPriceSubscriptionPeriod = @"YEAR";
                   break;
           }
-
-          if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitDay) {
-              introductoryPriceSubscriptionPeriod = @"DAY";
-          }	else if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitWeek) {
-              introductoryPriceSubscriptionPeriod = @"WEEK";
-          }	else if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitMonth) {
-              introductoryPriceSubscriptionPeriod = @"MONTH";
-          } else if (product.introductoryPrice.subscriptionPeriod.unit == SKProductPeriodUnitYear) {
-              introductoryPriceSubscriptionPeriod = @"YEAR";
-          } else {
-              introductoryPriceSubscriptionPeriod = @"";
-          }
-
-        } else {
-          introductoryPrice = @"";
-          introductoryPriceNumber = @"";
-          introductoryPricePaymentMode = @"";
-          introductoryPriceNumberOfPeriods = @"";
-          introductoryPriceSubscriptionPeriod = @"";
+            
         }
     }
 
@@ -405,7 +397,7 @@
         discounts = [self getDiscountData:[product.discounts copy]];
     }
 #endif
-
+    
     NSDictionary *obj = [NSDictionary dictionaryWithObjectsAndKeys:
         product.productIdentifier, @"productId",
         [product.price stringValue], @"price",
@@ -423,6 +415,7 @@
         discounts, @"discounts",
         nil
     ];
+    
     return obj;
 }
 
@@ -472,10 +465,6 @@
                     paymendMode = @"PAYUPFRONT";
                     numberOfPeriods = [@(discount.subscriptionPeriod.numberOfUnits) stringValue];
                     break;
-                default:
-                    paymendMode = @"";
-                    numberOfPeriods = @"0";
-                    break;
             }
             
             switch (discount.subscriptionPeriod.unit) {
@@ -491,8 +480,6 @@
                 case SKProductPeriodUnitYear:
                     subscriptionPeriods = @"YEAR";
                     break;
-                default:
-                    subscriptionPeriods = @"";
             }
 
             NSString* discountIdentifier = @"";
@@ -505,9 +492,6 @@
                         break;
                     case SKProductDiscountTypeSubscription:
                         discountType = @"SUBSCRIPTION";
-                        break;
-                    default:
-                        discountType = @"";
                         break;
                 }
                 
@@ -556,25 +540,18 @@
                                      [self englishErrorCodeDescription:(int)transaction.error.code], @"message",
                                      nil
                                      ];
-                NSString* result = [self convertDicToJsonString:err];
+        
 
-                [self.channel invokeMethod:@"purchase-error" arguments: [NSString stringWithFormat:@"%@", result]];
+                [self.channel invokeMethod:@"purchase-error" arguments: err];
                 NSLog(@"\n\n\n\n\n\n Purchase Failed  !! \n\n\n\n\n");
                 break;
         }
     }
 }
 
--(NSString *)convertDicToJsonString:(NSDictionary *)dic {
-    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
-    NSString* jsonDataStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    return jsonDataStr;
-}
-
 -(void)purchaseProcess:(SKPaymentTransaction *)transaction {
     [self getPurchaseData:transaction withBlock:^(NSDictionary *purchase) {
-        NSString* result = [self convertDicToJsonString:purchase];
-        [self.channel invokeMethod:@"purchase-updated" arguments: result];
+        [self.channel invokeMethod:@"purchase-updated" arguments: purchase];
     }];
 }
 
@@ -585,7 +562,7 @@
         }
         else {
             NSMutableDictionary *purchase = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                             @(transaction.transactionDate.timeIntervalSince1970 * 1000), @"transactionDate",
+                                             @(lround(transaction.transactionDate.timeIntervalSince1970 * 1000)), @"transactionDate",
                                              transaction.transactionIdentifier, @"transactionId",
                                              transaction.payment.productIdentifier, @"productId",
                                              [receiptData base64EncodedStringWithOptions:0], @"transactionReceipt",
@@ -596,7 +573,7 @@
             // originalTransaction is available for restore purchase and purchase of cancelled/expired subscriptions
             SKPaymentTransaction *originalTransaction = transaction.originalTransaction;
             if (originalTransaction) {
-                purchase[@"originalTransactionDateIOS"] = @(originalTransaction.transactionDate.timeIntervalSince1970 * 1000);
+                purchase[@"originalTransactionDateIOS"] = @(lround(originalTransaction.transactionDate.timeIntervalSince1970 * 1000));
                 purchase[@"originalTransactionIdentifierIOS"] = originalTransaction.transactionIdentifier;
             }
             

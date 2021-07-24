@@ -19,20 +19,20 @@ class FlutterInappPurchase {
   static FlutterInappPurchase instance =
       FlutterInappPurchase(FlutterInappPurchase.private(const LocalPlatform()));
 
-  static StreamController<PurchasedItem?>? _purchaseController;
-  static Stream<PurchasedItem?> get purchaseUpdated =>
+  static StreamController<PurchasedItem>? _purchaseController;
+  static Stream<PurchasedItem> get purchaseUpdated =>
       _purchaseController!.stream;
 
-  static StreamController<PurchaseResult?>? _purchaseErrorController;
-  static Stream<PurchaseResult?> get purchaseError =>
+  static StreamController<PurchaseResult>? _purchaseErrorController;
+  static Stream<PurchaseResult> get purchaseError =>
       _purchaseErrorController!.stream;
 
   static StreamController<ConnectionResult>? _connectionController;
   static Stream<ConnectionResult> get connectionUpdated =>
       _connectionController!.stream;
 
-  static StreamController<String?>? _purchasePromotedController;
-  static Stream<String?> get purchasePromoted =>
+  static StreamController<String>? _purchasePromotedController;
+  static Stream<String> get purchasePromoted =>
       _purchasePromotedController!.stream;
 
   /// Defining the [MethodChannel] for Flutter_Inapp_Purchase
@@ -70,12 +70,10 @@ class FlutterInappPurchase {
   /// Consumes all items on `Android`.
   ///
   /// Particularly useful for removing all consumable items.
-  Future get consumeAllItems async {
+  Future get consumeAllItemsAndroid async {
     if (_platform.isAndroid) {
       final String? result = await _channel.invokeMethod('consumeAllItems');
       return result;
-    } else if (_platform.isIOS) {
-      return 'no-ops in ios';
     }
 
     throw _platformException;
@@ -247,7 +245,7 @@ class FlutterInappPurchase {
     String sku, {
     String? oldSkuAndroid,
     int? prorationModeAndroid,
-    String? obfuscatedAccountIdAndroid,
+    String? obfuscatedAccountId,
     String? obfuscatedProfileIdAndroid,
     String? purchaseTokenAndroid,
   }) async {
@@ -257,13 +255,14 @@ class FlutterInappPurchase {
         'sku': sku,
         'oldSku': oldSkuAndroid,
         'prorationMode': prorationModeAndroid ?? -1,
-        'obfuscatedAccountId': obfuscatedAccountIdAndroid,
+        'obfuscatedAccountId': obfuscatedAccountId,
         'obfuscatedProfileId': obfuscatedProfileIdAndroid,
         'purchaseToken': purchaseTokenAndroid,
       });
     } else if (_platform.isIOS) {
       return _channel.invokeMethod('buyProduct', <String, dynamic>{
         'sku': sku,
+        'forUser': obfuscatedAccountId,
       });
     }
 
@@ -278,7 +277,8 @@ class FlutterInappPurchase {
     if (_platform.isIOS) {
       return _channel.invokeMethod<String>('getPromotedProduct');
     }
-    return null;
+
+    throw _platformException;
   }
 
   /// Add Store Payment (iOS only)
@@ -287,7 +287,7 @@ class FlutterInappPurchase {
   /// @returns {Future} will receive result from `purchasePromoted` listener.
   Future requestPromotedProductIOS() async {
     if (_platform.isIOS) {
-      return await _channel.invokeMethod('requestPromotedProduct');
+      return _channel.invokeMethod('requestPromotedProduct');
     }
 
     throw _platformException;
@@ -335,13 +335,13 @@ class FlutterInappPurchase {
   /// Get the pending purchases in IOS.
   ///
   /// @returns {Future<List<PurchasedItem>>}
-  Future<List<PurchasedItem>?> getPendingTransactionsIOS() async {
+  Future<List<PurchasedItem>> getPendingTransactionsIOS() async {
     if (_platform.isIOS) {
       final result = await _channel.invokeListMethod('getPendingTransactions');
-
       return extractPurchased(result ?? []);
     }
-    return [];
+
+    throw _platformException;
   }
 
   /// Acknowledge a purchase on `Android`.
@@ -350,11 +350,7 @@ class FlutterInappPurchase {
   Future<String?> acknowledgePurchaseAndroid(String token) async {
     if (_platform.isAndroid) {
       return _channel.invokeMethod<String>(
-        'acknowledgePurchase',
-        <String, dynamic>{'token': token},
-      );
-    } else if (_platform.isIOS) {
-      return 'no-ops in ios';
+          'acknowledgePurchase', <String, dynamic>{'token': token});
     }
 
     throw _platformException;
@@ -377,8 +373,6 @@ class FlutterInappPurchase {
       return _channel.invokeMethod<String>('consumeProduct', <String, dynamic>{
         'token': token,
       });
-    } else if (_platform.isIOS) {
-      return 'no-ops in ios';
     }
 
     throw _platformException;
@@ -390,7 +384,7 @@ class FlutterInappPurchase {
   Future<String?> get endConnection async {
     if (_platform.isAndroid || _platform.isIOS) {
       final result = await _channel.invokeMethod<String>('endConnection');
-      _removePurchaseListener();
+      _removePurchaseListeners();
       return result;
     }
 
@@ -403,9 +397,7 @@ class FlutterInappPurchase {
   ///
   /// No effect on `Android`, who does not allow this type of functionality.
   Future<String?> finishTransactionIOS(String transactionId) async {
-    if (_platform.isAndroid) {
-      return 'no ops in android';
-    } else if (_platform.isIOS) {
+    if (_platform.isIOS) {
       return _channel.invokeMethod<String>(
         'finishTransaction',
         <String, dynamic>{'transactionIdentifier': transactionId},
@@ -449,9 +441,7 @@ class FlutterInappPurchase {
   ///
   /// No effect on `Android`, who does not allow this type of functionality.
   Future<String?> clearTransactionIOS() async {
-    if (_platform.isAndroid) {
-      return 'no-ops in android.';
-    } else if (_platform.isIOS) {
+    if (_platform.isIOS) {
       return _channel.invokeMethod<String>('clearTransaction');
     }
 
@@ -461,9 +451,7 @@ class FlutterInappPurchase {
   /// Retrieves a list of products that have been attempted to purchase through the App Store `iOS` only.
   ///
   Future<List<IAPItem>> getAppStoreInitiatedProducts() async {
-    if (_platform.isAndroid) {
-      return <IAPItem>[];
-    } else if (_platform.isIOS) {
+    if (_platform.isIOS) {
       final result =
           await _channel.invokeListMethod('getAppStoreInitiatedProducts');
 
@@ -480,15 +468,15 @@ class FlutterInappPurchase {
   /// This method is NOT secure and untested in production.
   Future<bool> checkSubscribed({
     required String sku,
-    Duration duration: const Duration(days: 30),
-    Duration grace: const Duration(days: 3),
+    Duration duration = const Duration(days: 30),
+    Duration grace = const Duration(days: 3),
   }) async {
     if (_platform.isIOS) {
       final history = await getPurchaseHistory();
 
       for (final purchase in history) {
         Duration difference =
-            DateTime.now().difference(purchase.transactionDate!);
+            DateTime.now().difference(purchase.transactionDate);
         if (difference.inMinutes <= (duration + grace).inMinutes &&
             purchase.productId == sku) return true;
       }
@@ -522,9 +510,8 @@ class FlutterInappPurchase {
     required Map<String, String> receiptBody,
     bool isTest = true,
   }) async {
-    final String url = isTest
-        ? 'https://sandbox.itunes.apple.com/verifyReceipt'
-        : 'https://buy.itunes.apple.com/verifyReceipt';
+    final String url =
+        'https://${isTest ? 'sandbox' : 'buy'}.itunes.apple.com/verifyReceipt';
     return await http.post(
       Uri.parse(url),
       headers: {
@@ -568,23 +555,12 @@ class FlutterInappPurchase {
   }
 
   Future _setPurchaseListener() async {
-    if (_purchaseController == null) {
-      _purchaseController = StreamController.broadcast();
-    }
+    _purchaseController ??= StreamController.broadcast();
+    _connectionController ??= StreamController.broadcast();
+    _purchaseErrorController ??= StreamController.broadcast();
+    _purchasePromotedController ??= StreamController.broadcast();
 
-    if (_purchaseErrorController == null) {
-      _purchaseErrorController = StreamController.broadcast();
-    }
-
-    if (_connectionController == null) {
-      _connectionController = StreamController.broadcast();
-    }
-
-    if (_purchasePromotedController == null) {
-      _purchasePromotedController = StreamController.broadcast();
-    }
-
-    _channel.setMethodCallHandler((MethodCall call) {
+    _channel.setMethodCallHandler((MethodCall call) async {
       switch (call.method) {
         case "purchase-updated":
           final result = Map<String, dynamic>.from(call.arguments ?? {});
@@ -600,28 +576,25 @@ class FlutterInappPurchase {
           break;
         case "iap-promoted-product":
           String? productId = call.arguments;
-          _purchasePromotedController!.add(productId);
+          if (productId != null && productId.isNotEmpty) {
+            _purchasePromotedController!.add(productId);
+          }
           break;
         default:
           throw ArgumentError('Unknown method ${call.method}');
       }
-      return Future.value(null);
     });
   }
 
-  Future _removePurchaseListener() async {
-    if (_purchaseController != null) {
-      _purchaseController
-        ?..add(null)
-        ..close();
-      _purchaseController = null;
-    }
-    if (_purchaseErrorController != null) {
-      _purchaseErrorController
-        ?..add(null)
-        ..close();
-      _purchaseErrorController = null;
-    }
+  Future _removePurchaseListeners() async {
+    _purchaseController?.close();
+    _connectionController?.close();
+    _purchaseErrorController?.close();
+    _purchasePromotedController?.close();
+    _purchaseController = null;
+    _connectionController = null;
+    _purchaseErrorController = null;
+    _purchasePromotedController = null;
   }
 }
 
