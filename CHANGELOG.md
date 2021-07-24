@@ -1,5 +1,9 @@
 ## 5.5.0
++ Added some not nullable types to standart models
 + DEPRECATED: removed dataAndroid and originalJsonAndroid from PurchasedItem. Use transactionReceipt instead as it is the same object.
++ BREAKING: all platform scpecific methods (aka those which end with IOS/Android) now throw an exception on wrong platform.
++ BREAKING: consumeAllItems method renamed to consumeAllItemsAndroid.
+[#301](https://github.com/dooboolab/flutter_inapp_purchase/pull/301)
 
 ## 5.0.2
 + Replaced obfuscatedAccountIdAndroid with obfuscatedAccountId in request purchase method [#299](https://github.com/dooboolab/flutter_inapp_purchase/pull/299)
