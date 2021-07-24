@@ -13,13 +13,17 @@ enum ResponseCodeAndroid {
 
 /// An item available for purchase from either the `Google Play Store` or `iOS AppStore`
 class IAPItem {
-  final String price;
   final String title;
-  final String currency;
   final String productId;
-  final String localizedPrice;
   final String? description;
+  final String localizedPrice;
   final String? introductoryPrice;
+
+  /// not nullable for IOS and Android iaps - nullable for Amazon
+  final String? price;
+
+  /// not nullable for IOS and Android iaps - nullable for Amazon
+  final String? currency;
 
   /// ios only
   final String? subscriptionPeriodUnitIOS;

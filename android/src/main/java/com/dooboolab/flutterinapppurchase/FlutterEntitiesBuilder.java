@@ -92,16 +92,9 @@ class FlutterEntitiesBuilder {
         HashMap<String,Object> map = new HashMap<>();
 
         map.put("productId", amazonProduct.getSku());
-        map.put("price", amazonProduct.toString());
-        map.put("currency", null);
         map.put("localizedPrice", amazonProduct.getPrice());
         map.put("title", amazonProduct.getTitle());
         map.put("description", amazonProduct.getDescription());
-        map.put("introductoryPrice", "");
-        map.put("subscriptionPeriodAndroid", "");
-        map.put("freeTrialPeriodAndroid", "");
-        map.put("introductoryPriceCyclesAndroid", 0);
-        map.put("introductoryPricePeriodAndroid", "");
 
         ProductType productType = amazonProduct.getProductType();
         switch (productType) {
