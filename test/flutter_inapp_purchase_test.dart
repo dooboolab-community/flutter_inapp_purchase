@@ -65,14 +65,14 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.consumeAllItems;
+          await FlutterInappPurchase.instance.consumeAllItemsAndroid;
           expect(log, <Matcher>[
             isMethodCall('consumeAllItems', arguments: null),
           ]);
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.consumeAllItems,
+          expect(await FlutterInappPurchase.instance.consumeAllItemsAndroid,
               "All items have been consumed");
         });
       });
@@ -87,9 +87,12 @@ void main() {
           FlutterInappPurchase.channel.setMethodCallHandler(null);
         });
 
-        test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.consumeAllItems,
-              "no-ops in ios");
+        test('throws exception', () async {
+          try {
+            await FlutterInappPurchase.instance.consumeAllItemsAndroid;
+          } catch (e) {
+            expect(e, isInstanceOf<PlatformException>());
+          }
         });
       });
     });
@@ -637,7 +640,7 @@ void main() {
 
         final dynamic result = [
           {
-            "transactionDate": "1552824902000",
+            "transactionDate": 1552824902000,
             "transactionId": "testTransactionId",
             "productId": "com.cooni.point1000",
             "transactionReceipt": "testTransactionReciept",
@@ -645,12 +648,12 @@ void main() {
             "autoRenewingAndroid": true,
             "dataAndroid": "testDataAndroid",
             "signatureAndroid": "testSignatureAndroid",
-            "originalTransactionDateIOS": "1552831136000",
+            "originalTransactionDateIOS": 1552831136000,
             "originalTransactionIdentifierIOS":
                 "testOriginalTransactionIdentifierIOS"
           },
           {
-            "transactionDate": "1552824902000",
+            "transactionDate": 1552824902000,
             "transactionId": "testSubsTransactionId",
             "productId": "com.cooni.point1000.subs",
             "transactionReceipt": "testSubsTransactionReciept",
@@ -658,7 +661,7 @@ void main() {
             "autoRenewingAndroid": true,
             "dataAndroid": "testSubsDataAndroid",
             "signatureAndroid": "testSubsSignatureAndroid",
-            "originalTransactionDateIOS": "1552831136000",
+            "originalTransactionDateIOS": 1552831136000,
             "originalTransactionIdentifierIOS":
                 "testSubsOriginalTransactionIdentifierIOS"
           }
@@ -682,10 +685,7 @@ void main() {
         test('invokes correct method', () async {
           await FlutterInappPurchase.instance.getPurchaseHistory();
           expect(log, <Matcher>[
-            isMethodCall(
-              'getAvailableItems',
-              arguments: null,
-            ),
+            isMethodCall('getAvailableItems', arguments: null),
           ]);
         });
 
@@ -821,7 +821,7 @@ void main() {
 
         final dynamic result = [
           {
-            "transactionDate": "1552824902000",
+            "transactionDate": 1552824902000,
             "transactionId": "testTransactionId",
             "productId": "com.cooni.point1000",
             "transactionReceipt": "testTransactionReciept",
@@ -829,12 +829,12 @@ void main() {
             "autoRenewingAndroid": true,
             "dataAndroid": "testDataAndroid",
             "signatureAndroid": "testSignatureAndroid",
-            "originalTransactionDateIOS": "1552831136000",
+            "originalTransactionDateIOS": 1552831136000,
             "originalTransactionIdentifierIOS":
                 "testOriginalTransactionIdentifierIOS"
           },
           {
-            "transactionDate": "1552824902000",
+            "transactionDate": 1552824902000,
             "transactionId": "testSubsTransactionId",
             "productId": "com.cooni.point1000.subs",
             "transactionReceipt": "testSubsTransactionReciept",
@@ -842,7 +842,7 @@ void main() {
             "autoRenewingAndroid": true,
             "dataAndroid": "testSubsDataAndroid",
             "signatureAndroid": "testSubsSignatureAndroid",
-            "originalTransactionDateIOS": "1552831136000",
+            "originalTransactionDateIOS": 1552831136000,
             "originalTransactionIdentifierIOS":
                 "testSubsOriginalTransactionIdentifierIOS"
           }
@@ -905,7 +905,7 @@ void main() {
       group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
         final dynamic result = {
-          "transactionDate": "1552824902000",
+          "transactionDate": 1552824902000,
           "transactionId": "testTransactionId",
           "productId": "com.cooni.point1000",
           "transactionReceipt": "testTransactionReciept",
@@ -913,7 +913,7 @@ void main() {
           "autoRenewingAndroid": true,
           "dataAndroid": "testDataAndroid",
           "signatureAndroid": "testSignatureAndroid",
-          "originalTransactionDateIOS": "1552831136000",
+          "originalTransactionDateIOS": 1552831136000,
           "originalTransactionIdentifierIOS":
               "testOriginalTransactionIdentifierIOS"
         };
@@ -962,7 +962,7 @@ void main() {
         final List<MethodCall> log = <MethodCall>[];
         final String sku = "testsku";
         final dynamic result = {
-          "transactionDate": "1552824902000",
+          "transactionDate": 1552824902000,
           "transactionId": "testTransactionId",
           "productId": "com.cooni.point1000",
           "transactionReceipt": "testTransactionReciept",
@@ -970,7 +970,7 @@ void main() {
           "autoRenewingAndroid": true,
           "dataAndroid": "testDataAndroid",
           "signatureAndroid": "testSignatureAndroid",
-          "originalTransactionDateIOS": "1552831136000",
+          "originalTransactionDateIOS": 1552831136000,
           "originalTransactionIdentifierIOS":
               "testOriginalTransactionIdentifierIOS"
         };
@@ -1022,7 +1022,7 @@ void main() {
         final String sku = "testsku";
         final String oldSku = "testOldSku";
         final String result = """{
-          "transactionDate":"1552824902000",
+          "transactionDate":1552824902000,
           "transactionId":"testTransactionId",
           "productId":"com.cooni.point1000",
           "transactionReceipt":"testTransactionReciept",
@@ -1030,7 +1030,7 @@ void main() {
           "autoRenewingAndroid":true,
           "dataAndroid":"testDataAndroid",
           "signatureAndroid":"testSignatureAndroid",
-          "originalTransactionDateIOS":"1552831136000",
+          "originalTransactionDateIOS":1552831136000,
           "originalTransactionIdentifierIOS":"testOriginalTransactionIdentifierIOS"
         }""";
 
@@ -1079,7 +1079,7 @@ void main() {
         final String sku = "testsku";
         final String forUser = "testObfuscatedUser";
         final dynamic result = {
-          "transactionDate": "1552824902000",
+          "transactionDate": 1552824902000,
           "transactionId": "testTransactionId",
           "productId": "com.cooni.point1000",
           "transactionReceipt": "testTransactionReciept",
@@ -1087,7 +1087,7 @@ void main() {
           "autoRenewingAndroid": true,
           "dataAndroid": "testDataAndroid",
           "signatureAndroid": "testSignatureAndroid",
-          "originalTransactionDateIOS": "1552831136000",
+          "originalTransactionDateIOS": 1552831136000,
           "originalTransactionIdentifierIOS":
               "testOriginalTransactionIdentifierIOS"
         };
@@ -1304,11 +1304,12 @@ void main() {
           FlutterInappPurchase.channel.setMethodCallHandler(null);
         });
 
-        test('returns correct result', () async {
-          expect(
-              await FlutterInappPurchase.instance
-                  .getAppStoreInitiatedProducts(),
-              <IAPItem>[]);
+        test('throws exception', () async {
+          try {
+            await FlutterInappPurchase.instance.getAppStoreInitiatedProducts();
+          } catch (e) {
+            expect(e, isInstanceOf<PlatformException>());
+          }
         });
       });
 

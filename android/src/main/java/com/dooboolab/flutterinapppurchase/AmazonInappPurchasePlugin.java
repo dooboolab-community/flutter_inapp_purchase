@@ -170,7 +170,6 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
             Log.d(TAG, "opdr Putting "+item.toString());
             items.add(item);
           }
-          //System.err.println("Sending "+items.toString());
           result.success(items);
 
           break;
