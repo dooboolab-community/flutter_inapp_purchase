@@ -590,6 +590,8 @@
                                              transaction.payment.productIdentifier, @"productId",
                                              [receiptData base64EncodedStringWithOptions:0], @"transactionReceipt",
                                              [NSNumber numberWithInt: transaction.transactionState], @"transactionStateIOS",
+                                             [NSNumber numberWithInt:transaction.payment.quantity],
+                                             @"quantity",
                                              nil
                                              ];
             

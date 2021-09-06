@@ -226,6 +226,7 @@ class PurchasedItem {
   final DateTime? originalTransactionDateIOS;
   final String? originalTransactionIdentifierIOS;
   final TransactionState? transactionStateIOS;
+  final int? quantityIOS;
 
   /// Create [PurchasedItem] from a Map that was previously JSON formatted
   PurchasedItem.fromJSON(Map<String, dynamic> json)
@@ -247,7 +248,8 @@ class PurchasedItem {
         originalTransactionIdentifierIOS =
             json['originalTransactionIdentifierIOS'] as String?,
         transactionStateIOS =
-            _decodeTransactionStateIOS(json['transactionStateIOS'] as int?);
+            _decodeTransactionStateIOS(json['transactionStateIOS'] as int?),
+        quantityIOS = json['quantity'] as int?;
 
   /// This returns transaction dates in ISO 8601 format.
   @override
@@ -270,10 +272,11 @@ class PurchasedItem {
         /// ios specific
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
         'originalTransactionIdentifierIOS: $originalTransactionIdentifierIOS, '
-        'transactionStateIOS: $transactionStateIOS';
+        'transactionStateIOS: $transactionStateIOS,'
+        'quantityIOS: $quantityIOS';
   }
 
-  /// Coerce miliseconds since epoch in double, int, or String into DateTime format
+  /// Coerce milliseconds since epoch in double, int, or String into DateTime format
   static DateTime? _extractDate(dynamic timestamp) {
     if (timestamp == null) return null;
 
@@ -375,9 +378,7 @@ TransactionState? _decodeTransactionStateIOS(int? rawValue) {
 /// See also https://developer.android.com/reference/com/android/billingclient/api/Purchase.PurchaseState
 enum PurchaseState {
   pending,
-
   purchased,
-
   unspecified,
 }
 
