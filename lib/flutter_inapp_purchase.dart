@@ -333,9 +333,9 @@ class FlutterInappPurchase {
   ) async {
     if (_platform.isIOS) {
       return await _channel
-          .invokeMethod('requestPurchaseWithQuantity', <String, dynamic>{
+          .invokeMethod('requestProductWithQuantityIOS', <String, dynamic>{
         'sku': sku,
-        'quantity': quantity,
+        'quantity': quantity.toString(),
       });
     }
     throw PlatformException(
