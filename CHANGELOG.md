@@ -1,3 +1,6 @@
+## 5.0.3
++ Fix plugin exception for `requestProductWithQuantityIOS` [#306](https://github.com/dooboolab/flutter_inapp_purchase/pull/306)
+
 ## 5.0.2
 + Replaced obfuscatedAccountIdAndroid with obfuscatedAccountId in request purchase method [#299](https://github.com/dooboolab/flutter_inapp_purchase/pull/299)
 
