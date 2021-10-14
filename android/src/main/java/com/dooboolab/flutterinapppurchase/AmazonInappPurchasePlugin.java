@@ -154,10 +154,13 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
               NumberFormat format = NumberFormat.getCurrencyInstance();
 
               Number number;
+              String test;
               try {
                 Log.d(TAG, "onProduct: " + product);
                 Log.d(TAG, "onFormat: " + format);
                 Log.d(TAG, "onPrice: " + product.getPrice());
+                test = product.getPrice();
+                Log.d(TAG, "onTest: " +test);
                 number = format.parse(product.getPrice());
               } catch (ParseException e) {
                 result.error(TAG, "Price Parsing erroreee", e.getMessage());
