@@ -157,7 +157,7 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
               try {
                 number = format.parse(product.getPrice());
               } catch (ParseException e) {
-                result.error(TAG, "Price Parsing errorsee", e.getMessage());
+                result.error(TAG, "Price Parsing errorseett", e.getMessage());
                 return;
               }
               JSONObject item = new JSONObject();
