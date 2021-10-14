@@ -155,6 +155,9 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
 
               Number number;
               try {
+                Log.d(TAG, "onProduct: " + product);
+                Log.d(TAG, "onFormat: " + format);
+                Log.d(TAG, "onPrice: " + product.getPrice());
                 number = format.parse(product.getPrice());
               } catch (ParseException e) {
                 result.error(TAG, "Price Parsing erroreee", e.getMessage());
