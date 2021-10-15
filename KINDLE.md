@@ -1,6 +1,6 @@
 # Amazon Kindle Fire / Fire TV In-App Purchases Guide
 
-The plugin will automatically detect Amazon Kindle devices during runtime.
+The plugin will automatically detect Amazon devices during runtime.
 
 ## Testing In-App Purchases
 
