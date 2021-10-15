@@ -1,4 +1,4 @@
-# Amazon Kindle Fire / FIre TV In-App Purchases Guide
+# Amazon Kindle Fire / Fire TV In-App Purchases Guide
 
 The plugin will automatically detect Amazon Kindle devices during runtime.
 
