@@ -91,8 +91,6 @@ class FlutterInappPurchase {
       final String? result = await _channel.invokeMethod('canMakePayments');
       return result;
     }
-    throw PlatformException(
-        code: _platform.operatingSystem, message: "platform not supported");
   }
 
   /// Retrieves a list of products from the store on `Android` and `iOS`.
