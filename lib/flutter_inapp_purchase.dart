@@ -53,7 +53,7 @@ class FlutterInappPurchase {
   @visibleForTesting
   FlutterInappPurchase.private(Platform platform, {http.Client? client})
       : _pf = platform,
-        _httpClient = client;
+        _httpClient = client ?? http.Client();
 
   /// Returns the platform version on `Android` and `iOS`.
   ///
@@ -549,7 +549,7 @@ class FlutterInappPurchase {
     final String url = isTest
         ? 'https://sandbox.itunes.apple.com/verifyReceipt'
         : 'https://buy.itunes.apple.com/verifyReceipt';
-    return await http.post(
+    return await _client!.post(
       Uri.parse(url),
       headers: {
         'Accept': 'application/json',
