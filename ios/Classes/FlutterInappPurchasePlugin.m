@@ -235,6 +235,16 @@
         [self getAvailableItems:result];
     } else if ([@"getAppStoreInitiatedProducts" isEqualToString:call.method]) {
         [self getAppStoreInitiatedProducts:result];
+    } else if ([@"showRedeemCodes" isEqualToString:call.method]) {
+#if __IPHONE_12_2
+        if (@available(iOS 14.0, *)) {
+            [[SKPaymentQueue defaultQueue] presentCodeRedemptionSheet];
+            result(@"present PromoCodes");
+            return;
+            }
+#endif
+        result("the functionality is available starting from ios 14.0")
+
     } else {
         result(FlutterMethodNotImplemented);
     }

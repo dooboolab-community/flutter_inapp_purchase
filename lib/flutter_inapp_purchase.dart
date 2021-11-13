@@ -649,6 +649,14 @@ class FlutterInappPurchase {
       _purchaseErrorController = null;
     }
   }
+
+  Future<String> showPromoCodes() async {
+    if (_platform.isIOS) {
+      return await _channel.invokeMethod('showRedeemCodes');
+    }
+    throw PlatformException(
+        code: _platform.operatingSystem, message: "platform not supported");
+  }
 }
 
 /// A list of valid values for ProrationMode parameter
