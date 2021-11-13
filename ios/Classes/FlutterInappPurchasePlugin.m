@@ -243,7 +243,7 @@
             return;
             }
 #endif
-        result("the functionality is available starting from ios 14.0")
+        result(@"the functionality is available starting from ios 14.0");
 
     } else {
         result(FlutterMethodNotImplemented);
