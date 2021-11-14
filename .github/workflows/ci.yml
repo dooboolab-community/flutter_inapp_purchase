@@ -28,13 +28,13 @@ jobs:
 
       - run: flutter test --coverage
 
-      - name: Coveralls
-        uses: coverallsapp/github-action@1.1.3
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
-          path-to-lcov: coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage/lcov.info
 
-      - run: flutter build apk
+      # - run: flutter build apk
 
       # Upload generated apk to the artifacts.
       # - uses: actions/upload-artifact@v1

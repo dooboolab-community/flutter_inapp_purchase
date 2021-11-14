@@ -2,7 +2,7 @@
 
 [![Pub Version](https://img.shields.io/pub/v/flutter_inapp_purchase.svg?style=flat-square)](https://pub.dartlang.org/packages/flutter_inapp_purchase)
 [![Flutter CI](https://github.com/dooboolab/flutter_inapp_purchase/actions/workflows/ci.yml/badge.svg)](https://github.com/dooboolab/flutter_inapp_purchase/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/dooboolab/flutter_inapp_purchase/badge.svg?branch=master)](https://coveralls.io/github/dooboolab/flutter_inapp_purchase?branch=master)
+[![Coverage Status](https://codecov.io/gh/dooboolab/flutter_inapp_purchase/branch/master/graph/badge.svg?token=WXBlKvRB2G)](https://codecov.io/gh/dooboolab/flutter_inapp_purchase)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ## Flutter V2
