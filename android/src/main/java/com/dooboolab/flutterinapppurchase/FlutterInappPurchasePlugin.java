@@ -56,9 +56,7 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    if (isAndroid) {
-      tearDownChannel();
-    } else if(isAmazon) {
+    if (isAndroid || isAmazon) {
       tearDownChannel();
     }
   }
