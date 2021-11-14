@@ -321,7 +321,6 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
             item.put("transactionId", purchase.getOrderId());
             item.put("transactionDate", purchase.getPurchaseTime());
             item.put("transactionReceipt", purchase.getOriginalJson());
-            item.put("orderId", purchase.getOrderId());
             item.put("purchaseToken", purchase.getPurchaseToken());
             item.put("signatureAndroid", purchase.getSignature());
             item.put("purchaseStateAndroid", purchase.getPurchaseState());

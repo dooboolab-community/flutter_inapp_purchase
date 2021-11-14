@@ -2,6 +2,9 @@
 
 - Upgrade android billing client to `4.0.0` (#326)
 
+- Remove `orderId` in `Purchase`
+  - This is duplicate of `transactionId`.
+
 ## 5.0.4
 
 - Add iOS promo codes (#325)

@@ -114,7 +114,6 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
   final DateTime transactionDate;
   final String transactionReceipt;
   final String purchaseToken;
-  final String orderId;
 
   // Android only
   final String dataAndroid;
