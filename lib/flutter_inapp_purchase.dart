@@ -650,9 +650,9 @@ class FlutterInappPurchase {
     }
   }
 
-  Future<String> showPromoCodes() async {
+  Future<String> showPromoCodesIOS() async {
     if (_platform.isIOS) {
-      return await _channel.invokeMethod('showRedeemCodes');
+      return await _channel.invokeMethod('showRedeemCodesIOS');
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");

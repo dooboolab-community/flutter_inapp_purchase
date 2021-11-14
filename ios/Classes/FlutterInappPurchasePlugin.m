@@ -235,7 +235,7 @@
         [self getAvailableItems:result];
     } else if ([@"getAppStoreInitiatedProducts" isEqualToString:call.method]) {
         [self getAppStoreInitiatedProducts:result];
-    } else if ([@"showRedeemCodes" isEqualToString:call.method]) {
+    } else if ([@"showRedeemCodesIOS" isEqualToString:call.method]) {
 #if __IPHONE_12_2
         if (@available(iOS 14.0, *)) {
             [[SKPaymentQueue defaultQueue] presentCodeRedemptionSheet];
