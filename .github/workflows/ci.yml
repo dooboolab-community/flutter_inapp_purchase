@@ -31,7 +31,8 @@ jobs:
       - name: Coveralls
         uses: coverallsapp/github-action@1.1.3
         with:
-          github-token: ${{ secrets.COVERALLS_TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN }}
+          path-to-lcov: coverage/lcov.info
 
       - run: flutter build apk
 
