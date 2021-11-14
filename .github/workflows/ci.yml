@@ -38,7 +38,7 @@ jobs:
           fail_ci_if_error: false
           path_to_write_report: ./coverage/codecov_report.gz
 
-      - run: flutter build apk
+      # - run: flutter build apk
 
       # Upload generated apk to the artifacts.
       # - uses: actions/upload-artifact@v1
