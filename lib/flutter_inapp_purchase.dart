@@ -40,10 +40,10 @@ class FlutterInappPurchase {
   static MethodChannel get channel => _channel;
 
   final Platform _pf;
-  final http.Client? _httpClient;
+  late http.Client _httpClient;
 
   static Platform get _platform => instance._pf;
-  static http.Client? get _client => instance._httpClient;
+  static http.Client get _client => instance._httpClient;
 
   factory FlutterInappPurchase(FlutterInappPurchase _instance) {
     instance = _instance;
@@ -549,7 +549,7 @@ class FlutterInappPurchase {
     final String url = isTest
         ? 'https://sandbox.itunes.apple.com/verifyReceipt'
         : 'https://buy.itunes.apple.com/verifyReceipt';
-    return await _client!.post(
+    return await _client.post(
       Uri.parse(url),
       headers: {
         'Accept': 'application/json',
@@ -585,7 +585,7 @@ class FlutterInappPurchase {
     final String type = isSubscription ? 'subscriptions' : 'products';
     final String url =
         'https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
-    return await _client!.get(
+    return await _client.get(
       Uri.parse(url),
       headers: {
         'Accept': 'application/json',
