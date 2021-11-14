@@ -1400,7 +1400,7 @@ void main() {
         });
 
         FlutterInappPurchase(FlutterInappPurchase.private(
-            FakePlatform(operatingSystem: "ios"),
+            FakePlatform(operatingSystem: "android"),
             client: mockClient));
       });
 
@@ -1441,6 +1441,58 @@ void main() {
                 isSubscription: false);
         expect(response.request!.url.toString(),
             "https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
+      });
+    });
+
+    group('validateReceiptIos', () {
+      final receiptBody = {
+        'receipt-data': 'purchasedItem.transactionReceipt',
+        'password': 'apple_password'
+      };
+
+      setUp(() {
+        http.Client mockClient = MockClient((request) async {
+          return Response(json.encode({'status': 0}), 200);
+        });
+
+        FlutterInappPurchase(FlutterInappPurchase.private(
+          FakePlatform(operatingSystem: "ios"),
+          client: mockClient,
+        ));
+      });
+
+      tearDown(() {
+        FlutterInappPurchase.channel.setMethodCallHandler(null);
+      });
+
+      test('returns correct http request url in sandbox', () async {
+        final response = await FlutterInappPurchase.instance.validateReceiptIos(
+          receiptBody: receiptBody,
+          isTest: true,
+        );
+
+        expect(
+          response.request!.url.toString(),
+          "https://sandbox.itunes.apple.com/verifyReceipt",
+        );
+        expect(response.statusCode, 200);
+        final data = jsonDecode(response.body);
+        expect(data['status'], 0);
+      });
+
+      test('returns correct http request url in production', () async {
+        final response = await FlutterInappPurchase.instance.validateReceiptIos(
+          receiptBody: receiptBody,
+          isTest: false,
+        );
+
+        expect(
+          response.request!.url.toString(),
+          "https://buy.itunes.apple.com/verifyReceipt",
+        );
+        expect(response.statusCode, 200);
+        final data = jsonDecode(response.body);
+        expect(data['status'], 0);
       });
     });
   });
