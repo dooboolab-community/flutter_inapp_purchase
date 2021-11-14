@@ -212,7 +212,6 @@ class PurchasedItem {
   final DateTime? transactionDate;
   final String? transactionReceipt;
   final String? purchaseToken;
-  final String? orderId;
 
   // Android only
   final String? dataAndroid;
@@ -220,7 +219,6 @@ class PurchasedItem {
   final bool? autoRenewingAndroid;
   final bool? isAcknowledgedAndroid;
   final PurchaseState? purchaseStateAndroid;
-  final String? originalJsonAndroid;
 
   // iOS only
   final DateTime? originalTransactionDateIOS;
@@ -234,14 +232,12 @@ class PurchasedItem {
         transactionDate = _extractDate(json['transactionDate']),
         transactionReceipt = json['transactionReceipt'] as String?,
         purchaseToken = json['purchaseToken'] as String?,
-        orderId = json['orderId'] as String?,
         dataAndroid = json['dataAndroid'] as String?,
         signatureAndroid = json['signatureAndroid'] as String?,
         isAcknowledgedAndroid = json['isAcknowledgedAndroid'] as bool?,
         autoRenewingAndroid = json['autoRenewingAndroid'] as bool?,
         purchaseStateAndroid =
             _decodePurchaseStateAndroid(json['purchaseStateAndroid'] as int?),
-        originalJsonAndroid = json['originalJsonAndroid'] as String?,
         originalTransactionDateIOS =
             _extractDate(json['originalTransactionDateIOS']),
         originalTransactionIdentifierIOS =
@@ -257,7 +253,6 @@ class PurchasedItem {
         'transactionDate: ${transactionDate?.toIso8601String()}, '
         'transactionReceipt: $transactionReceipt, '
         'purchaseToken: $purchaseToken, '
-        'orderId: $orderId, '
 
         /// android specific
         'dataAndroid: $dataAndroid, '
@@ -265,7 +260,6 @@ class PurchasedItem {
         'isAcknowledgedAndroid: $isAcknowledgedAndroid, '
         'autoRenewingAndroid: $autoRenewingAndroid, '
         'purchaseStateAndroid: $purchaseStateAndroid, '
-        'originalJsonAndroid: $originalJsonAndroid, '
 
         /// ios specific
         'originalTransactionDateIOS: ${originalTransactionDateIOS?.toIso8601String()}, '
