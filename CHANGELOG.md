@@ -1,3 +1,7 @@
+## 5.1.0
+
+- Upgrade android billing client to `4.0.0` (#326)
+
 ## 5.0.4
 
 - Add iOS promo codes (#325)

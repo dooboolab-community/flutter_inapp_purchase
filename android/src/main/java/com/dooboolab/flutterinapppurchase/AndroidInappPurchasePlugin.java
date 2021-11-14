@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.android.billingclient.api.AccountIdentifiers;
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
@@ -316,7 +317,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
         if (purchases != null) {
           for (Purchase purchase : purchases) {
             JSONObject item = new JSONObject();
-            item.put("productId", purchase.getSku());
+            item.put("productId", purchase.getSkus().get(0));
             item.put("transactionId", purchase.getOrderId());
             item.put("transactionDate", purchase.getPurchaseTime());
             item.put("transactionReceipt", purchase.getOriginalJson());
@@ -362,7 +363,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
           try {
             for (PurchaseHistoryRecord purchase : purchaseHistoryRecordList) {
               JSONObject item = new JSONObject();
-              item.put("productId", purchase.getSku());
+              item.put("productId", purchase.getSkus().get(0));
               item.put("transactionDate", purchase.getPurchaseTime());
               item.put("transactionReceipt", purchase.getOriginalJson());
               item.put("purchaseToken", purchase.getPurchaseToken());
@@ -398,31 +399,6 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
 
       BillingFlowParams.Builder builder = BillingFlowParams.newBuilder();
 
-      if (type.equals(BillingClient.SkuType.SUBS) && oldSku != null && !oldSku.isEmpty()) {
-        // Subscription upgrade/downgrade
-        builder.setOldSku(oldSku, purchaseToken);
-      }
-
-      if (type.equals(BillingClient.SkuType.SUBS) && oldSku != null && !oldSku.isEmpty()) {
-        // Subscription upgrade/downgrade
-        if (prorationMode != -1) {
-          builder.setOldSku(oldSku, purchaseToken);
-          if (prorationMode == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE) {
-            builder.setReplaceSkusProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE);
-          } else if (prorationMode == BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION) {
-            builder.setReplaceSkusProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
-          } else {
-            builder.setOldSku(oldSku, purchaseToken);
-          }
-        } else {
-          builder.setOldSku(oldSku, purchaseToken);
-        }
-      }
-
-      if (prorationMode != 0 && prorationMode != -1) {
-        builder.setReplaceSkusProrationMode(prorationMode);
-      }
-
       SkuDetails selectedSku = null;
       for (SkuDetails skuDetail : skus) {
         if (skuDetail.getSku().equals(sku)) {
@@ -430,21 +406,72 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
           break;
         }
       }
+
       if (selectedSku == null) {
-        String debugMessage = "The sku was not found. Please fetch products first by calling getItems";
+        String debugMessage = "The sku was not found. Please fetch setObfuscatedAccountIdproducts first by calling getItems";
         result.error(TAG, "buyItemByType", debugMessage);
         return;
+      }
+      builder.setSkuDetails(selectedSku);
+
+      BillingFlowParams.SubscriptionUpdateParams.Builder subscriptionUpdateParamsBuilder =
+              BillingFlowParams.SubscriptionUpdateParams.newBuilder();
+
+      if (purchaseToken != null) {
+        subscriptionUpdateParamsBuilder.setOldSkuPurchaseToken(purchaseToken);
       }
 
       if (obfuscatedAccountId != null) {
         builder.setObfuscatedAccountId(obfuscatedAccountId);
       }
+
       if (obfuscatedProfileId != null) {
         builder.setObfuscatedProfileId(obfuscatedProfileId);
       }
 
-      builder.setSkuDetails(selectedSku);
+      if (prorationMode != -1) {
+        if (prorationMode
+                == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE) {
+          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                  BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE);
+          if (!type.equals(BillingClient.SkuType.SUBS)) {
+            String debugMessage =
+                    "IMMEDIATE_AND_CHARGE_PRORATED_PRICE for proration mode only works in"
+                            + " subscription purchase.";
+            result.error(TAG, "buyItemByType", debugMessage);
+            return;
+          }
+        } else if (prorationMode
+                == BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION) {
+          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                  BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
+        } else if (prorationMode == BillingFlowParams.ProrationMode.DEFERRED) {
+          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                  BillingFlowParams.ProrationMode.DEFERRED);
+        } else if (prorationMode
+                == BillingFlowParams.ProrationMode.IMMEDIATE_WITH_TIME_PRORATION) {
+          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                  BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
+        } else if (prorationMode
+                == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE) {
+          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                  BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE);
+        } else {
+          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                  BillingFlowParams.ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY);
+        }
+      }
+
+      if (purchaseToken != null) {
+        BillingFlowParams.SubscriptionUpdateParams subscriptionUpdateParams =
+                subscriptionUpdateParamsBuilder.build();
+
+        builder.setSubscriptionUpdateParams(subscriptionUpdateParams);
+      }
+
       BillingFlowParams flowParams = builder.build();
+      BillingResult billingResult = billingClient.launchBillingFlow(activity, flowParams);
+
       if (activity != null) {
         billingClient.launchBillingFlow(activity, flowParams);
       }
@@ -555,20 +582,24 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
         if (purchases != null) {
           for (Purchase purchase : purchases) {
             JSONObject item = new JSONObject();
-            item.put("productId", purchase.getSku());
+            item.put("productId", purchase.getSkus().get(0));
             item.put("transactionId", purchase.getOrderId());
             item.put("transactionDate", purchase.getPurchaseTime());
             item.put("transactionReceipt", purchase.getOriginalJson());
             item.put("purchaseToken", purchase.getPurchaseToken());
-            item.put("orderId", purchase.getOrderId());
-
             item.put("dataAndroid", purchase.getOriginalJson());
             item.put("signatureAndroid", purchase.getSignature());
+            item.put("purchaseStateAndroid", purchase.getPurchaseState());
             item.put("autoRenewingAndroid", purchase.isAutoRenewing());
             item.put("isAcknowledgedAndroid", purchase.isAcknowledged());
-            item.put("purchaseStateAndroid", purchase.getPurchaseState());
-            item.put("originalJsonAndroid", purchase.getOriginalJson());
+            item.put("packageNameAndroid", purchase.getPackageName());
+            item.put("developerPayloadAndroid", purchase.getDeveloperPayload());
+            AccountIdentifiers accountIdentifiers = purchase.getAccountIdentifiers();
 
+            if (accountIdentifiers != null) {
+              item.put("obfuscatedAccountIdAndroid", accountIdentifiers.getObfuscatedAccountId());
+              item.put("obfuscatedProfileIdAndroid", accountIdentifiers.getObfuscatedProfileId());
+            }
 
             channel.invokeMethod("purchase-updated", item.toString());
           }
