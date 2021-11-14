@@ -1,9 +1,9 @@
 # flutter_inapp_purchase
 
 [![Pub Version](https://img.shields.io/pub/v/flutter_inapp_purchase.svg?style=flat-square)](https://pub.dartlang.org/packages/flutter_inapp_purchase)
-[![Build Status](https://travis-ci.com/dooboolab/flutter_inapp_purchase.svg?branch=master)](https://travis-ci.com/dooboolab/flutter_inapp_purchase)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![Flutter CI](https://github.com/dooboolab/flutter_inapp_purchase/actions/workflows/ci.yml/badge.svg)](https://github.com/dooboolab/flutter_inapp_purchase/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/dooboolab/flutter_inapp_purchase/badge.svg?branch=master)](https://coveralls.io/github/dooboolab/flutter_inapp_purchase?branch=master)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ## Flutter V2
 
