@@ -1,9 +1,12 @@
 ## 5.1.0
 
-- Upgrade android billing client to `4.0.0` (#326)
+Upgrade android billing client to `4.0.0` (#326)
 
-- Remove `orderId` in `Purchase`
-  - This is duplicate of `transactionId`.
+Remove `orderId` in `Purchase`
+
+- This is duplicate of `transactionId`.
+
+Support for Amazon devices with Google Play sideloaded (#313)
 
 ## 5.0.4
 
