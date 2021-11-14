@@ -30,6 +30,16 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
     isAndroid = isPackageInstalled(context, "com.android.vending");
     isAmazon = isPackageInstalled(context, "com.amazon.venezia");
 
+    // In the case of an amazon device which has been side loaded with the Google Play store,
+    // we should use the store the app was installed from.
+    if (isAmazon && isAndroid) {
+      if (isAppInstalledFrom(context, "amazon")) {
+        isAndroid = false;
+      } else {
+        isAmazon = false;
+      }
+    }
+
     if (isAndroid) {
       androidInappPurchasePlugin = new AndroidInappPurchasePlugin();
       androidInappPurchasePlugin.setContext(context);
@@ -46,9 +56,7 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    if (isPackageInstalled(context, "com.android.vending")) {
-      tearDownChannel();
-    } else if(isPackageInstalled(context, "com.amazon.venezia")) {
+    if (isAndroid || isAmazon) {
       tearDownChannel();
     }
   }
@@ -75,19 +83,19 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
-    if (isPackageInstalled(context, "com.android.vending")) {
+    if (isAndroid) {
       androidInappPurchasePlugin.setActivity(binding.getActivity());
-    } else if(isPackageInstalled(context, "com.amazon.venezia")) {
+    } else if(isAmazon) {
       amazonInappPurchasePlugin.setActivity(binding.getActivity());
     }
   }
 
   @Override
   public void onDetachedFromActivity() {
-    if (isPackageInstalled(context, "com.android.vending")) {
+    if (isAndroid) {
       androidInappPurchasePlugin.setActivity(null);
       androidInappPurchasePlugin.onDetachedFromActivity();
-    } else if(isPackageInstalled(context, "com.amazon.venezia")) {
+    } else if(isAmazon) {
       amazonInappPurchasePlugin.setActivity(null);
     }
   }
@@ -109,6 +117,15 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
       return false;
     }
     return true;
+  }
+
+  public static final boolean isAppInstalledFrom(Context ctx, String installer) {
+    String installerPackageName = ctx.getPackageManager().getInstallerPackageName(
+            ctx.getPackageName());
+    if (installer != null && installerPackageName != null && installerPackageName.contains(installer)){
+      return true;
+    }
+    return false;
   }
 
   private void setupMethodChannel(BinaryMessenger messenger, MethodChannel.MethodCallHandler handler) {
