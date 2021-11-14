@@ -121,7 +121,6 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
   final bool autoRenewingAndroid;
   final bool isAcknowledgedAndroid;
   final int purchaseStateAndroid;
-  final String originalJsonAndroid;
 
   // iOS only
   final DateTime originalTransactionDateIOS;
