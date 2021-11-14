@@ -153,16 +153,9 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
               Product product=skuDetails.getValue();
               NumberFormat format = NumberFormat.getCurrencyInstance();
 
-              Number number;
-              try {
-                number = format.parse(product.getPrice());
-              } catch (ParseException e) {
-                result.error(TAG, "Price Parsing error", e.getMessage());
-                return;
-              }
               JSONObject item = new JSONObject();
               item.put("productId", product.getSku());
-              item.put("price", number.toString());
+              item.put("price", product.getPrice());
               item.put("currency", null);
               ProductType productType = product.getProductType();
               switch (productType) {

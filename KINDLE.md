@@ -1,6 +1,6 @@
-# Amazon Kindle Fire In-App Purchases Guide
+# Amazon Kindle Fire / Fire TV In-App Purchases Guide
 
-The plugin will automatically detect Amazon Kindle devices during runtime.
+The plugin will automatically detect Amazon devices during runtime.
 
 ## Testing In-App Purchases
 
@@ -20,10 +20,36 @@ Put this file into the kindle sdcard with :
     
 You can verify if the file is valid in the AAT and view the purchases.
 
+Add android.permission.INTERNET and com.amazon.device.iap.ResponseReceiver to your AndroidManifest like in the example https://github.com/dooboolab/flutter_inapp_purchase/blob/master/example/android/app/src/main/AndroidManifest.xml.
+
 Now, when you make a purchase the AAT will intercept, show the purchases screen and allow you to make a purchase. Your app will think a real purchase has been made and you can test the full purchase flow.
 
 ## Testing Live Purchases
 Add your apk into the "Live App Testing" tab. Add your IAP into the "In-App Items" tab. You must fill in your bank details first and submit your IAP so that the status is "live".
+
+Also with Gradle 3.4.0 or higher you need to take care of the obfuscating. To do so, create a Proguard file named "proguard-rules.pro" in the android/app folder. Into that file put the following content:
+
+-dontwarn com.amazon.** <br>
+-keep class com.amazon.** {*;} <br>
+-keepattributes *Annotation* <br>
+
+Then edit your build.gradle in app level like:
+
+build.gradle:
+
+    buildTypes {  
+        release {
+            shrinkResources false
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    
+
+If you need more help, check out https://stackoverflow.com/questions/62833628/how-to-disable-code-obfuscation-in-flutter-release-apk and the amazon part https://developer.amazon.com/de/docs/in-app-purchasing/iap-obfuscate-the-code.html.
+
 Now your testers will be sent a link to the test version of your app. They can make purchases at no cost to test your app.
 
 ## Submitting to the Amazon store
