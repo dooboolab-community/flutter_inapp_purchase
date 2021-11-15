@@ -39,7 +39,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 public class AmazonInappPurchasePlugin implements MethodCallHandler {
 
   private final String TAG = "InappPurchasePlugin";
-  private Result result = null;
+  private MethodResultWrapper safeResult = null;
   private MethodChannel channel;
   private Context context;
   private Activity activity;
@@ -58,27 +58,28 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
-    this.result=result;
+    safeResult = new MethodResultWrapper(result, channel);
+    
     try {
       PurchasingService.registerListener(context, purchasesUpdatedListener);
 
     } catch (Exception e) {
-      result.error(call.method, "Call endConnection method if you want to start over.", e.getMessage());
+      safeResult.error(call.method, "Call endConnection method if you want to start over.", e.getMessage());
     }
     if (call.method.equals("getPlatformVersion")) {
       try {
-        result.success("Android " + android.os.Build.VERSION.RELEASE);
+        safeResult.success("Android " + android.os.Build.VERSION.RELEASE);
       } catch(IllegalStateException e){
         e.printStackTrace();
       }
     } else if (call.method.equals("initConnection")) {
       PurchasingService.getUserData();
-      result.success("Billing client ready");
+      safeResult.success("Billing client ready");
     } else if (call.method.equals("endConnection")) {
-      result.success("Billing client has ended.");
+      safeResult.success("Billing client has ended.");
     } else if (call.method.equals("consumeAllItems")) {
       // consumable is a separate type in amazon
-      result.success("no-ops in amazon");
+      safeResult.success("no-ops in amazon");
     } else if (call.method.equals("getItemsByType")) {
       Log.d(TAG, "getItemsByType");
       String type = call.argument("type");
@@ -99,13 +100,13 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
           PurchasingService.getPurchaseUpdates(true);
       } else if(type.equals("subs")) {
         // Subscriptions are retrieved during inapp, so we just return empty list
-        result.success("[]");
+        safeResult.success("[]");
       } else {
-        result.notImplemented();
+        safeResult.notImplemented();
       }
     } else if (call.method.equals("getPurchaseHistoryByType")) {
       // No equivalent
-      result.success("[]");
+      safeResult.success("[]");
     } else if (call.method.equals("buyItemByType")) {
       final String type = call.argument("type");
       final String obfuscatedAccountId = call.argument("obfuscatedAccountId");
@@ -118,9 +119,9 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
       Log.d(TAG, "resid="+requestId.toString());
     } else if (call.method.equals("consumeProduct")) {
       // consumable is a separate type in amazon
-      result.success("no-ops in amazon");
+      safeResult.success("no-ops in amazon");
     } else {
-      result.notImplemented();
+      safeResult.notImplemented();
     }
   }
 
@@ -179,16 +180,16 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
               items.put(item);
             }
             //System.err.println("Sending "+items.toString());
-            result.success(items.toString());
+            safeResult.success(items.toString());
           } catch (JSONException e) {
-            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
+            safeResult.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
           }
           break;
         case FAILED:
-          result.error(TAG,"FAILED",null);
+          safeResult.error(TAG,"FAILED",null);
         case NOT_SUPPORTED:
           Log.d(TAG, "onProductDataResponse: failed, should retry request");
-          result.error(TAG,"NOT_SUPPORTED",null);
+          safeResult.error(TAG,"NOT_SUPPORTED",null);
           break;
       }
     }
@@ -210,14 +211,14 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
                   receipt.getReceiptId(),
                   transactionDate.doubleValue());
             Log.d(TAG, "opr Putting "+item.toString());
-            result.success(item.toString());
-            channel.invokeMethod("purchase-updated", item.toString());
+            safeResult.success(item.toString());
+            safeResult.invokeMethod("purchase-updated", item.toString());
           } catch (JSONException e) {
-            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
+            safeResult.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
           }
           break;
         case FAILED:
-          result.error(TAG, "buyItemByType", "billingResponse is not ok: " + status);
+          safeResult.error(TAG, "buyItemByType", "billingResponse is not ok: " + status);
           break;
       }
     }
@@ -244,17 +245,17 @@ public class AmazonInappPurchasePlugin implements MethodCallHandler {
               Log.d(TAG, "opudr Putting "+item.toString());
               items.put(item);
             }
-            result.success(items.toString());
+            safeResult.success(items.toString());
           } catch (JSONException e) {
-            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
+            safeResult.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", e.getMessage());
           }
           break;
         case FAILED:
-          result.error(TAG,"FAILED",null);
+          safeResult.error(TAG,"FAILED",null);
           break;
         case NOT_SUPPORTED:
           Log.d(TAG, "onPurchaseUpdatesResponse: failed, should retry request");
-          result.error(TAG,"NOT_SUPPORTED",null);
+          safeResult.error(TAG,"NOT_SUPPORTED",null);
           break;
       }
     }

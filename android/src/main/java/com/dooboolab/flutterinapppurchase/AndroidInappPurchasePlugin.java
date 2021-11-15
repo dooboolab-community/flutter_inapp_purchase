@@ -40,9 +40,10 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
 /** AndroidInappPurchasePlugin */
-public class AndroidInappPurchasePlugin implements MethodCallHandler,  Application.ActivityLifecycleCallbacks {
+public class AndroidInappPurchasePlugin implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
   static private ArrayList<SkuDetails> skus;
   private final String TAG = "InappPurchasePlugin";
+  private MethodResultWrapper safeResult = null;
   private BillingClient billingClient;
   private Context context;
   private Activity activity;
@@ -108,11 +109,14 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
 
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
+    safeResult = new MethodResultWrapper(result, channel);
+
     if (call.method.equals("getPlatformVersion")) {
       try {
-        result.success("Android " + android.os.Build.VERSION.RELEASE);
-      } catch(IllegalStateException e){
-        result.error(call.method, e.getMessage(), e.getLocalizedMessage());
+        safeResult.success("Android " + android.os.Build.VERSION.RELEASE);
+      }
+      catch (IllegalStateException e) {
+        safeResult.error(call.method, e.getMessage(), e.getLocalizedMessage());
       }
     }
 
@@ -121,13 +125,13 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
      */
     else if (call.method.equals("initConnection")) {
       if (billingClient != null) {
-        result.success("Already started. Call endConnection method if you want to start over.");
+        safeResult.success("Already started. Call endConnection method if you want to start over.");
         return;
       }
 
       billingClient = BillingClient.newBuilder(context).setListener(purchasesUpdatedListener)
-              .enablePendingPurchases()
-              .build();
+        .enablePendingPurchases()
+        .build();
       billingClient.startConnection(new BillingClientStateListener() {
         private boolean alreadyFinished = false;
 
@@ -139,19 +143,21 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
             if (responseCode == BillingClient.BillingResponseCode.OK) {
               JSONObject item = new JSONObject();
               item.put("connected", true);
-              channel.invokeMethod("connection-updated", item.toString());
+              safeResult.invokeMethod("connection-updated", item.toString());
               if (alreadyFinished) return;
               alreadyFinished = true;
-              result.success("Billing client ready");
-            } else {
+              safeResult.success("Billing client ready");
+            }
+            else {
               JSONObject item = new JSONObject();
               item.put("connected", false);
-              channel.invokeMethod("connection-updated", item.toString());
+              safeResult.invokeMethod("connection-updated", item.toString());
               if (alreadyFinished) return;
               alreadyFinished = true;
-              result.error(call.method, "responseCode: " + responseCode, "");
+              safeResult.error(call.method, "responseCode: " + responseCode, "");
             }
-          } catch (JSONException je) {
+          }
+          catch (JSONException je) {
             je.printStackTrace();
           }
 
@@ -162,8 +168,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
           try {
             JSONObject item = new JSONObject();
             item.put("connected", false);
-            channel.invokeMethod("connection-updated", item.toString());
-          } catch (JSONException je) {
+            safeResult.invokeMethod("connection-updated", item.toString());
+          }
+          catch (JSONException je) {
             je.printStackTrace();
           }
         }
@@ -178,9 +185,10 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
         try {
           billingClient.endConnection();
           billingClient = null;
-          result.success("Billing client has ended.");
-        } catch (Exception e) {
-          result.error(call.method, e.getMessage(), "");
+          safeResult.success("Billing client has ended.");
+        }
+        catch (Exception e) {
+          safeResult.error(call.method, e.getMessage(), "");
         }
       }
     }
@@ -193,19 +201,19 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
         final ArrayList<String> array = new ArrayList<>();
         Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(BillingClient.SkuType.INAPP);
         if (purchasesResult == null) {
-          result.error(call.method,"refreshItem", "No results for query");
+          safeResult.error(call.method, "refreshItem", "No results for query");
           return;
         }
         final List<Purchase> purchases = purchasesResult.getPurchasesList();
         if (purchases == null || purchases.size() == 0) {
-          result.error(call.method, "refreshItem", "No purchases found");
+          safeResult.error(call.method, "refreshItem", "No purchases found");
           return;
         }
 
         for (Purchase purchase : purchases) {
           final ConsumeParams consumeParams = ConsumeParams.newBuilder()
-              .setPurchaseToken(purchase.getPurchaseToken())
-              .build();
+            .setPurchaseToken(purchase.getPurchaseToken())
+            .build();
 
           final ConsumeResponseListener listener = new ConsumeResponseListener() {
             @Override
@@ -213,8 +221,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
               array.add(outToken);
               if (purchases.size() == array.size()) {
                 try {
-                  result.success(array.toString());
-                } catch (FlutterException e) {
+                  safeResult.success(array.toString());
+                }
+                catch (FlutterException e) {
                   Log.e(TAG, e.getMessage());
                 }
               }
@@ -222,8 +231,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
           };
           billingClient.consumeAsync(consumeParams, listener);
         }
-      } catch (Error err) {
-        result.error(call.method, err.getMessage(), "");
+      }
+      catch (Error err) {
+        safeResult.error(call.method, err.getMessage(), "");
       }
     }
 
@@ -233,7 +243,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
      */
     else if (call.method.equals("getItemsByType")) {
       if (billingClient == null || !billingClient.isReady()) {
-        result.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+        safeResult.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
         return;
       }
 
@@ -256,7 +266,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
           int responseCode = billingResult.getResponseCode();
           if (responseCode != BillingClient.BillingResponseCode.OK) {
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            result.error(call.method, errorData[0], errorData[1]);
+            safeResult.error(call.method, errorData[0], errorData[1]);
             return;
           }
 
@@ -288,11 +298,13 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
               item.put("originalPrice", skuDetails.getOriginalPriceAmountMicros() / 1000000f);
               items.put(item);
             }
-            result.success(items.toString());
-          } catch (JSONException je) {
+            safeResult.success(items.toString());
+          }
+          catch (JSONException je) {
             je.printStackTrace();
-          } catch (FlutterException fe) {
-            result.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
+          }
+          catch (FlutterException fe) {
+            safeResult.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
           }
         }
       });
@@ -304,7 +316,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
      */
     else if (call.method.equals("getAvailableItemsByType")) {
       if (billingClient == null || !billingClient.isReady()) {
-        result.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+        safeResult.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
         return;
       }
 
@@ -327,17 +339,20 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
 
             if (type.equals(BillingClient.SkuType.INAPP)) {
               item.put("isAcknowledgedAndroid", purchase.isAcknowledged());
-            } else if (type.equals(BillingClient.SkuType.SUBS)) {
+            }
+            else if (type.equals(BillingClient.SkuType.SUBS)) {
               item.put("autoRenewingAndroid", purchase.isAutoRenewing());
             }
             items.put(item);
           }
-          result.success(items.toString());
+          safeResult.success(items.toString());
         }
-      } catch (JSONException je) {
-        result.error(call.method, je.getMessage(), je.getLocalizedMessage());
-      } catch (FlutterException fe) {
-        result.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
+      }
+      catch (JSONException je) {
+        safeResult.error(call.method, je.getMessage(), je.getLocalizedMessage());
+      }
+      catch (FlutterException fe) {
+        safeResult.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
       }
     }
 
@@ -353,7 +368,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
         public void onPurchaseHistoryResponse(BillingResult billingResult, List<PurchaseHistoryRecord> purchaseHistoryRecordList) {
           if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            result.error(call.method, errorData[0], errorData[1]);
+            safeResult.error(call.method, errorData[0], errorData[1]);
             return;
           }
 
@@ -370,8 +385,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
               item.put("signatureAndroid", purchase.getSignature());
               items.put(item);
             }
-            result.success(items.toString());
-          } catch (JSONException je) {
+            safeResult.success(items.toString());
+          }
+          catch (JSONException je) {
             je.printStackTrace();
           }
         }
@@ -384,7 +400,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
      */
     else if (call.method.equals("buyItemByType")) {
       if (billingClient == null || !billingClient.isReady()) {
-        result.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+        safeResult.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
         return;
       }
 
@@ -408,13 +424,13 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
 
       if (selectedSku == null) {
         String debugMessage = "The sku was not found. Please fetch setObfuscatedAccountIdproducts first by calling getItems";
-        result.error(TAG, "buyItemByType", debugMessage);
+        safeResult.error(TAG, "buyItemByType", debugMessage);
         return;
       }
       builder.setSkuDetails(selectedSku);
 
       BillingFlowParams.SubscriptionUpdateParams.Builder subscriptionUpdateParamsBuilder =
-              BillingFlowParams.SubscriptionUpdateParams.newBuilder();
+        BillingFlowParams.SubscriptionUpdateParams.newBuilder();
 
       if (purchaseToken != null) {
         subscriptionUpdateParamsBuilder.setOldSkuPurchaseToken(purchaseToken);
@@ -430,40 +446,45 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
 
       if (prorationMode != -1) {
         if (prorationMode
-                == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE) {
+          == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE) {
           subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-                  BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE);
+            BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE);
           if (!type.equals(BillingClient.SkuType.SUBS)) {
             String debugMessage =
-                    "IMMEDIATE_AND_CHARGE_PRORATED_PRICE for proration mode only works in"
-                            + " subscription purchase.";
-            result.error(TAG, "buyItemByType", debugMessage);
+              "IMMEDIATE_AND_CHARGE_PRORATED_PRICE for proration mode only works in"
+                + " subscription purchase.";
+            safeResult.error(TAG, "buyItemByType", debugMessage);
             return;
           }
-        } else if (prorationMode
-                == BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION) {
+        }
+        else if (prorationMode
+          == BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION) {
           subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-                  BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
-        } else if (prorationMode == BillingFlowParams.ProrationMode.DEFERRED) {
+            BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
+        }
+        else if (prorationMode == BillingFlowParams.ProrationMode.DEFERRED) {
           subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-                  BillingFlowParams.ProrationMode.DEFERRED);
-        } else if (prorationMode
-                == BillingFlowParams.ProrationMode.IMMEDIATE_WITH_TIME_PRORATION) {
+            BillingFlowParams.ProrationMode.DEFERRED);
+        }
+        else if (prorationMode
+          == BillingFlowParams.ProrationMode.IMMEDIATE_WITH_TIME_PRORATION) {
           subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-                  BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
-        } else if (prorationMode
-                == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE) {
+            BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
+        }
+        else if (prorationMode
+          == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE) {
           subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-                  BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE);
-        } else {
+            BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE);
+        }
+        else {
           subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-                  BillingFlowParams.ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY);
+            BillingFlowParams.ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY);
         }
       }
 
       if (purchaseToken != null) {
         BillingFlowParams.SubscriptionUpdateParams subscriptionUpdateParams =
-                subscriptionUpdateParamsBuilder.build();
+          subscriptionUpdateParamsBuilder.build();
 
         builder.setSubscriptionUpdateParams(subscriptionUpdateParams);
       }
@@ -484,22 +505,22 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
       final String token = call.argument("token");
 
       if (billingClient == null || !billingClient.isReady()) {
-        result.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+        safeResult.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
         return;
       }
 
       AcknowledgePurchaseParams acknowledgePurchaseParams =
-          AcknowledgePurchaseParams.newBuilder()
-              .setPurchaseToken(token)
-              .build();
+        AcknowledgePurchaseParams.newBuilder()
+          .setPurchaseToken(token)
+          .build();
       billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
         @Override
         public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
-        if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-          String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-          result.error(call.method, errorData[0], errorData[1]);
-          return;
-        }
+          if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
+            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+            safeResult.error(call.method, errorData[0], errorData[1]);
+            return;
+          }
           try {
             JSONObject item = new JSONObject();
             item.put("responseCode", billingResult.getResponseCode());
@@ -507,8 +528,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
             item.put("code", errorData[0]);
             item.put("message", errorData[1]);
-            result.success(item.toString());
-          } catch (JSONException je) {
+            safeResult.success(item.toString());
+          }
+          catch (JSONException je) {
             je.printStackTrace();
           }
         }
@@ -521,21 +543,21 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
      */
     else if (call.method.equals("consumeProduct")) {
       if (billingClient == null || !billingClient.isReady()) {
-        result.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+        safeResult.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
         return;
       }
 
       final String token = call.argument("token");
 
       final ConsumeParams params = ConsumeParams.newBuilder()
-          .setPurchaseToken(token)
-          .build();
+        .setPurchaseToken(token)
+        .build();
       billingClient.consumeAsync(params, new ConsumeResponseListener() {
         @Override
         public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
           if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            result.error(call.method, errorData[0], errorData[1]);
+            safeResult.error(call.method, errorData[0], errorData[1]);
             return;
           }
 
@@ -546,9 +568,10 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
             String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
             item.put("code", errorData[0]);
             item.put("message", errorData[1]);
-            result.success(item.toString());
-          } catch (JSONException je) {
-            result.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
+            safeResult.success(item.toString());
+          }
+          catch (JSONException je) {
+            safeResult.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
           }
         }
       });
@@ -558,7 +581,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
      * else
      */
     else {
-      result.notImplemented();
+      safeResult.notImplemented();
     }
   }
 
@@ -574,7 +597,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
           String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
           json.put("code", errorData[0]);
           json.put("message", errorData[1]);
-          channel.invokeMethod("purchase-error", json.toString());
+          safeResult.invokeMethod("purchase-error", json.toString());
           return;
         }
 
@@ -600,19 +623,21 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
               item.put("obfuscatedProfileIdAndroid", accountIdentifiers.getObfuscatedProfileId());
             }
 
-            channel.invokeMethod("purchase-updated", item.toString());
+            safeResult.invokeMethod("purchase-updated", item.toString());
           }
-        } else {
+        }
+        else {
           JSONObject json = new JSONObject();
           json.put("responseCode", billingResult.getResponseCode());
           json.put("debugMessage", billingResult.getDebugMessage());
           String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
           json.put("code", errorData[0]);
           json.put("message", "purchases returns null.");
-          channel.invokeMethod("purchase-error", json.toString());
+          safeResult.invokeMethod("purchase-error", json.toString());
         }
-      } catch (JSONException je) {
-        channel.invokeMethod("purchase-error", je.getMessage());
+      }
+      catch (JSONException je) {
+        safeResult.invokeMethod("purchase-error", je.getMessage());
       }
     }
   };
@@ -622,7 +647,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler,  Applicati
       try {
         billingClient.endConnection();
         billingClient = null;
-      } catch (Exception ignored) {}
+      }
+      catch (Exception ignored) {
+      }
     }
   }
 }
