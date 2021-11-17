@@ -1,3 +1,17 @@
+## 5.1.1
+
+Run on UiThread and few others (#328)
+
+- Related #272
+
+- The main difference is a new MethodResultWrapper class that wraps both the result and the channel. onMethodCall() now immediately saves this wrapped result-channel to a field and only uses that later to set both the result and to send back info on the channel. I did this in both Google and Amazon but I can't test the Amazon one.
+
+- Included the plugin registration differences.
+
+- Midified suggested in one of the issues that initConnection, endConnection and consumeAllItems shouldn't be accessors. This is very much so, property accessors are not supposed to do work and have side effects, just return a value. Now three new functions are suggested and marked the old ones deprecated.
+
+Fourth, EnumUtil.getValueString() is not really necessary, we have describeEnum() in the Flutter engine just for this purpose.
+
 ## 5.1.0
 
 Upgrade android billing client to `4.0.0` (#326)
