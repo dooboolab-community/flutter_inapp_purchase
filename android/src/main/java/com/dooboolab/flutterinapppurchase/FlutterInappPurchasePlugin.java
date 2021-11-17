@@ -15,7 +15,6 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** FlutterInappPurchasePlugin */
 public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware {
-
   private AndroidInappPurchasePlugin androidInappPurchasePlugin;
   private AmazonInappPurchasePlugin amazonInappPurchasePlugin;
   private Context context;
@@ -26,7 +25,10 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    context = binding.getApplicationContext();
+    onAttached(binding.getApplicationContext(), binding.getBinaryMessenger());
+  }
+
+  private void onAttached(Context context, BinaryMessenger messenger) {
     isAndroid = isPackageInstalled(context, "com.android.vending");
     isAmazon = isPackageInstalled(context, "com.amazon.venezia");
 
@@ -40,52 +42,43 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
       }
     }
 
+    channel = new MethodChannel(messenger, "flutter_inapp");
+
     if (isAndroid) {
       androidInappPurchasePlugin = new AndroidInappPurchasePlugin();
       androidInappPurchasePlugin.setContext(context);
-
-      setupMethodChannel(binding.getBinaryMessenger(), androidInappPurchasePlugin);
-
-    } else if(isAmazon) {
+      androidInappPurchasePlugin.setChannel(channel);
+      channel.setMethodCallHandler(androidInappPurchasePlugin);
+    } else if (isAmazon) {
       amazonInappPurchasePlugin = new AmazonInappPurchasePlugin();
       amazonInappPurchasePlugin.setContext(context);
-
-      setupMethodChannel(binding.getBinaryMessenger(), amazonInappPurchasePlugin);
+      amazonInappPurchasePlugin.setChannel(channel);
+      channel.setMethodCallHandler(amazonInappPurchasePlugin);
     }
   }
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    if (isAndroid || isAmazon) {
-      tearDownChannel();
+    channel.setMethodCallHandler(null);
+    channel = null;
+
+    if (isAndroid) {
+      androidInappPurchasePlugin.setChannel(null);
+    } else if (isAmazon) {
+      amazonInappPurchasePlugin.setChannel(null);
     }
   }
 
-  /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    FlutterInappPurchasePlugin plugin = new FlutterInappPurchasePlugin();
-    if(isAndroid) {
-      AndroidInappPurchasePlugin androidInappPurchasePlugin = new AndroidInappPurchasePlugin();
-      androidInappPurchasePlugin.setContext(registrar.context());
-      androidInappPurchasePlugin.setActivity(registrar.activity());
-
-      plugin.setupMethodChannel(registrar.messenger(), androidInappPurchasePlugin);
-      plugin.setAndroidInappPurchasePlugin(androidInappPurchasePlugin);
-    } else if(isAmazon) {
-      AmazonInappPurchasePlugin amazonInappPurchasePlugin = new AmazonInappPurchasePlugin();
-      amazonInappPurchasePlugin.setContext(registrar.context());
-      amazonInappPurchasePlugin.setActivity(registrar.activity());
-
-      plugin.setupMethodChannel(registrar.messenger(), amazonInappPurchasePlugin);
-      plugin.setAmazonInappPurchasePlugin(amazonInappPurchasePlugin);
-    }
+    FlutterInappPurchasePlugin instance = new FlutterInappPurchasePlugin();
+    instance.onAttached(registrar.context(), registrar.messenger());
   }
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
     if (isAndroid) {
       androidInappPurchasePlugin.setActivity(binding.getActivity());
-    } else if(isAmazon) {
+    } else if (isAmazon) {
       amazonInappPurchasePlugin.setActivity(binding.getActivity());
     }
   }
@@ -95,7 +88,7 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
     if (isAndroid) {
       androidInappPurchasePlugin.setActivity(null);
       androidInappPurchasePlugin.onDetachedFromActivity();
-    } else if(isAmazon) {
+    } else if (isAmazon) {
       amazonInappPurchasePlugin.setActivity(null);
     }
   }
@@ -113,39 +106,15 @@ public class FlutterInappPurchasePlugin implements FlutterPlugin, ActivityAware 
   private static boolean isPackageInstalled(Context ctx, String packageName) {
     try {
       ctx.getPackageManager().getPackageInfo(packageName, 0);
+      return true;
     } catch (PackageManager.NameNotFoundException e) {
       return false;
     }
-    return true;
   }
 
   public static final boolean isAppInstalledFrom(Context ctx, String installer) {
-    String installerPackageName = ctx.getPackageManager().getInstallerPackageName(
-            ctx.getPackageName());
-    if (installer != null && installerPackageName != null && installerPackageName.contains(installer)){
-      return true;
-    }
-    return false;
-  }
-
-  private void setupMethodChannel(BinaryMessenger messenger, MethodChannel.MethodCallHandler handler) {
-    channel = new MethodChannel(messenger, "flutter_inapp");
-    channel.setMethodCallHandler(handler);
-    setChannelByPlatform(channel);
-  }
-
-  private void tearDownChannel() {
-    channel.setMethodCallHandler(null);
-    channel = null;
-    setChannelByPlatform(null);
-  }
-
-  private void setChannelByPlatform(MethodChannel channel) {
-    if(isAndroid) {
-      androidInappPurchasePlugin.setChannel(channel);
-    } else if (isAmazon) {
-      amazonInappPurchasePlugin.setChannel(channel);
-    }
+    String installerPackageName = ctx.getPackageManager().getInstallerPackageName(ctx.getPackageName());
+    return (installer != null && installerPackageName != null && installerPackageName.contains(installer));
   }
 
   private void setAndroidInappPurchasePlugin(AndroidInappPurchasePlugin androidInappPurchasePlugin) {
