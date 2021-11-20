@@ -489,11 +489,9 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
         builder.setSubscriptionUpdateParams(subscriptionUpdateParams);
       }
 
-      BillingFlowParams flowParams = builder.build();
-      BillingResult billingResult = billingClient.launchBillingFlow(activity, flowParams);
-
       if (activity != null) {
-        billingClient.launchBillingFlow(activity, flowParams);
+        BillingFlowParams flowParams = builder.build();
+        BillingResult billingResult = billingClient.launchBillingFlow(activity, flowParams);
       }
     }
 
