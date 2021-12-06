@@ -20,20 +20,44 @@ public class MethodResultWrapper implements Result {
 
   @Override
   public void success(final Object result) {
-    safeResult.success(result);
+    handler.post(
+      new Runnable() {
+        @Override
+        public void run() {
+          safeResult.success(result);
+        }
+      });
   }
 
   @Override
   public void error(final String errorCode, final String errorMessage, final Object errorDetails) {
-    safeResult.error(errorCode, errorMessage, errorDetails);
+    handler.post(
+      new Runnable() {
+        @Override
+        public void run() {
+          safeResult.error(errorCode, errorMessage, errorDetails);
+        }
+      });
   }
 
   @Override
   public void notImplemented() {
-    safeResult.notImplemented();
+    handler.post(
+      new Runnable() {
+        @Override
+        public void run() {
+          safeResult.notImplemented();
+        }
+      });
   }
 
   public void invokeMethod(final String method, final Object arguments) {
-    safeChannel.invokeMethod(method, arguments, null);
+    handler.post(
+      new Runnable() {
+        @Override
+        public void run() {
+          safeChannel.invokeMethod(method, arguments, null);
+        }
+      });
   }
 }
