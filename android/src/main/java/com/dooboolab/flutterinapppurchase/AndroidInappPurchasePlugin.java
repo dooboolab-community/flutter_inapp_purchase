@@ -44,6 +44,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
   static private ArrayList<SkuDetails> skus;
   private final String TAG = "InappPurchasePlugin";
   private MethodResultWrapper safeResult = null;
+  private MethodResultWrapper safeChannel = null;
   private BillingClient billingClient;
   private Context context;
   private Activity activity;
