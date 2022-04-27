@@ -110,8 +110,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
 
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
-    final MethodResultWrapper safeResult = new MethodResultWrapper(result, channel);
-    safeChannel = safeResult;
+    safeResult = new MethodResultWrapper(result, channel);
+    safeChannel = new MethodResultWrapper(result, channel);
 
     if (call.method.equals("getPlatformVersion")) {
       try {
