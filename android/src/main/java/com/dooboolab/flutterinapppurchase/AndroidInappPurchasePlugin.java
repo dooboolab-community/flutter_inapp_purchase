@@ -112,476 +112,481 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
   public void onMethodCall(final MethodCall call, final Result result) {
     safeResult = new MethodResultWrapper(result, channel);
     safeChannel = new MethodResultWrapper(result, channel);
+    
+    try{
 
-    if (call.method.equals("getPlatformVersion")) {
-      try {
-        safeChannel.success("Android " + android.os.Build.VERSION.RELEASE);
-      }
-      catch (IllegalStateException e) {
-        safeChannel.error(call.method, e.getMessage(), e.getLocalizedMessage());
-      }
-    }
-
-    /*
-     * initConnection
-     */
-    else if (call.method.equals("initConnection")) {
-      if (billingClient != null) {
-        safeChannel.success("Already started. Call endConnection method if you want to start over.");
-        return;
+      if (call.method.equals("getPlatformVersion")) {
+        try {
+          safeChannel.success("Android " + android.os.Build.VERSION.RELEASE);
+        }
+        catch (IllegalStateException e) {
+          safeChannel.error(call.method, e.getMessage(), e.getLocalizedMessage());
+        }
       }
 
-      billingClient = BillingClient.newBuilder(context).setListener(purchasesUpdatedListener)
-        .enablePendingPurchases()
-        .build();
-      billingClient.startConnection(new BillingClientStateListener() {
-        private boolean alreadyFinished = false;
+      /*
+       * initConnection
+       */
+      else if (call.method.equals("initConnection")) {
+        if (billingClient != null) {
+          safeChannel.success("Already started. Call endConnection method if you want to start over.");
+          return;
+        }
 
-        @Override
-        public void onBillingSetupFinished(BillingResult billingResult) {
-          try {
-            int responseCode = billingResult.getResponseCode();
+        billingClient = BillingClient.newBuilder(context).setListener(purchasesUpdatedListener)
+                .enablePendingPurchases()
+                .build();
+        billingClient.startConnection(new BillingClientStateListener() {
+          private boolean alreadyFinished = false;
 
-            if (responseCode == BillingClient.BillingResponseCode.OK) {
-              JSONObject item = new JSONObject();
-              item.put("connected", true);
-              safeChannel.invokeMethod("connection-updated", item.toString());
-              if (alreadyFinished) return;
-              alreadyFinished = true;
-              safeChannel.success("Billing client ready");
+          @Override
+          public void onBillingSetupFinished(BillingResult billingResult) {
+            try {
+              int responseCode = billingResult.getResponseCode();
+
+              if (responseCode == BillingClient.BillingResponseCode.OK) {
+                JSONObject item = new JSONObject();
+                item.put("connected", true);
+                safeChannel.invokeMethod("connection-updated", item.toString());
+                if (alreadyFinished) return;
+                alreadyFinished = true;
+                safeChannel.success("Billing client ready");
+              }
+              else {
+                JSONObject item = new JSONObject();
+                item.put("connected", false);
+                safeChannel.invokeMethod("connection-updated", item.toString());
+                if (alreadyFinished) return;
+                alreadyFinished = true;
+                safeChannel.error(call.method, "responseCode: " + responseCode, "");
+              }
             }
-            else {
+            catch (JSONException je) {
+              je.printStackTrace();
+            }
+
+          }
+
+          @Override
+          public void onBillingServiceDisconnected() {
+            try {
               JSONObject item = new JSONObject();
               item.put("connected", false);
               safeChannel.invokeMethod("connection-updated", item.toString());
-              if (alreadyFinished) return;
-              alreadyFinished = true;
-              safeChannel.error(call.method, "responseCode: " + responseCode, "");
+            }
+            catch (JSONException je) {
+              je.printStackTrace();
             }
           }
-          catch (JSONException je) {
-            je.printStackTrace();
-          }
+        });
+      }
 
-        }
-
-        @Override
-        public void onBillingServiceDisconnected() {
+      /*
+       * endConnection
+       */
+      else if (call.method.equals("endConnection")) {
+        if (billingClient != null) {
           try {
-            JSONObject item = new JSONObject();
-            item.put("connected", false);
-            safeChannel.invokeMethod("connection-updated", item.toString());
+            billingClient.endConnection();
+            billingClient = null;
+            safeChannel.success("Billing client has ended.");
           }
-          catch (JSONException je) {
-            je.printStackTrace();
+          catch (Exception e) {
+            safeChannel.error(call.method, e.getMessage(), "");
           }
-        }
-      });
-    }
-
-    /*
-     * endConnection
-     */
-    else if (call.method.equals("endConnection")) {
-      if (billingClient != null) {
-        try {
-          billingClient.endConnection();
-          billingClient = null;
-          safeChannel.success("Billing client has ended.");
-        }
-        catch (Exception e) {
-          safeChannel.error(call.method, e.getMessage(), "");
         }
       }
-    }
 
-    /*
-     * consumeAllItems
-     */
-    else if (call.method.equals("consumeAllItems")) {
-      try {
-        final ArrayList<String> array = new ArrayList<>();
-        Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(BillingClient.SkuType.INAPP);
-        if (purchasesResult == null) {
-          safeChannel.error(call.method, "refreshItem", "No results for query");
-          return;
-        }
-        final List<Purchase> purchases = purchasesResult.getPurchasesList();
-        if (purchases == null || purchases.size() == 0) {
-          safeChannel.error(call.method, "refreshItem", "No purchases found");
-          return;
-        }
+      /*
+       * consumeAllItems
+       */
+      else if (call.method.equals("consumeAllItems")) {
+        try {
+          final ArrayList<String> array = new ArrayList<>();
+          Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(BillingClient.SkuType.INAPP);
+          if (purchasesResult == null) {
+            safeChannel.error(call.method, "refreshItem", "No results for query");
+            return;
+          }
+          final List<Purchase> purchases = purchasesResult.getPurchasesList();
+          if (purchases == null || purchases.size() == 0) {
+            safeChannel.error(call.method, "refreshItem", "No purchases found");
+            return;
+          }
 
-        for (Purchase purchase : purchases) {
-          final ConsumeParams consumeParams = ConsumeParams.newBuilder()
-            .setPurchaseToken(purchase.getPurchaseToken())
-            .build();
+          for (Purchase purchase : purchases) {
+            final ConsumeParams consumeParams = ConsumeParams.newBuilder()
+                    .setPurchaseToken(purchase.getPurchaseToken())
+                    .build();
 
-          final ConsumeResponseListener listener = new ConsumeResponseListener() {
-            @Override
-            public void onConsumeResponse(BillingResult billingResult, String outToken) {
-              array.add(outToken);
-              if (purchases.size() == array.size()) {
-                try {
-                  safeChannel.success(array.toString());
-                }
-                catch (FlutterException e) {
-                  Log.e(TAG, e.getMessage());
+            final ConsumeResponseListener listener = new ConsumeResponseListener() {
+              @Override
+              public void onConsumeResponse(BillingResult billingResult, String outToken) {
+                array.add(outToken);
+                if (purchases.size() == array.size()) {
+                  try {
+                    safeChannel.success(array.toString());
+                  }
+                  catch (FlutterException e) {
+                    Log.e(TAG, e.getMessage());
+                  }
                 }
               }
-            }
-          };
-          billingClient.consumeAsync(consumeParams, listener);
-        }
-      }
-      catch (Error err) {
-        safeChannel.error(call.method, err.getMessage(), "");
-      }
-    }
-
-    /*
-     * getItemsByType
-     * arguments: type, skus
-     */
-    else if (call.method.equals("getItemsByType")) {
-      if (billingClient == null || !billingClient.isReady()) {
-        safeChannel.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
-        return;
-      }
-
-      String type = call.argument("type");
-      final ArrayList<String> skuArr = call.argument("skus");
-
-
-      ArrayList<String> skuList = new ArrayList<>();
-
-      for (int i = 0; i < skuArr.size(); i++) {
-        skuList.add(skuArr.get(i));
-      }
-
-      SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-      params.setSkusList(skuList).setType(type);
-
-      billingClient.querySkuDetailsAsync(params.build(), new SkuDetailsResponseListener() {
-        @Override
-        public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
-          int responseCode = billingResult.getResponseCode();
-          if (responseCode != BillingClient.BillingResponseCode.OK) {
-            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            safeChannel.error(call.method, errorData[0], errorData[1]);
-            return;
-          }
-
-          for (SkuDetails sku : skuDetailsList) {
-            if (!skus.contains(sku)) {
-              skus.add(sku);
-            }
-          }
-
-          try {
-            JSONArray items = new JSONArray();
-            for (SkuDetails skuDetails : skuDetailsList) {
-              JSONObject item = new JSONObject();
-              item.put("productId", skuDetails.getSku());
-              item.put("price", String.valueOf(skuDetails.getPriceAmountMicros() / 1000000f));
-              item.put("currency", skuDetails.getPriceCurrencyCode());
-              item.put("type", skuDetails.getType());
-              item.put("localizedPrice", skuDetails.getPrice());
-              item.put("title", skuDetails.getTitle());
-              item.put("description", skuDetails.getDescription());
-              item.put("introductoryPrice", skuDetails.getIntroductoryPrice());
-              item.put("subscriptionPeriodAndroid", skuDetails.getSubscriptionPeriod());
-              item.put("freeTrialPeriodAndroid", skuDetails.getFreeTrialPeriod());
-              item.put("introductoryPriceCyclesAndroid", skuDetails.getIntroductoryPriceCycles());
-              item.put("introductoryPricePeriodAndroid", skuDetails.getIntroductoryPricePeriod());
-              // new
-              item.put("iconUrl", skuDetails.getIconUrl());
-              item.put("originalJson", skuDetails.getOriginalJson());
-              item.put("originalPrice", skuDetails.getOriginalPriceAmountMicros() / 1000000f);
-              items.put(item);
-            }
-            safeChannel.success(items.toString());
-          }
-          catch (JSONException je) {
-            je.printStackTrace();
-          }
-          catch (FlutterException fe) {
-            safeChannel.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
+            };
+            billingClient.consumeAsync(consumeParams, listener);
           }
         }
-      });
-    }
-
-    /*
-     * getAvailableItemsByType
-     * arguments: type
-     */
-    else if (call.method.equals("getAvailableItemsByType")) {
-      if (billingClient == null || !billingClient.isReady()) {
-        safeChannel.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
-        return;
-      }
-
-      final String type = call.argument("type");
-      final JSONArray items = new JSONArray();
-      Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(type.equals("subs") ? BillingClient.SkuType.SUBS : BillingClient.SkuType.INAPP);
-      final List<Purchase> purchases = purchasesResult.getPurchasesList();
-
-      try {
-        if (purchases != null) {
-          for (Purchase purchase : purchases) {
-            JSONObject item = new JSONObject();
-            item.put("productId", purchase.getSkus().get(0));
-            item.put("transactionId", purchase.getOrderId());
-            item.put("transactionDate", purchase.getPurchaseTime());
-            item.put("transactionReceipt", purchase.getOriginalJson());
-            item.put("purchaseToken", purchase.getPurchaseToken());
-            item.put("signatureAndroid", purchase.getSignature());
-            item.put("purchaseStateAndroid", purchase.getPurchaseState());
-
-            if (type.equals(BillingClient.SkuType.INAPP)) {
-              item.put("isAcknowledgedAndroid", purchase.isAcknowledged());
-            }
-            else if (type.equals(BillingClient.SkuType.SUBS)) {
-              item.put("autoRenewingAndroid", purchase.isAutoRenewing());
-            }
-            items.put(item);
-          }
-          safeChannel.success(items.toString());
+        catch (Error err) {
+          safeChannel.error(call.method, err.getMessage(), "");
         }
       }
-      catch (JSONException je) {
-        safeChannel.error(call.method, je.getMessage(), je.getLocalizedMessage());
-      }
-      catch (FlutterException fe) {
-        safeChannel.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
-      }
-    }
 
-    /*
-     * getPurchaseHistoryByType
-     * arguments: type
-     */
-    else if (call.method.equals("getPurchaseHistoryByType")) {
-      final String type = call.argument("type");
+      /*
+       * getItemsByType
+       * arguments: type, skus
+       */
+      else if (call.method.equals("getItemsByType")) {
+        if (billingClient == null || !billingClient.isReady()) {
+          safeChannel.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+          return;
+        }
 
-      billingClient.queryPurchaseHistoryAsync(type.equals("subs") ? BillingClient.SkuType.SUBS : BillingClient.SkuType.INAPP, new PurchaseHistoryResponseListener() {
-        @Override
-        public void onPurchaseHistoryResponse(BillingResult billingResult, List<PurchaseHistoryRecord> purchaseHistoryRecordList) {
-          if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            safeChannel.error(call.method, errorData[0], errorData[1]);
-            return;
+        String type = call.argument("type");
+        final ArrayList<String> skuArr = call.argument("skus");
+
+
+        ArrayList<String> skuList = new ArrayList<>();
+
+        for (int i = 0; i < skuArr.size(); i++) {
+          skuList.add(skuArr.get(i));
+        }
+
+        SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+        params.setSkusList(skuList).setType(type);
+
+        billingClient.querySkuDetailsAsync(params.build(), new SkuDetailsResponseListener() {
+          @Override
+          public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
+            int responseCode = billingResult.getResponseCode();
+            if (responseCode != BillingClient.BillingResponseCode.OK) {
+              String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+              safeChannel.error(call.method, errorData[0], errorData[1]);
+              return;
+            }
+
+            for (SkuDetails sku : skuDetailsList) {
+              if (!skus.contains(sku)) {
+                skus.add(sku);
+              }
+            }
+
+            try {
+              JSONArray items = new JSONArray();
+              for (SkuDetails skuDetails : skuDetailsList) {
+                JSONObject item = new JSONObject();
+                item.put("productId", skuDetails.getSku());
+                item.put("price", String.valueOf(skuDetails.getPriceAmountMicros() / 1000000f));
+                item.put("currency", skuDetails.getPriceCurrencyCode());
+                item.put("type", skuDetails.getType());
+                item.put("localizedPrice", skuDetails.getPrice());
+                item.put("title", skuDetails.getTitle());
+                item.put("description", skuDetails.getDescription());
+                item.put("introductoryPrice", skuDetails.getIntroductoryPrice());
+                item.put("subscriptionPeriodAndroid", skuDetails.getSubscriptionPeriod());
+                item.put("freeTrialPeriodAndroid", skuDetails.getFreeTrialPeriod());
+                item.put("introductoryPriceCyclesAndroid", skuDetails.getIntroductoryPriceCycles());
+                item.put("introductoryPricePeriodAndroid", skuDetails.getIntroductoryPricePeriod());
+                // new
+                item.put("iconUrl", skuDetails.getIconUrl());
+                item.put("originalJson", skuDetails.getOriginalJson());
+                item.put("originalPrice", skuDetails.getOriginalPriceAmountMicros() / 1000000f);
+                items.put(item);
+              }
+              safeChannel.success(items.toString());
+            }
+            catch (JSONException je) {
+              je.printStackTrace();
+            }
+            catch (FlutterException fe) {
+              safeChannel.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
+            }
           }
+        });
+      }
 
-          JSONArray items = new JSONArray();
+      /*
+       * getAvailableItemsByType
+       * arguments: type
+       */
+      else if (call.method.equals("getAvailableItemsByType")) {
+        if (billingClient == null || !billingClient.isReady()) {
+          safeChannel.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+          return;
+        }
 
-          try {
-            for (PurchaseHistoryRecord purchase : purchaseHistoryRecordList) {
+        final String type = call.argument("type");
+        final JSONArray items = new JSONArray();
+        Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(type.equals("subs") ? BillingClient.SkuType.SUBS : BillingClient.SkuType.INAPP);
+        final List<Purchase> purchases = purchasesResult.getPurchasesList();
+
+        try {
+          if (purchases != null) {
+            for (Purchase purchase : purchases) {
               JSONObject item = new JSONObject();
               item.put("productId", purchase.getSkus().get(0));
+              item.put("transactionId", purchase.getOrderId());
               item.put("transactionDate", purchase.getPurchaseTime());
               item.put("transactionReceipt", purchase.getOriginalJson());
               item.put("purchaseToken", purchase.getPurchaseToken());
-              item.put("dataAndroid", purchase.getOriginalJson());
               item.put("signatureAndroid", purchase.getSignature());
+              item.put("purchaseStateAndroid", purchase.getPurchaseState());
+
+              if (type.equals(BillingClient.SkuType.INAPP)) {
+                item.put("isAcknowledgedAndroid", purchase.isAcknowledged());
+              }
+              else if (type.equals(BillingClient.SkuType.SUBS)) {
+                item.put("autoRenewingAndroid", purchase.isAutoRenewing());
+              }
               items.put(item);
             }
             safeChannel.success(items.toString());
           }
-          catch (JSONException je) {
-            je.printStackTrace();
+        }
+        catch (JSONException je) {
+          safeChannel.error(call.method, je.getMessage(), je.getLocalizedMessage());
+        }
+        catch (FlutterException fe) {
+          safeChannel.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
+        }
+      }
+
+      /*
+       * getPurchaseHistoryByType
+       * arguments: type
+       */
+      else if (call.method.equals("getPurchaseHistoryByType")) {
+        final String type = call.argument("type");
+
+        billingClient.queryPurchaseHistoryAsync(type.equals("subs") ? BillingClient.SkuType.SUBS : BillingClient.SkuType.INAPP, new PurchaseHistoryResponseListener() {
+          @Override
+          public void onPurchaseHistoryResponse(BillingResult billingResult, List<PurchaseHistoryRecord> purchaseHistoryRecordList) {
+            if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
+              String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+              safeChannel.error(call.method, errorData[0], errorData[1]);
+              return;
+            }
+
+            JSONArray items = new JSONArray();
+
+            try {
+              for (PurchaseHistoryRecord purchase : purchaseHistoryRecordList) {
+                JSONObject item = new JSONObject();
+                item.put("productId", purchase.getSkus().get(0));
+                item.put("transactionDate", purchase.getPurchaseTime());
+                item.put("transactionReceipt", purchase.getOriginalJson());
+                item.put("purchaseToken", purchase.getPurchaseToken());
+                item.put("dataAndroid", purchase.getOriginalJson());
+                item.put("signatureAndroid", purchase.getSignature());
+                items.put(item);
+              }
+              safeChannel.success(items.toString());
+            }
+            catch (JSONException je) {
+              je.printStackTrace();
+            }
+          }
+        });
+      }
+
+      /*
+       * buyItemByType
+       * arguments: type, obfuscatedAccountId, obfuscatedProfileId, sku, oldSku, prorationMode, purchaseToken
+       */
+      else if (call.method.equals("buyItemByType")) {
+        if (billingClient == null || !billingClient.isReady()) {
+          safeChannel.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+          return;
+        }
+
+        final String type = call.argument("type");
+        final String obfuscatedAccountId = call.argument("obfuscatedAccountId");
+        final String obfuscatedProfileId = call.argument("obfuscatedProfileId");
+        final String sku = call.argument("sku");
+        final String oldSku = call.argument("oldSku");
+        final int prorationMode = call.argument("prorationMode");
+        final String purchaseToken = call.argument("purchaseToken");
+
+        BillingFlowParams.Builder builder = BillingFlowParams.newBuilder();
+
+        SkuDetails selectedSku = null;
+        for (SkuDetails skuDetail : skus) {
+          if (skuDetail.getSku().equals(sku)) {
+            selectedSku = skuDetail;
+            break;
           }
         }
-      });
-    }
 
-    /*
-     * buyItemByType
-     * arguments: type, obfuscatedAccountId, obfuscatedProfileId, sku, oldSku, prorationMode, purchaseToken
-     */
-    else if (call.method.equals("buyItemByType")) {
-      if (billingClient == null || !billingClient.isReady()) {
-        safeChannel.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
-        return;
-      }
-
-      final String type = call.argument("type");
-      final String obfuscatedAccountId = call.argument("obfuscatedAccountId");
-      final String obfuscatedProfileId = call.argument("obfuscatedProfileId");
-      final String sku = call.argument("sku");
-      final String oldSku = call.argument("oldSku");
-      final int prorationMode = call.argument("prorationMode");
-      final String purchaseToken = call.argument("purchaseToken");
-
-      BillingFlowParams.Builder builder = BillingFlowParams.newBuilder();
-
-      SkuDetails selectedSku = null;
-      for (SkuDetails skuDetail : skus) {
-        if (skuDetail.getSku().equals(sku)) {
-          selectedSku = skuDetail;
-          break;
+        if (selectedSku == null) {
+          String debugMessage = "The sku was not found. Please fetch setObfuscatedAccountIdproducts first by calling getItems";
+          safeChannel.error(TAG, "buyItemByType", debugMessage);
+          return;
         }
-      }
+        builder.setSkuDetails(selectedSku);
 
-      if (selectedSku == null) {
-        String debugMessage = "The sku was not found. Please fetch setObfuscatedAccountIdproducts first by calling getItems";
-        safeChannel.error(TAG, "buyItemByType", debugMessage);
-        return;
-      }
-      builder.setSkuDetails(selectedSku);
+        BillingFlowParams.SubscriptionUpdateParams.Builder subscriptionUpdateParamsBuilder =
+                BillingFlowParams.SubscriptionUpdateParams.newBuilder();
 
-      BillingFlowParams.SubscriptionUpdateParams.Builder subscriptionUpdateParamsBuilder =
-        BillingFlowParams.SubscriptionUpdateParams.newBuilder();
+        if (purchaseToken != null) {
+          subscriptionUpdateParamsBuilder.setOldSkuPurchaseToken(purchaseToken);
+        }
 
-      if (purchaseToken != null) {
-        subscriptionUpdateParamsBuilder.setOldSkuPurchaseToken(purchaseToken);
-      }
+        if (obfuscatedAccountId != null) {
+          builder.setObfuscatedAccountId(obfuscatedAccountId);
+        }
 
-      if (obfuscatedAccountId != null) {
-        builder.setObfuscatedAccountId(obfuscatedAccountId);
-      }
+        if (obfuscatedProfileId != null) {
+          builder.setObfuscatedProfileId(obfuscatedProfileId);
+        }
 
-      if (obfuscatedProfileId != null) {
-        builder.setObfuscatedProfileId(obfuscatedProfileId);
-      }
-
-      if (prorationMode != -1) {
-        if (prorationMode
-          == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE) {
-          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-            BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE);
-          if (!type.equals(BillingClient.SkuType.SUBS)) {
-            String debugMessage =
-              "IMMEDIATE_AND_CHARGE_PRORATED_PRICE for proration mode only works in"
-                + " subscription purchase.";
-            safeChannel.error(TAG, "buyItemByType", debugMessage);
-            return;
+        if (prorationMode != -1) {
+          if (prorationMode
+                  == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE) {
+            subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                    BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE);
+            if (!type.equals(BillingClient.SkuType.SUBS)) {
+              String debugMessage =
+                      "IMMEDIATE_AND_CHARGE_PRORATED_PRICE for proration mode only works in"
+                              + " subscription purchase.";
+              safeChannel.error(TAG, "buyItemByType", debugMessage);
+              return;
+            }
+          }
+          else if (prorationMode
+                  == BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION) {
+            subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                    BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
+          }
+          else if (prorationMode == BillingFlowParams.ProrationMode.DEFERRED) {
+            subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                    BillingFlowParams.ProrationMode.DEFERRED);
+          }
+          else if (prorationMode
+                  == BillingFlowParams.ProrationMode.IMMEDIATE_WITH_TIME_PRORATION) {
+            subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                    BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
+          }
+          else if (prorationMode
+                  == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE) {
+            subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                    BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE);
+          }
+          else {
+            subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
+                    BillingFlowParams.ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY);
           }
         }
-        else if (prorationMode
-          == BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION) {
-          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-            BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
+
+        if (purchaseToken != null) {
+          BillingFlowParams.SubscriptionUpdateParams subscriptionUpdateParams =
+                  subscriptionUpdateParamsBuilder.build();
+
+          builder.setSubscriptionUpdateParams(subscriptionUpdateParams);
         }
-        else if (prorationMode == BillingFlowParams.ProrationMode.DEFERRED) {
-          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-            BillingFlowParams.ProrationMode.DEFERRED);
-        }
-        else if (prorationMode
-          == BillingFlowParams.ProrationMode.IMMEDIATE_WITH_TIME_PRORATION) {
-          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-            BillingFlowParams.ProrationMode.IMMEDIATE_WITHOUT_PRORATION);
-        }
-        else if (prorationMode
-          == BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE) {
-          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-            BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE);
-        }
-        else {
-          subscriptionUpdateParamsBuilder.setReplaceSkusProrationMode(
-            BillingFlowParams.ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY);
+
+        if (activity != null) {
+          BillingFlowParams flowParams = builder.build();
+          BillingResult billingResult = billingClient.launchBillingFlow(activity, flowParams);
         }
       }
 
-      if (purchaseToken != null) {
-        BillingFlowParams.SubscriptionUpdateParams subscriptionUpdateParams =
-          subscriptionUpdateParamsBuilder.build();
+      /*
+       * acknowledgePurchase (For non-consumable purchases)
+       * arguments: token
+       */
+      else if (call.method.equals("acknowledgePurchase")) {
+        final String token = call.argument("token");
 
-        builder.setSubscriptionUpdateParams(subscriptionUpdateParams);
-      }
-
-      if (activity != null) {
-        BillingFlowParams flowParams = builder.build();
-        BillingResult billingResult = billingClient.launchBillingFlow(activity, flowParams);
-      }
-    }
-
-    /*
-     * acknowledgePurchase (For non-consumable purchases)
-     * arguments: token
-     */
-    else if (call.method.equals("acknowledgePurchase")) {
-      final String token = call.argument("token");
-
-      if (billingClient == null || !billingClient.isReady()) {
-        safeChannel.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
-        return;
-      }
-
-      AcknowledgePurchaseParams acknowledgePurchaseParams =
-        AcknowledgePurchaseParams.newBuilder()
-          .setPurchaseToken(token)
-          .build();
-      billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
-        @Override
-        public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
-          if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            safeChannel.error(call.method, errorData[0], errorData[1]);
-            return;
-          }
-          try {
-            JSONObject item = new JSONObject();
-            item.put("responseCode", billingResult.getResponseCode());
-            item.put("debugMessage", billingResult.getDebugMessage());
-            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            item.put("code", errorData[0]);
-            item.put("message", errorData[1]);
-            safeChannel.success(item.toString());
-          }
-          catch (JSONException je) {
-            je.printStackTrace();
-          }
+        if (billingClient == null || !billingClient.isReady()) {
+          safeChannel.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+          return;
         }
-      });
-    }
 
-    /*
-     * consumeProduct (For consumable purchases)
-     * arguments: token
-     */
-    else if (call.method.equals("consumeProduct")) {
-      if (billingClient == null || !billingClient.isReady()) {
-        safeChannel.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
-        return;
+        AcknowledgePurchaseParams acknowledgePurchaseParams =
+                AcknowledgePurchaseParams.newBuilder()
+                        .setPurchaseToken(token)
+                        .build();
+        billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
+          @Override
+          public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+            if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
+              String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+              safeChannel.error(call.method, errorData[0], errorData[1]);
+              return;
+            }
+            try {
+              JSONObject item = new JSONObject();
+              item.put("responseCode", billingResult.getResponseCode());
+              item.put("debugMessage", billingResult.getDebugMessage());
+              String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+              item.put("code", errorData[0]);
+              item.put("message", errorData[1]);
+              safeChannel.success(item.toString());
+            }
+            catch (JSONException je) {
+              je.printStackTrace();
+            }
+          }
+        });
       }
 
-      final String token = call.argument("token");
-
-      final ConsumeParams params = ConsumeParams.newBuilder()
-        .setPurchaseToken(token)
-        .build();
-      billingClient.consumeAsync(params, new ConsumeResponseListener() {
-        @Override
-        public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
-          if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            safeChannel.error(call.method, errorData[0], errorData[1]);
-            return;
-          }
-
-          try {
-            JSONObject item = new JSONObject();
-            item.put("responseCode", billingResult.getResponseCode());
-            item.put("debugMessage", billingResult.getDebugMessage());
-            String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
-            item.put("code", errorData[0]);
-            item.put("message", errorData[1]);
-            safeChannel.success(item.toString());
-          }
-          catch (JSONException je) {
-            safeChannel.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
-          }
+      /*
+       * consumeProduct (For consumable purchases)
+       * arguments: token
+       */
+      else if (call.method.equals("consumeProduct")) {
+        if (billingClient == null || !billingClient.isReady()) {
+          safeChannel.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
+          return;
         }
-      });
-    }
 
-    /*
-     * else
-     */
-    else {
-      safeChannel.notImplemented();
+        final String token = call.argument("token");
+
+        final ConsumeParams params = ConsumeParams.newBuilder()
+                .setPurchaseToken(token)
+                .build();
+        billingClient.consumeAsync(params, new ConsumeResponseListener() {
+          @Override
+          public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
+            if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
+              String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+              safeChannel.error(call.method, errorData[0], errorData[1]);
+              return;
+            }
+
+            try {
+              JSONObject item = new JSONObject();
+              item.put("responseCode", billingResult.getResponseCode());
+              item.put("debugMessage", billingResult.getDebugMessage());
+              String[] errorData = DoobooUtils.getInstance().getBillingResponseData(billingResult.getResponseCode());
+              item.put("code", errorData[0]);
+              item.put("message", errorData[1]);
+              safeChannel.success(item.toString());
+            }
+            catch (JSONException je) {
+              safeChannel.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
+            }
+          }
+        });
+      }
+
+      /*
+       * else
+       */
+      else {
+        safeChannel.notImplemented();
+      }
+    } catch(Exception e){
+      e.printStackTrace();
     }
   }
 
