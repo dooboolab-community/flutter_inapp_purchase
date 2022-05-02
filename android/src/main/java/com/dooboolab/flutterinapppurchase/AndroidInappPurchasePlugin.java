@@ -571,8 +571,8 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
             e.printStackTrace();
             try {
                 safeResult.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }
