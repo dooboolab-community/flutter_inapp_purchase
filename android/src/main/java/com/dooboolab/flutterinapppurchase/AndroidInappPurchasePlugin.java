@@ -120,8 +120,10 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
             if (call.method.equals("getPlatformVersion")) {
                 try {
                     safeChannel.success("Android " + android.os.Build.VERSION.RELEASE);
+                    return;
                 } catch (IllegalStateException e) {
                     safeChannel.error(call.method, e.getMessage(), e.getLocalizedMessage());
+                    return;
                 }
             }
 
@@ -152,6 +154,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                                 if (alreadyFinished) return;
                                 alreadyFinished = true;
                                 safeChannel.success("Billing client ready");
+                                return;
                             } else {
                                 JSONObject item = new JSONObject();
                                 item.put("connected", false);
@@ -159,6 +162,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                                 if (alreadyFinished) return;
                                 alreadyFinished = true;
                                 safeChannel.error(call.method, "responseCode: " + responseCode, "");
+                                return;
                             }
                         } catch (JSONException je) {
                             je.printStackTrace();
@@ -172,6 +176,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                             JSONObject item = new JSONObject();
                             item.put("connected", false);
                             safeChannel.invokeMethod("connection-updated", item.toString());
+                            return;
                         } catch (JSONException je) {
                             je.printStackTrace();
                         }
@@ -188,8 +193,10 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                         billingClient.endConnection();
                         billingClient = null;
                         safeChannel.success("Billing client has ended.");
+                        return;
                     } catch (Exception e) {
                         safeChannel.error(call.method, e.getMessage(), "");
+                        return;
                     }
                 }
             }
@@ -223,6 +230,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                                 if (purchases.size() == array.size()) {
                                     try {
                                         safeChannel.success(array.toString());
+                                        return;
                                     } catch (FlutterException e) {
                                         Log.e(TAG, e.getMessage());
                                     }
@@ -233,6 +241,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                     }
                 } catch (Error err) {
                     safeChannel.error(call.method, err.getMessage(), "");
+                    return;
                 }
             }
 
@@ -298,10 +307,12 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                                 items.put(item);
                             }
                             safeChannel.success(items.toString());
+                            return;
                         } catch (JSONException je) {
                             je.printStackTrace();
                         } catch (FlutterException fe) {
                             safeChannel.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
+                            return;
                         }
                     }
                 });
@@ -342,11 +353,14 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                             items.put(item);
                         }
                         safeChannel.success(items.toString());
+                        return;
                     }
                 } catch (JSONException je) {
                     safeChannel.error(call.method, je.getMessage(), je.getLocalizedMessage());
+                    return;
                 } catch (FlutterException fe) {
                     safeChannel.error(call.method, fe.getMessage(), fe.getLocalizedMessage());
+                    return;
                 }
             }
 
@@ -380,6 +394,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                                 items.put(item);
                             }
                             safeChannel.success(items.toString());
+                            return;
                         } catch (JSONException je) {
                             je.printStackTrace();
                         }
@@ -554,8 +569,10 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                             item.put("code", errorData[0]);
                             item.put("message", errorData[1]);
                             safeChannel.success(item.toString());
+                            return;
                         } catch (JSONException je) {
                             safeChannel.error(TAG, "E_BILLING_RESPONSE_JSON_PARSE_ERROR", je.getMessage());
+                            return;
                         }
                     }
                 });
@@ -566,13 +583,15 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
              */
             else {
                 safeChannel.notImplemented();
+                return;
             }
         } catch (Exception e) {
             e.printStackTrace();
             try {
                 safeResult.error(call.method, "IAP not prepared. Check if Google Play service is available.", "");
-            } catch (Exception e) {
-                e.printStackTrace();
+                return;
+            } catch (Exception e2) {
+                e2.printStackTrace();
             }
         }
     }
@@ -616,6 +635,7 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                         }
 
                         safeResult.invokeMethod("purchase-updated", item.toString());
+                        return;
                     }
                 } else {
                     JSONObject json = new JSONObject();
@@ -625,9 +645,11 @@ public class AndroidInappPurchasePlugin implements MethodCallHandler, Applicatio
                     json.put("code", errorData[0]);
                     json.put("message", "purchases returns null.");
                     safeResult.invokeMethod("purchase-error", json.toString());
+                    return;
                 }
             } catch (JSONException je) {
                 safeResult.invokeMethod("purchase-error", je.getMessage());
+                return;
             }
         }
     };
