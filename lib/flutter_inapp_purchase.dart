@@ -183,7 +183,9 @@ class FlutterInappPurchase {
       );
 
       List<dynamic> results =
-          await Future.wait([getInappPurchaseHistory, getSubsPurchaseHistory]);
+          await Future.wait(getInappPurchaseHistory);
+      
+      await results.add(await Future.wait(getSubsPurchaseHistory));
 
       return results.reduce((result1, result2) =>
           extractPurchased(result1)! + extractPurchased(result2)!);
