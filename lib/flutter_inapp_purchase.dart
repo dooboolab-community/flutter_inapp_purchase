@@ -182,9 +182,8 @@ class FlutterInappPurchase {
         },
       );
 
-      List<dynamic> results =
-          await Future.wait(getInappPurchaseHistory);
-      
+      List<dynamic> results = await Future.wait(getInappPurchaseHistory);
+
       await results.add(await Future.wait(getSubsPurchaseHistory));
 
       return results.reduce((result1, result2) =>
