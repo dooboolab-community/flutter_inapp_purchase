@@ -1,3 +1,7 @@
+## 5.2.0
+
+Bugfix #356
+
 ## 5.1.1
 
 Run on UiThread and few others (#328)
