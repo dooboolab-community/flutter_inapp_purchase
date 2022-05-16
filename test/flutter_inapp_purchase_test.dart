@@ -761,12 +761,12 @@ void main() {
         test('invokes correct method', () async {
           await FlutterInappPurchase.instance.getAvailablePurchases();
           expect(log, <Matcher>[
-            isMethodCall(
-              'getAvailableItemsByType',
-              arguments: <String, dynamic>{
-                'type': 'inapp',
-              },
-            ),
+            // isMethodCall(
+            //   'getAvailableItemsByType',
+            //   arguments: <String, dynamic>{
+            //     'type': 'inapp',
+            //   },
+            // ),
             isMethodCall(
               'getAvailableItemsByType',
               arguments: <String, dynamic>{
