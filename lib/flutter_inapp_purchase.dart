@@ -182,8 +182,8 @@ class FlutterInappPurchase {
         },
       );
 
-      return extractPurchased(getInappPurchaseHistory)! +
-          extractPurchased(getSubsPurchaseHistory)!;
+      return extractPurchased(getInappPurchaseHistory)! + extractPurchased(getSubsPurchaseHistory)!;
+
     } else if (_platform.isIOS) {
       dynamic result = await _channel.invokeMethod('getAvailableItems');
 
