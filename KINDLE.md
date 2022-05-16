@@ -11,7 +11,7 @@ Install the Amazon App Tester (AAT) :
 
 You need to create an amazon.sdktester.json file. 
 
-Example : [amazon.sdktester.json](https://github.com/dooboolab/flutter_inapp_purchase/blob/master/ancillary/amazon.sdktester.json)
+Example : [amazon.sdktester.json](https://github.com/dooboolab/flutter_inapp_purchase/blob/main/ancillary/amazon.sdktester.json)
 Edit this to add your own Product Ids. 
 
 Put this file into the kindle sdcard with :
@@ -20,7 +20,7 @@ Put this file into the kindle sdcard with :
     
 You can verify if the file is valid in the AAT and view the purchases.
 
-Add android.permission.INTERNET and com.amazon.device.iap.ResponseReceiver to your AndroidManifest like in the example https://github.com/dooboolab/flutter_inapp_purchase/blob/master/example/android/app/src/main/AndroidManifest.xml.
+Add android.permission.INTERNET and com.amazon.device.iap.ResponseReceiver to your AndroidManifest like in the example https://github.com/dooboolab/flutter_inapp_purchase/blob/main/example/android/app/src/main/AndroidManifest.xml.
 
 Now, when you make a purchase the AAT will intercept, show the purchases screen and allow you to make a purchase. Your app will think a real purchase has been made and you can test the full purchase flow.
 
