@@ -52,7 +52,7 @@ class AmazonInappPurchasePlugin : MethodCallHandler {
                 safeResult!!.success("Billing client has ended.")
             }
             "showInAppMessages" -> {
-                //not supported on amazon
+                safeChannel.success("in app messages not supported for amazon")
             }
             "consumeAllItems" -> {
                 // consumable is a separate type in amazon

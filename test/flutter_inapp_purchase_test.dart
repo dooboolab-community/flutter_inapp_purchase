@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -63,14 +62,14 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.consumeAllItems;
+          await FlutterInappPurchase.instance.consumeAll();
           expect(log, <Matcher>[
             isMethodCall('consumeAllItems', arguments: null),
           ]);
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.consumeAllItems,
+          expect(await FlutterInappPurchase.instance.consumeAll(),
               "All items have been consumed");
         });
       });
@@ -86,7 +85,7 @@ void main() {
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.consumeAllItems,
+          expect(await FlutterInappPurchase.instance.consumeAll(),
               "no-ops in ios");
         });
       });
@@ -111,14 +110,14 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.initConnection;
+          await FlutterInappPurchase.instance.initialize();
           expect(log, <Matcher>[
             isMethodCall('initConnection', arguments: null),
           ]);
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.initConnection,
+          expect(await FlutterInappPurchase.instance.initialize(),
               "Billing client ready");
         });
       });
@@ -141,14 +140,14 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.initConnection;
+          await FlutterInappPurchase.instance.initialize();
           expect(log, <Matcher>[
             isMethodCall('canMakePayments', arguments: null),
           ]);
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.initConnection, "true");
+          expect(await FlutterInappPurchase.instance.initialize(), "true");
         });
       });
     });
@@ -589,9 +588,8 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
-                  .getPurchaseHistory() as FutureOr<List<PurchasedItem>?>) ??
-              [];
+          List<PurchasedItem>? actualList =
+              await (FlutterInappPurchase.instance.getPurchaseHistory()) ?? [];
           List<PurchasedItem> expectList = ((json.decode(resultInapp) as List) +
                   (json.decode(resultSubs) as List))
               .map((item) => PurchasedItem.fromJSON(item))
@@ -675,9 +673,8 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
-                  .getPurchaseHistory() as FutureOr<List<PurchasedItem>?>) ??
-              [];
+          List<PurchasedItem>? actualList =
+              await (FlutterInappPurchase.instance.getPurchaseHistory()) ?? [];
           List<PurchasedItem>? expectList = result
               .map<PurchasedItem>((item) => PurchasedItem.fromJSON(item))
               .toList();
@@ -772,9 +769,9 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
-                  .getAvailablePurchases() as FutureOr<List<PurchasedItem>?>) ??
-              [];
+          List<PurchasedItem>? actualList =
+              await (FlutterInappPurchase.instance.getAvailablePurchases()) ??
+                  [];
           List<PurchasedItem> expectList = ((json.decode(resultInapp) as List) +
                   (json.decode(resultSubs) as List))
               .map((item) => PurchasedItem.fromJSON(item))
@@ -858,9 +855,9 @@ void main() {
         });
 
         test('returns correct result', () async {
-          List<PurchasedItem>? actualList = await (FlutterInappPurchase.instance
-                  .getAvailablePurchases() as FutureOr<List<PurchasedItem>?>) ??
-              [];
+          List<PurchasedItem>? actualList =
+              await (FlutterInappPurchase.instance.getAvailablePurchases()) ??
+                  [];
           List<PurchasedItem>? expectList = result
               .map<PurchasedItem>((item) =>
                   PurchasedItem.fromJSON(item as Map<String, dynamic>))
@@ -1213,14 +1210,14 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.endConnection;
+          await FlutterInappPurchase.instance.finalize();
           expect(log, <Matcher>[
             isMethodCall('endConnection', arguments: null),
           ]);
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.endConnection,
+          expect(await FlutterInappPurchase.instance.finalize(),
               "Billing client has ended.");
         });
       });
@@ -1236,7 +1233,7 @@ void main() {
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.endConnection,
+          expect(await FlutterInappPurchase.instance.finalize(),
               "Billing client has ended.");
         });
       });

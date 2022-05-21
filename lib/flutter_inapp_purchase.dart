@@ -197,7 +197,7 @@ class FlutterInappPurchase {
   /// Android only, Google Play will show users messaging during grace period
   /// and account hold once per day and provide them an opportunity to fix their
   /// payment without leaving the app
-  Future<String?> showInAppMessageAndroid()async {
+  Future<String?> showInAppMessageAndroid() async {
     if (!_platform.isAndroid) return Future.value("");
     _onInAppMessageController ??= StreamController.broadcast();
     return await _channel.invokeMethod('showInAppMessages');
