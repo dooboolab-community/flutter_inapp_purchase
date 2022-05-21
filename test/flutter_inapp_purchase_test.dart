@@ -13,40 +13,36 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('FlutterInappPurchase', () {
-    group('platformVersion', () {
-      final List<MethodCall> log = <MethodCall>[];
-      setUp(() {
-        FlutterInappPurchase(FlutterInappPurchase.private(FakePlatform(
-          operatingSystem: 'android',
-        )));
+    group('showInAppMessageAndroid', (){
+      group('for Android', () {
+        final List<MethodCall> log = <MethodCall>[];
+        setUp(() {
+          FlutterInappPurchase(FlutterInappPurchase.private(
+              FakePlatform(operatingSystem: "android")));
 
-        FlutterInappPurchase.channel
-            .setMockMethodCallHandler((MethodCall methodCall) async {
-          log.add(methodCall);
-          return "Android 5.1.1";
+          FlutterInappPurchase.channel
+              .setMockMethodCallHandler((MethodCall methodCall) async {
+            log.add(methodCall);
+            return "ready";
+          });
+        });
+        test('invokes correct method', () async {
+          await FlutterInappPurchase.instance.showInAppMessageAndroid();
+          expect(log, <Matcher>[
+            isMethodCall('showInAppMessages', arguments: null),
+          ]);
+        });
+
+        test('returns correct result', () async {
+          final result = await FlutterInappPurchase.instance.showInAppMessageAndroid();
+          expect(result, "ready");
+        });
+
+        tearDown(() {
+          FlutterInappPurchase.channel.setMethodCallHandler(null);
         });
       });
-
-      tearDown(() {
-        FlutterInappPurchase.channel.setMethodCallHandler(null);
-      });
-
-      test('invokes correct method', () async {
-        await FlutterInappPurchase.instance.platformVersion;
-        expect(log, <Matcher>[
-          isMethodCall(
-            'getPlatformVersion',
-            arguments: null,
-          ),
-        ]);
-      });
-
-      test('returns correct result', () async {
-        expect(await FlutterInappPurchase.instance.platformVersion,
-            "Android 5.1.1");
-      });
     });
-
     group('consumeAllItems', () {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
@@ -201,9 +197,8 @@ void main() {
           await FlutterInappPurchase.instance.getProducts(skus);
           expect(log, <Matcher>[
             isMethodCall(
-              'getItemsByType',
+              'getProducts',
               arguments: <String, dynamic>{
-                'type': 'inapp',
                 'skus': skus,
               },
             ),
@@ -386,9 +381,8 @@ void main() {
           await FlutterInappPurchase.instance.getSubscriptions(skus);
           expect(log, <Matcher>[
             isMethodCall(
-              'getItemsByType',
+              'getSubscriptions',
               arguments: <String, dynamic>{
-                'type': 'subs',
                 'skus': skus,
               },
             ),

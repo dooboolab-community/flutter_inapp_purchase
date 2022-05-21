@@ -141,6 +141,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
         billingClient!!.showInAppMessages(activity!!, inAppMessageParams) { inAppMessageResult ->
             safeChannel.invokeMethod("on-in-app-message", inAppMessageResult.responseCode)
         }
+        safeChannel.success("show in app messages ready")
     }
 
     private fun consumeAllItems(

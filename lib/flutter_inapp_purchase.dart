@@ -197,10 +197,10 @@ class FlutterInappPurchase {
   /// Android only, Google Play will show users messaging during grace period
   /// and account hold once per day and provide them an opportunity to fix their
   /// payment without leaving the app
-  Future<void> showInAppMessageAndroid() {
-    if (!_platform.isAndroid) return Future.value();
+  Future<String?> showInAppMessageAndroid()async {
+    if (!_platform.isAndroid) return Future.value("");
     _onInAppMessageController ??= StreamController.broadcast();
-    return _channel.invokeMethod('showInAppMessages');
+    return await _channel.invokeMethod('showInAppMessages');
   }
 
   /// Get all non-consumed purchases made on `Android` and `iOS`.
