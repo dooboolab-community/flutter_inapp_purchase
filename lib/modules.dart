@@ -85,7 +85,7 @@ class IAPItem {
   /// and then get IAPItem from "str" above
   /// IAPItem item = IAPItem.fromJSON(convert.jsonDecode(str));
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['productId'] = this.productId;
     data['price'] = this.price;
     data['currency'] = this.currency;
@@ -181,7 +181,7 @@ class DiscountIOS {
         subscriptionPeriod = json['subscriptionPeriod'] as String?;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['identifier'] = this.identifier;
     data['type'] = this.type;
     data['numberOfPeriods'] = this.numberOfPeriods;

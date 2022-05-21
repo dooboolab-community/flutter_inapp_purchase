@@ -40,7 +40,8 @@ class FlutterInappPurchase {
       _purchasePromotedController!.stream;
 
   static StreamController<int?>? _onInAppMessageController;
-  static Stream<int?> get inAppMessageAndroid => _onInAppMessageController!.stream;
+  static Stream<int?> get inAppMessageAndroid =>
+      _onInAppMessageController!.stream;
 
   /// Defining the [MethodChannel] for Flutter_Inapp_Purchase
   static final MethodChannel _channel = const MethodChannel('flutter_inapp');
@@ -196,8 +197,8 @@ class FlutterInappPurchase {
   /// Android only, Google Play will show users messaging during grace period
   /// and account hold once per day and provide them an opportunity to fix their
   /// payment without leaving the app
-  Future<void> showInAppMessageAndroid(){
-    if(!_platform.isAndroid)return Future.value();
+  Future<void> showInAppMessageAndroid() {
+    if (!_platform.isAndroid) return Future.value();
     _onInAppMessageController ??= StreamController.broadcast();
     return _channel.invokeMethod('showInAppMessages');
   }
@@ -461,14 +462,14 @@ class FlutterInappPurchase {
           'token': purchasedItem.purchaseToken,
         });
       } else {
-        if(purchasedItem.isAcknowledgedAndroid == true){
+        if (purchasedItem.isAcknowledgedAndroid == true) {
           return Future.value(null);
-        }else{
-          return await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
+        } else {
+          return await _channel
+              .invokeMethod('acknowledgePurchase', <String, dynamic>{
             'token': purchasedItem.purchaseToken,
           });
         }
-
       }
     } else if (_platform.isIOS) {
       return await _channel.invokeMethod('finishTransaction', <String, dynamic>{
@@ -514,8 +515,8 @@ class FlutterInappPurchase {
   /// This method is NOT secure and untested in production.
   Future<bool> checkSubscribed({
     required String sku,
-    Duration duration: const Duration(days: 30),
-    Duration grace: const Duration(days: 3),
+    Duration duration = const Duration(days: 30),
+    Duration grace = const Duration(days: 3),
   }) async {
     if (_platform.isIOS) {
       var history =
@@ -610,7 +611,6 @@ class FlutterInappPurchase {
     _purchaseErrorController ??= StreamController.broadcast();
     _connectionController ??= StreamController.broadcast();
     _purchasePromotedController ??= StreamController.broadcast();
-
 
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
