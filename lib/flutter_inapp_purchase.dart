@@ -40,6 +40,9 @@ class FlutterInappPurchase {
   static Stream<String?> get purchasePromoted =>
       _purchasePromotedController!.stream;
 
+  static StreamController<int?>? _onInAppMessageController;
+  static Stream<int?> get inAppMessageAndroid => _onInAppMessageController!.stream;
+
   /// Defining the [MethodChannel] for Flutter_Inapp_Purchase
   static final MethodChannel _channel = const MethodChannel('flutter_inapp');
 
@@ -116,9 +119,8 @@ class FlutterInappPurchase {
   Future<List<IAPItem>> getProducts(List<String> skus) async {
     if (_platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(
-        'getItemsByType',
+        'getProducts',
         <String, dynamic>{
-          'type': describeEnum(_TypeInApp.inapp),
           'skus': skus.toList(),
         },
       );
@@ -142,9 +144,8 @@ class FlutterInappPurchase {
   Future<List<IAPItem>> getSubscriptions(List<String> skus) async {
     if (_platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(
-        'getItemsByType',
+        'getSubscriptions',
         <String, dynamic>{
-          'type': describeEnum(_TypeInApp.subs),
           'skus': skus.toList(),
         },
       );
@@ -191,6 +192,15 @@ class FlutterInappPurchase {
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
+  }
+
+  /// Android only, Google Play will show users messaging during grace period
+  /// and account hold once per day and provide them an opportunity to fix their
+  /// payment without leaving the app
+  Future<void> showInAppMessageAndroid(){
+    if(!_platform.isAndroid)return Future.value();
+    _onInAppMessageController ??= StreamController.broadcast();
+    return _channel.invokeMethod('showInAppMessages');
   }
 
   /// Get all non-consumed purchases made on `Android` and `iOS`.
@@ -452,10 +462,14 @@ class FlutterInappPurchase {
           'token': purchasedItem.purchaseToken,
         });
       } else {
-        return await _channel
-            .invokeMethod('acknowledgePurchase', <String, dynamic>{
-          'token': purchasedItem.purchaseToken,
-        });
+        if(purchasedItem.isAcknowledgedAndroid == true){
+          return Future.value(null);
+        }else{
+          return await _channel.invokeMethod('acknowledgePurchase', <String, dynamic>{
+            'token': purchasedItem.purchaseToken,
+          });
+        }
+
       }
     } else if (_platform.isIOS) {
       return await _channel.invokeMethod('finishTransaction', <String, dynamic>{
@@ -598,6 +612,7 @@ class FlutterInappPurchase {
     _connectionController ??= StreamController.broadcast();
     _purchasePromotedController ??= StreamController.broadcast();
 
+
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
         case "purchase-updated":
@@ -615,6 +630,10 @@ class FlutterInappPurchase {
         case "iap-promoted-product":
           String? productId = call.arguments;
           _purchasePromotedController!.add(productId);
+          break;
+        case "on-in-app-message":
+          final int code = call.arguments;
+          _onInAppMessageController?.add(code);
           break;
         default:
           throw ArgumentError('Unknown method ${call.method}');
