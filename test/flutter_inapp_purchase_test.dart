@@ -13,7 +13,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('FlutterInappPurchase', () {
-    group('showInAppMessageAndroid', (){
+    group('showInAppMessageAndroid', () {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
         setUp(() {
@@ -33,13 +33,14 @@ void main() {
           ]);
         });
 
-        test('returns correct result', () async {
-          final result = await FlutterInappPurchase.instance.showInAppMessageAndroid();
-          expect(result, "ready");
-        });
-
         tearDown(() {
           FlutterInappPurchase.channel.setMethodCallHandler(null);
+        });
+
+        test('returns correct result', () async {
+          final result =
+              await FlutterInappPurchase.instance.showInAppMessageAndroid();
+          expect(result, "ready");
         });
       });
     });
