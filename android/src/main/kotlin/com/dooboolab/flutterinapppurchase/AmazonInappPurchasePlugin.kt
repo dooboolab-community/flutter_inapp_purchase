@@ -33,7 +33,13 @@ class AmazonInappPurchasePlugin : MethodCallHandler {
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        if(call.method == "getStore"){
+            result.success(FlutterInappPurchasePlugin.getStore())
+            return
+        }
+
         safeResult = MethodResultWrapper(result, channel!!)
+
         try {
             PurchasingService.registerListener(context, purchasesUpdatedListener)
         } catch (e: Exception) {
@@ -50,6 +56,9 @@ class AmazonInappPurchasePlugin : MethodCallHandler {
             }
             "endConnection" -> {
                 safeResult!!.success("Billing client has ended.")
+            }
+            "isReady" -> {
+                safeResult!!.success(true)
             }
             "showInAppMessages" -> {
                 safeResult!!.success("in app messages not supported for amazon")

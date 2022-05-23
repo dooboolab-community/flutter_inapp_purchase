@@ -3,7 +3,10 @@ package com.dooboolab.flutterinapppurchase
 import android.app.Activity
 import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import com.android.billingclient.api.*
@@ -22,6 +25,7 @@ import org.json.JSONObject
 class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     ActivityLifecycleCallbacks {
     private val TAG = "InappPurchasePlugin"
+    private val playStoreUrl = "https://play.google.com/store/account/subscriptions"
     private var safeResult: MethodResultWrapper? = null
     private var billingClient: BillingClient? = null
     private var context: Context? = null
@@ -52,8 +56,25 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     override fun onActivityStopped(activity: Activity) {}
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+
+        if(call.method == "getStore"){
+            result.success(FlutterInappPurchasePlugin.getStore())
+            return
+        }
+
+        if(call.method == "manageSubscription"){
+            result.success(manageSubscription(call.argument<String>("sku")!!,call.argument<String>("packageName")!!))
+            return
+        }
+
+        if(call.method == "openPlayStoreSubscriptions"){
+            result.success(openPlayStoreSubscriptions())
+            return
+        }
+
         safeResult = MethodResultWrapper(result, channel!!)
         val safeChannel = MethodResultWrapper(result, channel!!)
+
         if (call.method == "initConnection") {
             if (billingClient != null) {
                 safeChannel.success("Already started. Call endConnection method if you want to start over.")
@@ -101,7 +122,9 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                 }
             })
             return
-        } else if (call.method == "endConnection") {
+        }
+
+        if (call.method == "endConnection") {
             if (billingClient == null) {
                 safeChannel.success("Already ended.")
             }else{
@@ -110,7 +133,14 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
             return
         }
 
-        if (billingClient == null || !billingClient!!.isReady) {
+        val isReady = billingClient?.isReady
+
+        if(call.method == "isReady"){
+            safeChannel.success(isReady)
+            return
+        }
+
+        if (isReady != true) {
             safeChannel.error(
                 call.method,
                 BillingError.E_NOT_PREPARED,
@@ -131,6 +161,33 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
             "consumeProduct" -> consumeProduct(call, safeChannel)
             else -> safeChannel.notImplemented()
         }
+    }
+
+
+    private fun manageSubscription(sku: String, packageName: String): Boolean{
+        val url = "$playStoreUrl?sku=${sku}&package=${packageName}"
+        return openWithFallback(Uri.parse(url))
+    }
+
+    private fun openPlayStoreSubscriptions():Boolean{
+        return openWithFallback(Uri.parse(playStoreUrl))
+    }
+
+    private fun openWithFallback(uri: Uri):Boolean{
+        try{
+            activity!!.startActivity(Intent(Intent.ACTION_VIEW).apply { data = uri })
+            return true
+        }catch (e: ActivityNotFoundException){
+            try{
+                activity!!.startActivity( Intent(Intent.ACTION_VIEW)
+                    .setDataAndType(uri, "text/html")
+                    .addCategory(Intent.CATEGORY_BROWSABLE))
+                return true
+            }catch (e: ActivityNotFoundException){
+                // ignore
+            }
+        }
+        return false
     }
 
     private fun showInAppMessages(safeChannel: MethodResultWrapper) {

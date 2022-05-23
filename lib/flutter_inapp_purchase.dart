@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:platform/platform.dart';
 
+import 'Store.dart';
 import 'modules.dart';
 import 'utils.dart';
 
@@ -65,18 +66,6 @@ class FlutterInappPurchase {
       : _pf = platform,
         _httpClient = client ?? http.Client();
 
-  /// Returns the platform version on `Android` and `iOS`.
-  ///
-  /// eg, `Android 5.1.1`
-  Future<String?> get platformVersion async =>
-      await _channel.invokeMethod('getPlatformVersion');
-
-  /// Consumes all items on `Android`.
-  ///
-  /// Particularly useful for removing all consumable items.
-  @Deprecated('Use consumeAll() instead.')
-  Future get consumeAllItems async => consumeAll();
-
   /// Consumes all items on `Android`.
   ///
   /// Particularly useful for removing all consumable items.
@@ -89,13 +78,6 @@ class FlutterInappPurchase {
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
   }
-
-  /// InitConnection prepare iap features for both `Android` and `iOS`.
-  ///
-  /// This must be called on `Android` and `iOS` before purchasing.
-  /// On `iOS`, it also checks if the client can make payments.
-  @Deprecated('Use initialize() instead.')
-  Future<String?> get initConnection async => initialize();
 
   /// Initializes iap features for both `Android` and `iOS`.
   ///
@@ -112,6 +94,51 @@ class FlutterInappPurchase {
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
   }
+  
+  Future<bool> isReady()async {
+    if (_platform.isAndroid) {
+      return (await _channel.invokeMethod<bool?>('isReady')) ?? false;
+    }
+    if (_platform.isIOS) {
+      return Future.value(true);
+    }
+    throw PlatformException(
+        code: _platform.operatingSystem, message: "platform not supported");
+  }
+
+  Future<bool> manageSubscription(String sku, String packageName)async{
+    if (_platform.isAndroid) {
+      return (await _channel.invokeMethod<bool?>('manageSubscription',
+        <String, dynamic>{
+        'sku': sku,
+        'packageName': packageName,
+      },)) ?? false;
+    }
+    throw PlatformException(
+        code: _platform.operatingSystem, message: "platform not supported");
+  }
+
+  Future<bool> openPlayStoreSubscriptions()async{
+    if (_platform.isAndroid) {
+      return (await _channel.invokeMethod<bool?>('manageSubscription')) ?? false;
+    }
+    throw PlatformException(
+        code: _platform.operatingSystem, message: "platform not supported");
+  }
+
+  Future<Store> getStore()async {
+    if(_platform.isIOS){
+      return Future.value(Store.appStore);
+    }
+    if(_platform.isAndroid){
+      final store = await _channel.invokeMethod<String?>('getStore');
+      if(store == "play_store")return Store.playStore;
+      if(store == "amazon")return Store.amazon;
+      return Store.none;
+    }
+    return Future.value(Store.none);
+  }
+
 
   /// Retrieves a list of products from the store on `Android` and `iOS`.
   ///
@@ -410,12 +437,6 @@ class FlutterInappPurchase {
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
   }
-
-  /// End Play Store connection on `Android` and remove iap observer in `iOS`.
-  ///
-  /// Absolutely necessary to call this when done with the payment.
-  @Deprecated('Use finalize() instead.')
-  Future<String?> get endConnection async => finalize();
 
   /// End Play Store connection on `Android` and remove iap observer in `iOS`.
   ///
