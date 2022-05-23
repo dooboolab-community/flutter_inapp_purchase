@@ -62,7 +62,6 @@ class _InAppState extends State<InApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
 
-
     // prepare
     var result = await FlutterInappPurchase.instance.initialize();
     print('result: $result');
