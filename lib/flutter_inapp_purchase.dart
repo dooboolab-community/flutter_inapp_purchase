@@ -94,8 +94,8 @@ class FlutterInappPurchase {
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
   }
-  
-  Future<bool> isReady()async {
+
+  Future<bool> isReady() async {
     if (_platform.isAndroid) {
       return (await _channel.invokeMethod<bool?>('isReady')) ?? false;
     }
@@ -106,39 +106,42 @@ class FlutterInappPurchase {
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
-  Future<bool> manageSubscription(String sku, String packageName)async{
+  Future<bool> manageSubscription(String sku, String packageName) async {
     if (_platform.isAndroid) {
-      return (await _channel.invokeMethod<bool?>('manageSubscription',
-        <String, dynamic>{
-        'sku': sku,
-        'packageName': packageName,
-      },)) ?? false;
+      return (await _channel.invokeMethod<bool?>(
+            'manageSubscription',
+            <String, dynamic>{
+              'sku': sku,
+              'packageName': packageName,
+            },
+          )) ??
+          false;
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
-  Future<bool> openPlayStoreSubscriptions()async{
+  Future<bool> openPlayStoreSubscriptions() async {
     if (_platform.isAndroid) {
-      return (await _channel.invokeMethod<bool?>('manageSubscription')) ?? false;
+      return (await _channel.invokeMethod<bool?>('openPlayStoreSubscriptions')) ??
+          false;
     }
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
-  Future<Store> getStore()async {
-    if(_platform.isIOS){
+  Future<Store> getStore() async {
+    if (_platform.isIOS) {
       return Future.value(Store.appStore);
     }
-    if(_platform.isAndroid){
+    if (_platform.isAndroid) {
       final store = await _channel.invokeMethod<String?>('getStore');
-      if(store == "play_store")return Store.playStore;
-      if(store == "amazon")return Store.amazon;
+      if (store == "play_store") return Store.playStore;
+      if (store == "amazon") return Store.amazon;
       return Store.none;
     }
     return Future.value(Store.none);
   }
-
 
   /// Retrieves a list of products from the store on `Android` and `iOS`.
   ///
@@ -273,7 +276,6 @@ class FlutterInappPurchase {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': describeEnum(_TypeInApp.inapp),
         'sku': sku,
-        'oldSku': null,
         'prorationMode': -1,
         'obfuscatedAccountId': obfuscatedAccountId,
         'obfuscatedProfileId': obfuscatedProfileIdAndroid,
@@ -298,7 +300,6 @@ class FlutterInappPurchase {
   /// Identical to [requestPurchase] on `iOS`.
   Future requestSubscription(
     String sku, {
-    String? oldSkuAndroid,
     int? prorationModeAndroid,
     String? obfuscatedAccountIdAndroid,
     String? obfuscatedProfileIdAndroid,
@@ -308,7 +309,6 @@ class FlutterInappPurchase {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': describeEnum(_TypeInApp.subs),
         'sku': sku,
-        'oldSku': oldSkuAndroid,
         'prorationMode': prorationModeAndroid ?? -1,
         'obfuscatedAccountId': obfuscatedAccountIdAndroid,
         'obfuscatedProfileId': obfuscatedProfileIdAndroid,

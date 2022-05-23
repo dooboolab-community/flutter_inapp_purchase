@@ -18,14 +18,14 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.security.InvalidParameterException
 
 /**
  * AndroidInappPurchasePlugin
  */
 class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     ActivityLifecycleCallbacks {
-    private val TAG = "InappPurchasePlugin"
-    private val playStoreUrl = "https://play.google.com/store/account/subscriptions"
+
     private var safeResult: MethodResultWrapper? = null
     private var billingClient: BillingClient? = null
     private var context: Context? = null
@@ -163,14 +163,13 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
         }
     }
 
-
     private fun manageSubscription(sku: String, packageName: String): Boolean{
-        val url = "$playStoreUrl?sku=${sku}&package=${packageName}"
+        val url = "$PLAY_STORE_URL?sku=${sku}&package=${packageName}"
         return openWithFallback(Uri.parse(url))
     }
 
     private fun openPlayStoreSubscriptions():Boolean{
-        return openWithFallback(Uri.parse(playStoreUrl))
+        return openWithFallback(Uri.parse(PLAY_STORE_URL))
     }
 
     private fun openWithFallback(uri: Uri):Boolean{
@@ -453,7 +452,6 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
         val obfuscatedAccountId = call.argument<String>("obfuscatedAccountId")
         val obfuscatedProfileId = call.argument<String>("obfuscatedProfileId")
         val sku = call.argument<String>("sku")
-        val oldSku = call.argument<String>("oldSku")
         val prorationMode = call.argument<Int>("prorationMode")!!
         val purchaseToken = call.argument<String>("purchaseToken")
         val builder = newBuilder()
@@ -475,9 +473,8 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
         val params = SubscriptionUpdateParams.newBuilder()
         if (purchaseToken != null) {
             params.setOldSkuPurchaseToken(purchaseToken)
-        }
-        if (oldSku != null) {
-            params.setOldSkuPurchaseToken(oldSku)
+        }else if(prorationMode != -1){
+            throw InvalidParameterException("purchaseToken not defined")
         }
         if (obfuscatedAccountId != null) {
             builder.setObfuscatedAccountId(obfuscatedAccountId)
@@ -506,6 +503,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                 params.setReplaceSkusProrationMode(prorationMode)
             else -> params.setReplaceSkusProrationMode(ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY)
         }
+
         if (purchaseToken != null) {
             builder.setSubscriptionUpdateParams(params.build())
         }
@@ -576,6 +574,8 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     }
 
     companion object {
+        private const val TAG = "InappPurchasePlugin"
+        private const val PLAY_STORE_URL = "https://play.google.com/store/account/subscriptions"
         private var skus: ArrayList<SkuDetails> = arrayListOf()
     }
 }

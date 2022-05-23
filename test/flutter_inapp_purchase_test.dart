@@ -887,6 +887,7 @@ void main() {
     group('requestPurchase', () {
       group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
+        /*
         final dynamic result = {
           "transactionDate": "1552824902000",
           "transactionId": "testTransactionId",
@@ -900,6 +901,7 @@ void main() {
           "originalTransactionIdentifierIOS":
               "testOriginalTransactionIdentifierIOS"
         };
+         */
 
         final String sku = "testsku";
         final String forUser = "testObfuscatedUser";
@@ -944,6 +946,7 @@ void main() {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
         final String sku = "testsku";
+        /*
         final dynamic result = {
           "transactionDate": "1552824902000",
           "transactionId": "testTransactionId",
@@ -957,6 +960,7 @@ void main() {
           "originalTransactionIdentifierIOS":
               "testOriginalTransactionIdentifierIOS"
         };
+         */
 
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
@@ -981,7 +985,6 @@ void main() {
               arguments: <String, dynamic>{
                 'type': 'inapp',
                 'sku': sku,
-                'oldSku': null,
                 'prorationMode': -1,
                 'obfuscatedAccountId': null,
                 'obfuscatedProfileId': null,
@@ -1003,7 +1006,7 @@ void main() {
         final List<MethodCall> log = <MethodCall>[];
 
         final String sku = "testsku";
-        final String oldSku = "testOldSku";
+        /*
         final String result = """{
           "transactionDate":"1552824902000",
           "transactionId":"testTransactionId",
@@ -1016,6 +1019,7 @@ void main() {
           "originalTransactionDateIOS":"1552831136000",
           "originalTransactionIdentifierIOS":"testOriginalTransactionIdentifierIOS"
         }""";
+         */
 
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
@@ -1033,15 +1037,13 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance
-              .requestSubscription(sku, oldSkuAndroid: oldSku);
+          await FlutterInappPurchase.instance.requestSubscription(sku);
           expect(log, <Matcher>[
             isMethodCall(
               'buyItemByType',
               arguments: <String, dynamic>{
                 'type': 'subs',
                 'sku': sku,
-                'oldSku': oldSku,
                 'prorationMode': -1,
                 'obfuscatedAccountId': null,
                 'obfuscatedProfileId': null,
@@ -1061,6 +1063,7 @@ void main() {
         final List<MethodCall> log = <MethodCall>[];
         final String sku = "testsku";
         final String forUser = "testObfuscatedUser";
+        /*
         final dynamic result = {
           "transactionDate": "1552824902000",
           "transactionId": "testTransactionId",
@@ -1074,6 +1077,7 @@ void main() {
           "originalTransactionIdentifierIOS":
               "testOriginalTransactionIdentifierIOS"
         };
+         */
 
         setUp(() {
           FlutterInappPurchase(FlutterInappPurchase.private(
