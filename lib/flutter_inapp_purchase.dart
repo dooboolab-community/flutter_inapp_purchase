@@ -687,6 +687,10 @@ class FlutterInappPurchase {
 /// A list of valid values for ProrationMode parameter
 /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
 class AndroidProrationMode {
+  /// Replacement takes effect immediately, and the user is charged full price of new plan and is given a full billing cycle of subscription, plus remaining prorated time from the old plan.
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#IMMEDIATE_AND_CHARGE_FULL_PRICE
+  static const int IMMEDIATE_AND_CHARGE_FULL_PRICE = 5;
+
   /// Replacement takes effect when the old plan expires, and the new price will be charged at the same time.
   /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#DEFERRED
   static const int DEFERRED = 4;
