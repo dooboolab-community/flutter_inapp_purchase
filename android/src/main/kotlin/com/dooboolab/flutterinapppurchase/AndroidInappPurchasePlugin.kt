@@ -473,8 +473,6 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
         val params = SubscriptionUpdateParams.newBuilder()
         if (purchaseToken != null) {
             params.setOldSkuPurchaseToken(purchaseToken)
-        }else if(prorationMode != -1){
-            throw InvalidParameterException("purchaseToken not defined")
         }
         if (obfuscatedAccountId != null) {
             builder.setObfuscatedAccountId(obfuscatedAccountId)

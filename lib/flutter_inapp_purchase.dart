@@ -123,7 +123,8 @@ class FlutterInappPurchase {
 
   Future<bool> openPlayStoreSubscriptions() async {
     if (_platform.isAndroid) {
-      return (await _channel.invokeMethod<bool?>('openPlayStoreSubscriptions')) ??
+      return (await _channel
+              .invokeMethod<bool?>('openPlayStoreSubscriptions')) ??
           false;
     }
     throw PlatformException(
