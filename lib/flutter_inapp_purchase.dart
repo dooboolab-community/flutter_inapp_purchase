@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
 
+import 'Store.dart';
 import 'modules.dart';
 import 'utils.dart';
 
@@ -40,6 +40,10 @@ class FlutterInappPurchase {
   static Stream<String?> get purchasePromoted =>
       _purchasePromotedController!.stream;
 
+  static StreamController<int?>? _onInAppMessageController;
+  static Stream<int?> get inAppMessageAndroid =>
+      _onInAppMessageController!.stream;
+
   /// Defining the [MethodChannel] for Flutter_Inapp_Purchase
   static final MethodChannel _channel = const MethodChannel('flutter_inapp');
 
@@ -62,18 +66,6 @@ class FlutterInappPurchase {
       : _pf = platform,
         _httpClient = client ?? http.Client();
 
-  /// Returns the platform version on `Android` and `iOS`.
-  ///
-  /// eg, `Android 5.1.1`
-  Future<String?> get platformVersion async =>
-      await _channel.invokeMethod('getPlatformVersion');
-
-  /// Consumes all items on `Android`.
-  ///
-  /// Particularly useful for removing all consumable items.
-  @Deprecated('Use consumeAll() instead.')
-  Future get consumeAllItems async => consumeAll();
-
   /// Consumes all items on `Android`.
   ///
   /// Particularly useful for removing all consumable items.
@@ -86,13 +78,6 @@ class FlutterInappPurchase {
     throw PlatformException(
         code: _platform.operatingSystem, message: "platform not supported");
   }
-
-  /// InitConnection prepare iap features for both `Android` and `iOS`.
-  ///
-  /// This must be called on `Android` and `iOS` before purchasing.
-  /// On `iOS`, it also checks if the client can make payments.
-  @Deprecated('Use initialize() instead.')
-  Future<String?> get initConnection async => initialize();
 
   /// Initializes iap features for both `Android` and `iOS`.
   ///
@@ -110,15 +95,63 @@ class FlutterInappPurchase {
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
+  Future<bool> isReady() async {
+    if (_platform.isAndroid) {
+      return (await _channel.invokeMethod<bool?>('isReady')) ?? false;
+    }
+    if (_platform.isIOS) {
+      return Future.value(true);
+    }
+    throw PlatformException(
+        code: _platform.operatingSystem, message: "platform not supported");
+  }
+
+  Future<bool> manageSubscription(String sku, String packageName) async {
+    if (_platform.isAndroid) {
+      return (await _channel.invokeMethod<bool?>(
+            'manageSubscription',
+            <String, dynamic>{
+              'sku': sku,
+              'packageName': packageName,
+            },
+          )) ??
+          false;
+    }
+    throw PlatformException(
+        code: _platform.operatingSystem, message: "platform not supported");
+  }
+
+  Future<bool> openPlayStoreSubscriptions() async {
+    if (_platform.isAndroid) {
+      return (await _channel
+              .invokeMethod<bool?>('openPlayStoreSubscriptions')) ??
+          false;
+    }
+    throw PlatformException(
+        code: _platform.operatingSystem, message: "platform not supported");
+  }
+
+  Future<Store> getStore() async {
+    if (_platform.isIOS) {
+      return Future.value(Store.appStore);
+    }
+    if (_platform.isAndroid) {
+      final store = await _channel.invokeMethod<String?>('getStore');
+      if (store == "play_store") return Store.playStore;
+      if (store == "amazon") return Store.amazon;
+      return Store.none;
+    }
+    return Future.value(Store.none);
+  }
+
   /// Retrieves a list of products from the store on `Android` and `iOS`.
   ///
   /// `iOS` also returns subscriptions.
   Future<List<IAPItem>> getProducts(List<String> skus) async {
     if (_platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(
-        'getItemsByType',
+        'getProducts',
         <String, dynamic>{
-          'type': describeEnum(_TypeInApp.inapp),
           'skus': skus.toList(),
         },
       );
@@ -142,9 +175,8 @@ class FlutterInappPurchase {
   Future<List<IAPItem>> getSubscriptions(List<String> skus) async {
     if (_platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(
-        'getItemsByType',
+        'getSubscriptions',
         <String, dynamic>{
-          'type': describeEnum(_TypeInApp.subs),
           'skus': skus.toList(),
         },
       );
@@ -193,6 +225,15 @@ class FlutterInappPurchase {
         code: _platform.operatingSystem, message: "platform not supported");
   }
 
+  /// Android only, Google Play will show users messaging during grace period
+  /// and account hold once per day and provide them an opportunity to fix their
+  /// payment without leaving the app
+  Future<String?> showInAppMessageAndroid() async {
+    if (!_platform.isAndroid) return Future.value("");
+    _onInAppMessageController ??= StreamController.broadcast();
+    return await _channel.invokeMethod('showInAppMessages');
+  }
+
   /// Get all non-consumed purchases made on `Android` and `iOS`.
   ///
   /// This is identical to [getPurchaseHistory] on `iOS`
@@ -236,7 +277,6 @@ class FlutterInappPurchase {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': describeEnum(_TypeInApp.inapp),
         'sku': sku,
-        'oldSku': null,
         'prorationMode': -1,
         'obfuscatedAccountId': obfuscatedAccountId,
         'obfuscatedProfileId': obfuscatedProfileIdAndroid,
@@ -261,7 +301,6 @@ class FlutterInappPurchase {
   /// Identical to [requestPurchase] on `iOS`.
   Future requestSubscription(
     String sku, {
-    String? oldSkuAndroid,
     int? prorationModeAndroid,
     String? obfuscatedAccountIdAndroid,
     String? obfuscatedProfileIdAndroid,
@@ -271,7 +310,6 @@ class FlutterInappPurchase {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': describeEnum(_TypeInApp.subs),
         'sku': sku,
-        'oldSku': oldSkuAndroid,
         'prorationMode': prorationModeAndroid ?? -1,
         'obfuscatedAccountId': obfuscatedAccountIdAndroid,
         'obfuscatedProfileId': obfuscatedProfileIdAndroid,
@@ -404,12 +442,6 @@ class FlutterInappPurchase {
   /// End Play Store connection on `Android` and remove iap observer in `iOS`.
   ///
   /// Absolutely necessary to call this when done with the payment.
-  @Deprecated('Use finalize() instead.')
-  Future<String?> get endConnection async => finalize();
-
-  /// End Play Store connection on `Android` and remove iap observer in `iOS`.
-  ///
-  /// Absolutely necessary to call this when done with the payment.
   Future<String?> finalize() async {
     if (_platform.isAndroid) {
       final String? result = await _channel.invokeMethod('endConnection');
@@ -452,10 +484,14 @@ class FlutterInappPurchase {
           'token': purchasedItem.purchaseToken,
         });
       } else {
-        return await _channel
-            .invokeMethod('acknowledgePurchase', <String, dynamic>{
-          'token': purchasedItem.purchaseToken,
-        });
+        if (purchasedItem.isAcknowledgedAndroid == true) {
+          return Future.value(null);
+        } else {
+          return await _channel
+              .invokeMethod('acknowledgePurchase', <String, dynamic>{
+            'token': purchasedItem.purchaseToken,
+          });
+        }
       }
     } else if (_platform.isIOS) {
       return await _channel.invokeMethod('finishTransaction', <String, dynamic>{
@@ -501,8 +537,8 @@ class FlutterInappPurchase {
   /// This method is NOT secure and untested in production.
   Future<bool> checkSubscribed({
     required String sku,
-    Duration duration: const Duration(days: 30),
-    Duration grace: const Duration(days: 3),
+    Duration duration = const Duration(days: 30),
+    Duration grace = const Duration(days: 3),
   }) async {
     if (_platform.isIOS) {
       var history =
@@ -616,6 +652,10 @@ class FlutterInappPurchase {
           String? productId = call.arguments;
           _purchasePromotedController!.add(productId);
           break;
+        case "on-in-app-message":
+          final int code = call.arguments;
+          _onInAppMessageController?.add(code);
+          break;
         default:
           throw ArgumentError('Unknown method ${call.method}');
       }
@@ -647,6 +687,10 @@ class FlutterInappPurchase {
 /// A list of valid values for ProrationMode parameter
 /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
 class AndroidProrationMode {
+  /// Replacement takes effect immediately, and the user is charged full price of new plan and is given a full billing cycle of subscription, plus remaining prorated time from the old plan.
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#IMMEDIATE_AND_CHARGE_FULL_PRICE
+  static const int IMMEDIATE_AND_CHARGE_FULL_PRICE = 5;
+
   /// Replacement takes effect when the old plan expires, and the new price will be charged at the same time.
   /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#DEFERRED
   static const int DEFERRED = 4;
