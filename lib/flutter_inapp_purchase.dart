@@ -542,7 +542,11 @@ class FlutterInappPurchase {
   }) async {
     if (_platform.isIOS) {
       var history =
-          await (getPurchaseHistory() as FutureOr<List<PurchasedItem>>);
+          await (getPurchaseHistory() as Future<List<PurchasedItem>?>);
+
+      if (history == null) {
+        return false;
+      }
 
       for (var purchase in history) {
         Duration difference =
