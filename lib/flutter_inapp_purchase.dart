@@ -541,8 +541,7 @@ class FlutterInappPurchase {
     Duration grace = const Duration(days: 3),
   }) async {
     if (_platform.isIOS) {
-      var history =
-          await (getPurchaseHistory() as Future<List<PurchasedItem>?>);
+      var history = await getPurchaseHistory();
 
       if (history == null) {
         return false;
@@ -557,8 +556,11 @@ class FlutterInappPurchase {
 
       return false;
     } else if (_platform.isAndroid) {
-      var purchases =
-          await (getAvailablePurchases() as FutureOr<List<PurchasedItem>>);
+      var purchases = await getAvailablePurchases();
+
+      if (purchases == null) {
+        return false;
+      }
 
       for (var purchase in purchases) {
         if (purchase.productId == sku) return true;
