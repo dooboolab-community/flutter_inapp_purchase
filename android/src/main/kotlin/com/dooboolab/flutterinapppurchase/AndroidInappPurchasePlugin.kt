@@ -234,12 +234,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                         }
                         billingClient!!.consumeAsync(consumeParams, listener)
                     }
-            else {
-                    safeChannel.error(
-                        call.method, "refreshItem",
-                        "No results for query"
-                    )
-                }
+
 
         } catch (err: Error) {
             safeChannel.error(call.method, err.message, "")
