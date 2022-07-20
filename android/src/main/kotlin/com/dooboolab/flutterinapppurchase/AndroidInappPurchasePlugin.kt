@@ -216,25 +216,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                 )
                 return
             }
-            print("Size is ${ lstPurchase.size }")
-            for (purchase in lstPurchase) {
-                        val consumeParams = ConsumeParams.newBuilder()
-                            .setPurchaseToken(purchase.purchaseToken)
-                            .build()
-                        val listener = ConsumeResponseListener { _, outToken ->
-                            array.add(outToken)
-                            if (lstPurchase.size == array.size) {
-                                try {
-                                    safeChannel.success(array.toString())
-                                    return@ConsumeResponseListener
-                                } catch (e: FlutterException) {
-                                    Log.e(TAG, e.message!!)
-                                }
-                            }
-                        }
-                        billingClient!!.consumeAsync(consumeParams, listener)
-                    }
-
+            safeChannel.success(lstPurchase.size.toString())
 
         } catch (err: Error) {
             safeChannel.error(call.method, err.message, "")
