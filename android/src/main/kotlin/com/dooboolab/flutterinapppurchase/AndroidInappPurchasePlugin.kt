@@ -206,7 +206,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     ) {
         try {
             val array = ArrayList<String>()
-            billingClient!!.queryPurchasesAsync(BillingClient.SkuType.INAPP)
+            billingClient!!.queryPurchases(BillingClient.SkuType.INAPP)
             { billingResult, skuDetailsList ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     if (skuDetailsList.size == 0) {
