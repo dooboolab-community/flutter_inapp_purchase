@@ -216,7 +216,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                 )
                 return
             }
-
+            android.util.Log.e(TAG, "consumeAllItems: logging ${lstPurchase.size}", )
             for (purchase in lstPurchase) {
                         val consumeParams = ConsumeParams.newBuilder()
                             .setPurchaseToken(purchase.purchaseToken)
