@@ -216,8 +216,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                 )
                 return
             }
-            safeChannel.success(lstPurchase.size.toString())
-
+            safeChannel.success(lstPurchase[0].sku)
         } catch (err: Error) {
             safeChannel.error(call.method, err.message, "")
         }
