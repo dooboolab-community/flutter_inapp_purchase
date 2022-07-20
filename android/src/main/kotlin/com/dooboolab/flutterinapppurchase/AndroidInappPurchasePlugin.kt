@@ -206,25 +206,24 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     ) {
         try {
             val array = ArrayList<String>()
-            billingClient!!.queryPurchases(BillingClient.SkuType.INAPP)
-            { billingResult, skuDetailsList ->
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    if (skuDetailsList.size == 0) {
-                        safeChannel.error(
-                            call.method,
-                            "refreshItem",
-                            "No purchases found"
-                        )
-                        return@queryPurchasesAsync
-                    }
+            val purchasesResult = billingClient.queryPurchases(BillingClient.SkuType.INAPP)
+            val lstPurchase = purchasesResult.purchasesList
+            if (lstPurchase==null){
+                safeChannel.error(
+                    call.method,
+                    "refreshItem",
+                    "No purchases found"
+                )
+                return
+            }
 
-                    for (purchase in skuDetailsList) {
+            for (purchase in lstPurchase) {
                         val consumeParams = ConsumeParams.newBuilder()
                             .setPurchaseToken(purchase.purchaseToken)
                             .build()
                         val listener = ConsumeResponseListener { _, outToken ->
                             array.add(outToken)
-                            if (skuDetailsList.size == array.size) {
+                            if (lstPurchase.size == array.size) {
                                 try {
                                     safeChannel.success(array.toString())
                                     return@ConsumeResponseListener
