@@ -56,7 +56,6 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     override fun onActivityStopped(activity: Activity) {}
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-
         if(call.method == "getStore"){
             result.success(FlutterInappPurchasePlugin.getStore())
             return
