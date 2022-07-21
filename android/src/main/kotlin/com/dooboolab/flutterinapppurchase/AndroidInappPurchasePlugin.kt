@@ -205,7 +205,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     ) {
         try {
             val array = ArrayList<String>()
-            val purchasesResult = billingClient.queryPurchases(BillingClient.SkuType.INAPP)
+            val purchasesResult = billingClient?.queryPurchases(BillingClient.SkuType.INAPP)
             val lstPurchase = purchasesResult.purchasesList
             if (lstPurchase == null) {
                 safeChannel.error(
