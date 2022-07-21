@@ -205,43 +205,20 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     ) {
         try {
             val array = ArrayList<String>()
-            billingClient!!.queryPurchasesAsync(BillingClient.SkuType.INAPP)
-            { billingResult, skuDetailsList ->
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    if (skuDetailsList.size == 0) {
-                        safeChannel.error(
-                            call.method,
-                            "refreshItem",
-                            "No purchases found"
-                        )
-                        return@queryPurchasesAsync
-                    }
-
-                    for (purchase in skuDetailsList) {
-                        val consumeParams = ConsumeParams.newBuilder()
-                            .setPurchaseToken(purchase.purchaseToken)
-                            .build()
-                        val listener = ConsumeResponseListener { _, outToken ->
-                            array.add(outToken)
-                            if (skuDetailsList.size == array.size) {
-                                try {
-                                    safeChannel.success(array.toString())
-                                    return@ConsumeResponseListener
-                                } catch (e: FlutterException) {
-                                    Log.e(TAG, e.message!!)
-                                }
-                            }
-                        }
-                        billingClient!!.consumeAsync(consumeParams, listener)
-                    }
-                } else {
-                    safeChannel.error(
-                        call.method, "refreshItem",
-                        "No results for query"
-                    )
-                }
+            val purchasesResult = billingClient!!.queryPurchases(BillingClient.SkuType.INAPP)
+            val lstPurchase = purchasesResult.purchasesList
+            if (lstPurchase == null) {
+                safeChannel.error(
+                    call.method,
+                    "refreshItem",
+                    "No purchases found"
+                )
+                return
             }
-
+            lstPurchase?.let {
+                val purchase = lstPurchase.first();
+                safeChannel.success(purchase?.toString())
+            }
         } catch (err: Error) {
             safeChannel.error(call.method, err.message, "")
         }
