@@ -430,7 +430,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                             for (pricing in it.pricingPhases.pricingPhaseList) {
                                 val subItem = JSONObject()
                                 subItem.put("introductoryPrice", pricing.formattedPrice)
-                                subItem.put("subscriptionPeriodAndroid", pricing.billingPeriod.)
+                                subItem.put("subscriptionPeriodAndroid", pricing.billingPeriod)
 //                                item.put("freeTrialPeriodAndroid", pricing.getRecurrenceMode())
                                 subItem.put("introductoryPriceCyclesAndroid", pricing.billingCycleCount)
 //                                item.put("introductoryPricePeriodAndroid", pricing.p)
@@ -439,9 +439,6 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
 
                         }
                     }
-                    // new
-//                    item.put("iconUrl", skuDetails.)
-//                    item.put("originalJson", skuDetails.zzb)
                     item.put("subscriptionOfferDetails", subs)
                     item.put("originalPrice", ((skuDetails.oneTimePurchaseOfferDetails?.priceAmountMicros ?: 0) / 1000000f).toDouble())
                     items.put(item)
