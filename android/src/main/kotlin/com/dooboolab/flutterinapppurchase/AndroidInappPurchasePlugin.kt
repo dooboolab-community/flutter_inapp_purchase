@@ -18,14 +18,12 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.security.InvalidParameterException
 
 /**
  * AndroidInappPurchasePlugin
  */
 class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     ActivityLifecycleCallbacks {
-
     private var safeResult: MethodResultWrapper? = null
     private var billingClient: BillingClient? = null
     private var context: Context? = null
@@ -152,8 +150,8 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
         when(call.method){
             "showInAppMessages" -> showInAppMessages(safeChannel)
             "consumeAllItems" -> consumeAllItems(safeChannel, call)
-            "getProducts" -> getProductsByType(BillingClient.SkuType.INAPP, call, safeChannel)
-            "getSubscriptions" -> getProductsByType(BillingClient.SkuType.SUBS, call, safeChannel)
+            "getProducts" -> getProductsByType(BillingClient.ProductType.INAPP, call, safeChannel)
+            "getSubscriptions" -> getProductsByType(BillingClient.ProductType.SUBS, call, safeChannel)
             "getAvailableItemsByType" -> getAvailableItemsByType(call, safeChannel)
             "getPurchaseHistoryByType" -> getPurchaseHistoryByType(call, safeChannel)
             "buyItemByType" -> buyProduct(call, safeChannel)
@@ -260,16 +258,16 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 for (purchase in skuDetailsList) {
                     val item = JSONObject()
-                    item.put("productId", purchase.skus[0])
+                    item.put("productId", purchase.products[0])
                     item.put("transactionId", purchase.orderId)
                     item.put("transactionDate", purchase.purchaseTime)
                     item.put("transactionReceipt", purchase.originalJson)
                     item.put("purchaseToken", purchase.purchaseToken)
                     item.put("signatureAndroid", purchase.signature)
                     item.put("purchaseStateAndroid", purchase.purchaseState)
-                    if (type == BillingClient.SkuType.INAPP) {
+                    if (type == BillingClient.ProductType.INAPP) {
                         item.put("isAcknowledgedAndroid", purchase.isAcknowledged)
-                    } else if (type == BillingClient.SkuType.SUBS) {
+                    } else if (type == BillingClient.ProductType.SUBS) {
                         item.put("autoRenewingAndroid", purchase.isAutoRenewing)
                     }
                     items.put(item)
@@ -372,7 +370,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                 try {
                     for (purchase in purchaseHistoryRecordList!!) {
                         val item = JSONObject()
-                        item.put("productId", purchase.skus[0])
+                        item.put("productId", purchase.products[0])
                         item.put("transactionDate", purchase.purchaseTime)
                         item.put("transactionReceipt", purchase.originalJson)
                         item.put("purchaseToken", purchase.purchaseToken)
@@ -390,57 +388,76 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
     }
 
     private fun getProductsByType(
-        skuType: String,
+        productType: String,
         call: MethodCall,
         safeChannel: MethodResultWrapper
     ) {
         val skuArr : ArrayList<String> = call.argument<ArrayList<String>>("skus")!!
-        val skuList = ArrayList<QueryProductDetailsParams.Product>()
+        val params = ArrayList<QueryProductDetailsParams.Product>()
         for (i in skuArr.indices) {
-            skuList.add(QueryProductDetailsParams.Product.newBuilder().setProductId(skuArr[i]).setProductType(skuType).build())
+            params.add(QueryProductDetailsParams.Product.newBuilder().setProductId(skuArr[i]).setProductType(productType).build())
         }
 
         billingClient!!.queryProductDetailsAsync(
-            QueryProductDetailsParams.newBuilder().setProductList(skuList).build()
-        ) { billingResult, skuDetailsList ->
+            QueryProductDetailsParams.newBuilder().setProductList(params).build()
+        ) { billingResult, products ->
+            // On error
             if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
                 val errorData = BillingError.getErrorFromResponseData(billingResult.responseCode)
                 safeChannel.error(call.method, errorData.code, errorData.message)
                 return@queryProductDetailsAsync
             }
-            for (sku in skuDetailsList) {
-                if (!skus.contains(sku)) {
-                    skus.add(sku)
-                }
-            }
+
             try {
                 val items = JSONArray()
-                for (skuDetails in skuDetailsList) {
-                    val item = JSONObject()
-                    item.put("productId", skuDetails.productId)
-                    item.put("price", ((skuDetails.oneTimePurchaseOfferDetails?.priceAmountMicros ?: 0) / 1000000f).toString())
-                    item.put("currency", skuDetails.oneTimePurchaseOfferDetails?.priceCurrencyCode)
-                    item.put("type", skuDetails.productType)
-                    item.put("localizedPrice", skuDetails.oneTimePurchaseOfferDetails?.formattedPrice)
-                    item.put("title", skuDetails.title)
-                    item.put("description", skuDetails.description)
-                    val subs = JSONArray()
-                    if(skuDetails.subscriptionOfferDetails!=null) {
-                        for (it in skuDetails.subscriptionOfferDetails!!) {
-                            for (pricing in it.pricingPhases.pricingPhaseList) {
-                                val subItem = JSONObject()
-                                subItem.put("introductoryPrice", pricing.formattedPrice)
-                                subItem.put("subscriptionPeriodAndroid", pricing.billingPeriod)
-//                                item.put("freeTrialPeriodAndroid", pricing.getRecurrenceMode())
-                                subItem.put("introductoryPriceCyclesAndroid", pricing.billingCycleCount)
-//                                item.put("introductoryPricePeriodAndroid", pricing.p)
-                                subs.put(subItem)
-                            }
+                for (productDetails in products) {
+                    // Add to list of tracked SKUS
+                    if (!skus.contains(productDetails)) {
+                        skus.add(productDetails)
+                    }
 
+                    // Create flutter objects
+                    val item = JSONObject()
+                    item.put("productId", productDetails.productId)
+                    item.put("type", productDetails.productType)
+                    item.put("title", productDetails.title)
+                    item.put("description", productDetails.description)
+
+                    // These generalized values are derived from the first pricing object, mainly for backwards compatibility
+                    // It would be better to use the actual objects in PricingPhases and SubscriptionOffers
+
+                    // Get first subscription offer
+                    val firstProductInfo = productDetails.subscriptionOfferDetails?.get(0)
+                    if (firstProductInfo != null && firstProductInfo.pricingPhases.pricingPhaseList[0] != null) {
+                        val defaultPricingPhase = firstProductInfo.pricingPhases.pricingPhaseList[0]
+                        item.put("price", (defaultPricingPhase.priceAmountMicros / 1000000f).toString())
+                        item.put("currency", defaultPricingPhase.priceCurrencyCode)
+                        item.put("localizedPrice", defaultPricingPhase.formattedPrice)
+                    }
+
+                    val subs = JSONArray()
+                    if (productDetails.subscriptionOfferDetails != null ) {
+                        for (offer in productDetails.subscriptionOfferDetails!!) {
+                            val offerItem = JSONObject()
+                            offerItem.put("offerId", offer.offerId)
+                            offerItem.put("basePlanId", offer.basePlanId)
+                            offerItem.put("offerToken", offer.offerToken)
+                            val pricingPhases = JSONArray()
+                            for (pricing in offer.pricingPhases.pricingPhaseList) {
+                                val pricingPhase = JSONObject()
+                                pricingPhase.put("price", (pricing.priceAmountMicros / 1000000f).toString())
+                                pricingPhase.put("formattedPrice", pricing.formattedPrice)
+                                pricingPhase.put("billingPeriod", pricing.billingPeriod)
+                                pricingPhase.put("currencyCode", pricing.priceCurrencyCode)
+                                pricingPhase.put("recurrenceMode", pricing.recurrenceMode)
+                                pricingPhase.put("billingCycleCount", pricing.billingCycleCount)
+                                pricingPhases.put(pricingPhase)
+                            }
+                            offerItem.put("pricingPhases", pricingPhases)
+                            subs.put(offerItem)
                         }
                     }
-                    item.put("subscriptionOfferDetails", subs)
-                    item.put("originalPrice", ((skuDetails.oneTimePurchaseOfferDetails?.priceAmountMicros ?: 0) / 1000000f).toDouble())
+                    item.put("subscriptionOffers", subs)
                     items.put(item)
                 }
                 safeChannel.success(items.toString())
@@ -480,7 +497,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
             return
         }
 
-        var arr = ArrayList<ProductDetailsParams>()
+        val arr = ArrayList<ProductDetailsParams>()
         arr.add(ProductDetailsParams.newBuilder().apply { setProductDetails(selectedSku) }.build())
         builder.setProductDetailsParamsList(arr)
 
@@ -539,7 +556,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
             if (purchases != null) {
                 for (purchase in purchases) {
                     val item = JSONObject()
-                    item.put("productId", purchase.skus[0])
+                    item.put("productId", purchase.products[0])
                     item.put("transactionId", purchase.orderId)
                     item.put("transactionDate", purchase.purchaseTime)
                     item.put("transactionReceipt", purchase.originalJson)

@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
-import 'package:platform/platform.dart';
-import 'package:http/testing.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:platform/platform.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -232,14 +232,14 @@ void main() {
                 expectedProduct.introductoryPriceNumberOfPeriodsIOS);
             expect(product.introductoryPriceSubscriptionPeriodIOS,
                 expectedProduct.introductoryPriceSubscriptionPeriodIOS);
-            expect(product.subscriptionPeriodAndroid,
-                expectedProduct.subscriptionPeriodAndroid);
-            expect(product.introductoryPriceCyclesAndroid,
-                expectedProduct.introductoryPriceCyclesAndroid);
-            expect(product.introductoryPricePeriodAndroid,
-                expectedProduct.introductoryPricePeriodAndroid);
-            expect(product.freeTrialPeriodAndroid,
-                expectedProduct.freeTrialPeriodAndroid);
+            // expect(product.subscriptionPeriodAndroid,
+            //     expectedProduct.subscriptionPeriodAndroid);
+            // expect(product.introductoryPriceCyclesAndroid,
+            //     expectedProduct.introductoryPriceCyclesAndroid);
+            // expect(product.introductoryPricePeriodAndroid,
+            //     expectedProduct.introductoryPricePeriodAndroid);
+            // expect(product.freeTrialPeriodAndroid,
+            //     expectedProduct.freeTrialPeriodAndroid);
           }
         });
       });
@@ -323,14 +323,14 @@ void main() {
                 expectedProduct.introductoryPriceNumberOfPeriodsIOS);
             expect(product.introductoryPriceSubscriptionPeriodIOS,
                 expectedProduct.introductoryPriceSubscriptionPeriodIOS);
-            expect(product.subscriptionPeriodAndroid,
-                expectedProduct.subscriptionPeriodAndroid);
-            expect(product.introductoryPriceCyclesAndroid,
-                expectedProduct.introductoryPriceCyclesAndroid);
-            expect(product.introductoryPricePeriodAndroid,
-                expectedProduct.introductoryPricePeriodAndroid);
-            expect(product.freeTrialPeriodAndroid,
-                expectedProduct.freeTrialPeriodAndroid);
+            // expect(product.subscriptionPeriodAndroid,
+            //     expectedProduct.subscriptionPeriodAndroid);
+            // expect(product.introductoryPriceCyclesAndroid,
+            //     expectedProduct.introductoryPriceCyclesAndroid);
+            // expect(product.introductoryPricePeriodAndroid,
+            //     expectedProduct.introductoryPricePeriodAndroid);
+            // expect(product.freeTrialPeriodAndroid,
+            //     expectedProduct.freeTrialPeriodAndroid);
           }
         });
       });
@@ -415,14 +415,14 @@ void main() {
                 expectedProduct.introductoryPriceNumberOfPeriodsIOS);
             expect(product.introductoryPriceSubscriptionPeriodIOS,
                 expectedProduct.introductoryPriceSubscriptionPeriodIOS);
-            expect(product.subscriptionPeriodAndroid,
-                expectedProduct.subscriptionPeriodAndroid);
-            expect(product.introductoryPriceCyclesAndroid,
-                expectedProduct.introductoryPriceCyclesAndroid);
-            expect(product.introductoryPricePeriodAndroid,
-                expectedProduct.introductoryPricePeriodAndroid);
-            expect(product.freeTrialPeriodAndroid,
-                expectedProduct.freeTrialPeriodAndroid);
+            // expect(product.subscriptionPeriodAndroid,
+            //     expectedProduct.subscriptionPeriodAndroid);
+            // expect(product.introductoryPriceCyclesAndroid,
+            //     expectedProduct.introductoryPriceCyclesAndroid);
+            // expect(product.introductoryPricePeriodAndroid,
+            //     expectedProduct.introductoryPricePeriodAndroid);
+            // expect(product.freeTrialPeriodAndroid,
+            //     expectedProduct.freeTrialPeriodAndroid);
           }
         });
       });
@@ -506,14 +506,14 @@ void main() {
                 expectedProduct.introductoryPriceNumberOfPeriodsIOS);
             expect(product.introductoryPriceSubscriptionPeriodIOS,
                 expectedProduct.introductoryPriceSubscriptionPeriodIOS);
-            expect(product.subscriptionPeriodAndroid,
-                expectedProduct.subscriptionPeriodAndroid);
-            expect(product.introductoryPriceCyclesAndroid,
-                expectedProduct.introductoryPriceCyclesAndroid);
-            expect(product.introductoryPricePeriodAndroid,
-                expectedProduct.introductoryPricePeriodAndroid);
-            expect(product.freeTrialPeriodAndroid,
-                expectedProduct.freeTrialPeriodAndroid);
+            // expect(product.subscriptionPeriodAndroid,
+            //     expectedProduct.subscriptionPeriodAndroid);
+            // expect(product.introductoryPriceCyclesAndroid,
+            //     expectedProduct.introductoryPriceCyclesAndroid);
+            // expect(product.introductoryPricePeriodAndroid,
+            //     expectedProduct.introductoryPricePeriodAndroid);
+            // expect(product.freeTrialPeriodAndroid,
+            //     expectedProduct.freeTrialPeriodAndroid);
           }
         });
       });
@@ -1371,14 +1371,14 @@ void main() {
                 expectedProduct.introductoryPriceNumberOfPeriodsIOS);
             expect(product.introductoryPriceSubscriptionPeriodIOS,
                 expectedProduct.introductoryPriceSubscriptionPeriodIOS);
-            expect(product.subscriptionPeriodAndroid,
-                expectedProduct.subscriptionPeriodAndroid);
-            expect(product.introductoryPriceCyclesAndroid,
-                expectedProduct.introductoryPriceCyclesAndroid);
-            expect(product.introductoryPricePeriodAndroid,
-                expectedProduct.introductoryPricePeriodAndroid);
-            expect(product.freeTrialPeriodAndroid,
-                expectedProduct.freeTrialPeriodAndroid);
+            // expect(product.subscriptionPeriodAndroid,
+            //     expectedProduct.subscriptionPeriodAndroid);
+            // expect(product.introductoryPriceCyclesAndroid,
+            //     expectedProduct.introductoryPriceCyclesAndroid);
+            // expect(product.introductoryPricePeriodAndroid,
+            //     expectedProduct.introductoryPricePeriodAndroid);
+            // expect(product.freeTrialPeriodAndroid,
+            //     expectedProduct.freeTrialPeriodAndroid);
           }
         });
       });
