@@ -423,16 +423,22 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                     item.put("title", productDetails.title)
                     item.put("description", productDetails.description)
 
+                    // One-time offer details have changed in 5.0
+                    if (productDetails.oneTimePurchaseOfferDetails != null) {
+                        item.put("introductoryPrice", productDetails.oneTimePurchaseOfferDetails!!.formattedPrice)
+                    }
+
                     // These generalized values are derived from the first pricing object, mainly for backwards compatibility
                     // It would be better to use the actual objects in PricingPhases and SubscriptionOffers
 
                     // Get first subscription offer
-                    val firstProductInfo = productDetails.subscriptionOfferDetails?.get(0)
+                    val firstProductInfo = productDetails.subscriptionOfferDetails?.find { offer -> offer.offerId == null }
                     if (firstProductInfo != null && firstProductInfo.pricingPhases.pricingPhaseList[0] != null) {
                         val defaultPricingPhase = firstProductInfo.pricingPhases.pricingPhaseList[0]
                         item.put("price", (defaultPricingPhase.priceAmountMicros / 1000000f).toString())
                         item.put("currency", defaultPricingPhase.priceCurrencyCode)
                         item.put("localizedPrice", defaultPricingPhase.formattedPrice)
+                        item.put("subscriptionPeriodAndroid", defaultPricingPhase.billingPeriod)
                     }
 
                     val subs = JSONArray()

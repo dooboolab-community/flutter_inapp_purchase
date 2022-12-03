@@ -33,6 +33,7 @@ class IAPItem {
   /// android only
   final String? signatureAndroid;
   final List<SubscriptionOfferAndroid>? subscriptionOffersAndroid;
+  final String? subscriptionPeriodAndroid;
 
   final String? iconUrl;
   final String? originalJson;
@@ -59,6 +60,8 @@ class IAPItem {
             json['subscriptionPeriodNumberIOS'] as String?,
         subscriptionPeriodUnitIOS =
             json['subscriptionPeriodUnitIOS'] as String?,
+        subscriptionPeriodAndroid =
+            json['subscriptionPeriodAndroid'] as String?,
         signatureAndroid = json['signatureAndroid'] as String?,
         iconUrl = json['iconUrl'] as String?,
         originalJson = json['originalJson'] as String?,
@@ -94,7 +97,7 @@ class IAPItem {
         this.introductoryPriceNumberOfPeriodsIOS;
     data['introductoryPriceSubscriptionPeriodIOS'] =
         this.introductoryPriceSubscriptionPeriodIOS;
-
+    data['subscriptionPeriodAndroid'] = this.subscriptionPeriodAndroid;
     data['signatureAndroid'] = this.signatureAndroid;
 
     data['iconUrl'] = this.iconUrl;
@@ -120,6 +123,7 @@ class IAPItem {
         'introductoryPricePaymentModeIOS: $introductoryPricePaymentModeIOS, '
         'introductoryPriceNumberOfPeriodsIOS: $introductoryPriceNumberOfPeriodsIOS, '
         'introductoryPriceSubscriptionPeriodIOS: $introductoryPriceSubscriptionPeriodIOS, '
+        'subscriptionPeriodAndroid $subscriptionPeriodAndroid'
         'iconUrl: $iconUrl, '
         'originalJson: $originalJson, '
         'originalPrice: $originalPrice, '
