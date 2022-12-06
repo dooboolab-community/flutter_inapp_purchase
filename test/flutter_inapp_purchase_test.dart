@@ -155,7 +155,7 @@ void main() {
     group('getProducts', () {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
-        List<String> skus = []..add("testsku");
+        List<String> productIds = []..add("testsku");
 
         final dynamic result = """[
           {
@@ -194,12 +194,12 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.getProducts(skus);
+          await FlutterInappPurchase.instance.getProducts(productIds);
           expect(log, <Matcher>[
             isMethodCall(
               'getProducts',
               arguments: <String, dynamic>{
-                'skus': skus,
+                'productIds': productIds,
               },
             ),
           ]);
@@ -207,7 +207,7 @@ void main() {
 
         test('returns correct result', () async {
           List<IAPItem> products =
-              await FlutterInappPurchase.instance.getProducts(skus);
+              await FlutterInappPurchase.instance.getProducts(productIds);
           List<IAPItem> expected = (json.decode(result) as List)
               .map<IAPItem>(
                 (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
@@ -339,7 +339,7 @@ void main() {
     group('getSubscriptions', () {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
-        List<String> skus = []..add("testsku");
+        List<String> productIds = []..add("testsku");
 
         final dynamic result = """[
           {
@@ -378,19 +378,19 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.getSubscriptions(skus);
+          await FlutterInappPurchase.instance.getSubscriptions(productIds);
           expect(log, <Matcher>[
             isMethodCall(
               'getSubscriptions',
               arguments: <String, dynamic>{
-                'skus': skus,
+                'productIds': productIds,
               },
             ),
           ]);
         });
         test('returns correct result', () async {
           List<IAPItem> products =
-              await FlutterInappPurchase.instance.getSubscriptions(skus);
+              await FlutterInappPurchase.instance.getSubscriptions(productIds);
           List<IAPItem> expected = (json.decode(result) as List)
               .map<IAPItem>(
                 (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
@@ -945,7 +945,7 @@ void main() {
 
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
-        final String sku = "testsku";
+        final String productId = "testsku";
         /*
         final dynamic result = {
           "transactionDate": "1552824902000",
@@ -978,25 +978,26 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.requestPurchase(sku);
+          await FlutterInappPurchase.instance.requestPurchase(productId);
           expect(log, <Matcher>[
             isMethodCall(
               'buyItemByType',
               arguments: <String, dynamic>{
                 'type': 'inapp',
-                'sku': sku,
+                'productId': productId,
                 'prorationMode': -1,
                 'obfuscatedAccountId': null,
                 'obfuscatedProfileId': null,
                 'purchaseToken': null,
+                'offerTokenIndex': null
               },
             ),
           ]);
         });
 
         test('returns correct result', () async {
-          expect(
-              await FlutterInappPurchase.instance.requestPurchase(sku), null);
+          expect(await FlutterInappPurchase.instance.requestPurchase(productId),
+              null);
         });
       });
     });
@@ -1005,7 +1006,7 @@ void main() {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
 
-        final String sku = "testsku";
+        final String productId = "testsku";
         /*
         final String result = """{
           "transactionDate":"1552824902000",
@@ -1037,24 +1038,27 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await FlutterInappPurchase.instance.requestSubscription(sku);
+          await FlutterInappPurchase.instance.requestSubscription(productId);
           expect(log, <Matcher>[
             isMethodCall(
               'buyItemByType',
               arguments: <String, dynamic>{
                 'type': 'subs',
-                'sku': sku,
+                'productId': productId,
                 'prorationMode': -1,
                 'obfuscatedAccountId': null,
                 'obfuscatedProfileId': null,
                 'purchaseToken': null,
+                'offerTokenIndex': null
               },
             ),
           ]);
         });
 
         test('returns correct result', () async {
-          expect(await FlutterInappPurchase.instance.requestSubscription(sku),
+          expect(
+              await FlutterInappPurchase.instance
+                  .requestSubscription(productId),
               null);
         });
       });

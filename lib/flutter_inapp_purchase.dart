@@ -13,7 +13,7 @@ import 'utils.dart';
 export 'modules.dart';
 
 /// A enumeration of in-app purchase types for Android
-/// https://developer.android.com/reference/com/android/billingclient/api/BillingClient.SkuType.html#constants_2
+/// https://developer.android.com/reference/com/android/billingclient/api/BillingClient.ProductType
 enum _TypeInApp { inapp, subs }
 
 class FlutterInappPurchase {
