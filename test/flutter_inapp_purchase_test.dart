@@ -3,9 +3,6 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:platform/platform.dart';
 
 void main() {
@@ -174,7 +171,24 @@ void main() {
             "subscriptionPeriodNumberIOS": "3",
             "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
-            "freeTrialPeriodAndroid": "6"
+            "freeTrialPeriodAndroid": "6",
+            "subscriptionOffers": [
+              {
+                "offerId": "123",
+                "basePlanId": "null",
+                "offerToken": "1234",
+                "pricingPhases": [
+                  {
+                    "price": "120",
+                    "formattedPrice": "¥120",
+                    "billingPeriod": "p1m",
+                    "currencyCode": "JPY",
+                    "recurrenceMode": 1,
+                    "billingCycleCount": 2
+                  }
+                ]
+              }
+            ]
           }
         ]""";
 
@@ -234,12 +248,6 @@ void main() {
                 expectedProduct.introductoryPriceSubscriptionPeriodIOS);
             expect(product.subscriptionPeriodAndroid,
                 expectedProduct.subscriptionPeriodAndroid);
-            // expect(product.introductoryPriceCyclesAndroid,
-            //     expectedProduct.introductoryPriceCyclesAndroid);
-            // expect(product.introductoryPricePeriodAndroid,
-            //     expectedProduct.introductoryPricePeriodAndroid);
-            // expect(product.freeTrialPeriodAndroid,
-            //     expectedProduct.freeTrialPeriodAndroid);
           }
         });
       });
@@ -265,7 +273,18 @@ void main() {
             "subscriptionPeriodNumberIOS": "3",
             "introductoryPriceCyclesAndroid": 4,
             "introductoryPricePeriodAndroid": "5",
-            "freeTrialPeriodAndroid": "6"
+            "freeTrialPeriodAndroid": "6",
+            "discounts": [
+              {
+                "identifier": "123",
+                "type": "test",
+                "numberOfPeriods": "3",
+                "price": 100.toDouble(),
+                "localizedPrice": "¥100",
+                "paymentMode": "test",
+                "subscriptionPeriod": "123"
+              }
+            ]
           }
         ];
 
@@ -1395,13 +1414,8 @@ void main() {
 
     group('validateReceiptAndroid', () {
       setUp(() {
-        http.Client mockClient = MockClient((request) async {
-          return Response(json.encode({}), 200);
-        });
-
         FlutterInappPurchase(FlutterInappPurchase.private(
-            FakePlatform(operatingSystem: "android"),
-            client: mockClient));
+            FakePlatform(operatingSystem: "android")));
       });
 
       tearDown(() {
@@ -1422,9 +1436,8 @@ void main() {
                 productToken: productToken,
                 accessToken: accessToken,
                 isSubscription: true);
-        // TODO: fix this url
-        // expect(response.request!.url.toString(),
-        //     "https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
+        expect(response.request!.url.toString(),
+            "https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
       });
       test('returns correct http request url, isSubscription is false',
           () async {
@@ -1440,9 +1453,8 @@ void main() {
                 productToken: productToken,
                 accessToken: accessToken,
                 isSubscription: false);
-        // TODO: fix this url
-        // expect(response.request!.url.toString(),
-        //     "https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
+        expect(response.request!.url.toString(),
+            "https://www.googleapis.com/androidpublisher/v3/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
       });
     });
 
@@ -1453,13 +1465,8 @@ void main() {
       };
 
       setUp(() {
-        http.Client mockClient = MockClient((request) async {
-          return Response(json.encode({'status': 0}), 200);
-        });
-
         FlutterInappPurchase(FlutterInappPurchase.private(
           FakePlatform(operatingSystem: "ios"),
-          client: mockClient,
         ));
       });
 
@@ -1473,14 +1480,10 @@ void main() {
           isTest: true,
         );
 
-        // TODO: fix this url
-        // expect(
-        //   response.request!.url.toString(),
-        //   "https://sandbox.itunes.apple.com/verifyReceipt",
-        // );
-        expect(response.statusCode, 200);
-        final data = jsonDecode(response.body);
-        expect(data['status'], 0);
+        expect(
+          response.request!.url.toString(),
+          "https://sandbox.itunes.apple.com/verifyReceipt",
+        );
       });
 
       test('returns correct http request url in production', () async {
@@ -1489,14 +1492,10 @@ void main() {
           isTest: false,
         );
 
-        // TODO: fix this url
-        // expect(
-        //   response.request!.url.toString(),
-        //   "https://buy.itunes.apple.com/verifyReceipt",
-        // );
-        expect(response.statusCode, 200);
-        final data = jsonDecode(response.body);
-        expect(data['status'], 0);
+        expect(
+          response.request!.url.toString(),
+          "https://buy.itunes.apple.com/verifyReceipt",
+        );
       });
     });
   });

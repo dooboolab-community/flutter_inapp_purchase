@@ -123,7 +123,7 @@ class IAPItem {
         'introductoryPricePaymentModeIOS: $introductoryPricePaymentModeIOS, '
         'introductoryPriceNumberOfPeriodsIOS: $introductoryPriceNumberOfPeriodsIOS, '
         'introductoryPriceSubscriptionPeriodIOS: $introductoryPriceSubscriptionPeriodIOS, '
-        'subscriptionPeriodAndroid $subscriptionPeriodAndroid'
+        'subscriptionPeriodAndroid: $subscriptionPeriodAndroid, '
         'iconUrl: $iconUrl, '
         'originalJson: $originalJson, '
         'originalPrice: $originalPrice, '
