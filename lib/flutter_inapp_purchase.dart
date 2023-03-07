@@ -13,7 +13,7 @@ import 'utils.dart';
 export 'modules.dart';
 
 /// A enumeration of in-app purchase types for Android
-/// https://developer.android.com/reference/com/android/billingclient/api/BillingClient.SkuType.html#constants_2
+/// https://developer.android.com/reference/com/android/billingclient/api/BillingClient.ProductType
 enum _TypeInApp { inapp, subs }
 
 class FlutterInappPurchase {
@@ -147,12 +147,12 @@ class FlutterInappPurchase {
   /// Retrieves a list of products from the store on `Android` and `iOS`.
   ///
   /// `iOS` also returns subscriptions.
-  Future<List<IAPItem>> getProducts(List<String> skus) async {
+  Future<List<IAPItem>> getProducts(List<String> productIds) async {
     if (_platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(
         'getProducts',
         <String, dynamic>{
-          'skus': skus.toList(),
+          'productIds': productIds.toList(),
         },
       );
       return extractItems(result);
@@ -160,7 +160,7 @@ class FlutterInappPurchase {
       dynamic result = await _channel.invokeMethod(
         'getItems',
         <String, dynamic>{
-          'skus': skus.toList(),
+          'skus': productIds.toList(),
         },
       );
       return extractItems(json.encode(result));
@@ -172,12 +172,12 @@ class FlutterInappPurchase {
   /// Retrieves subscriptions on `Android` and `iOS`.
   ///
   /// `iOS` also returns non-subscription products.
-  Future<List<IAPItem>> getSubscriptions(List<String> skus) async {
+  Future<List<IAPItem>> getSubscriptions(List<String> productIds) async {
     if (_platform.isAndroid) {
       dynamic result = await _channel.invokeMethod(
         'getSubscriptions',
         <String, dynamic>{
-          'skus': skus.toList(),
+          'productIds': productIds.toList(),
         },
       );
       return extractItems(result);
@@ -185,7 +185,7 @@ class FlutterInappPurchase {
       dynamic result = await _channel.invokeMethod(
         'getItems',
         <String, dynamic>{
-          'skus': skus.toList(),
+          'skus': productIds.toList(),
         },
       );
       return extractItems(json.encode(result));
@@ -267,24 +267,26 @@ class FlutterInappPurchase {
   ///
   /// Check [AndroidProrationMode] for valid proration values
   /// Identical to [requestSubscription] on `iOS`.
-  Future requestPurchase(
-    String sku, {
-    String? obfuscatedAccountId,
-    String? purchaseTokenAndroid,
-    String? obfuscatedProfileIdAndroid,
-  }) async {
+  /// [purchaseTokenAndroid] is used when upgrading subscriptions and sets the old purchase token
+  /// [offerTokenIndex] is now required for billing 5.0, if upgraded from billing 4.0 this will default to 0
+  Future requestPurchase(String productId,
+      {String? obfuscatedAccountId,
+      String? purchaseTokenAndroid,
+      String? obfuscatedProfileIdAndroid,
+      int? offerTokenIndex}) async {
     if (_platform.isAndroid) {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': describeEnum(_TypeInApp.inapp),
-        'sku': sku,
+        'productId': productId,
         'prorationMode': -1,
         'obfuscatedAccountId': obfuscatedAccountId,
         'obfuscatedProfileId': obfuscatedProfileIdAndroid,
         'purchaseToken': purchaseTokenAndroid,
+        'offerTokenIndex': offerTokenIndex
       });
     } else if (_platform.isIOS) {
       return await _channel.invokeMethod('buyProduct', <String, dynamic>{
-        'sku': sku,
+        'sku': productId,
         'forUser': obfuscatedAccountId,
       });
     }
@@ -299,25 +301,29 @@ class FlutterInappPurchase {
   ///
   /// Check [AndroidProrationMode] for valid proration values
   /// Identical to [requestPurchase] on `iOS`.
+  /// [purchaseTokenAndroid] is used when upgrading subscriptions and sets the old purchase token
+  /// [offerTokenIndex] is now required for billing 5.0, if upgraded from billing 4.0 this will default to 0
   Future requestSubscription(
-    String sku, {
+    String productId, {
     int? prorationModeAndroid,
     String? obfuscatedAccountIdAndroid,
     String? obfuscatedProfileIdAndroid,
     String? purchaseTokenAndroid,
+    int? offerTokenIndex,
   }) async {
     if (_platform.isAndroid) {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': describeEnum(_TypeInApp.subs),
-        'sku': sku,
+        'productId': productId,
         'prorationMode': prorationModeAndroid ?? -1,
         'obfuscatedAccountId': obfuscatedAccountIdAndroid,
         'obfuscatedProfileId': obfuscatedProfileIdAndroid,
         'purchaseToken': purchaseTokenAndroid,
+        'offerTokenIndex': offerTokenIndex,
       });
     } else if (_platform.isIOS) {
       return await _channel.invokeMethod('buyProduct', <String, dynamic>{
-        'sku': sku,
+        'sku': productId,
       });
     }
     throw PlatformException(
@@ -541,8 +547,7 @@ class FlutterInappPurchase {
     Duration grace = const Duration(days: 3),
   }) async {
     if (_platform.isIOS) {
-      var history =
-          await (getPurchaseHistory() as Future<List<PurchasedItem>?>);
+      var history = await getPurchaseHistory();
 
       if (history == null) {
         return false;

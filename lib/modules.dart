@@ -31,11 +31,9 @@ class IAPItem {
   final List<DiscountIOS>? discountsIOS;
 
   /// android only
-  final String? subscriptionPeriodAndroid;
-  final int? introductoryPriceCyclesAndroid;
-  final String? introductoryPricePeriodAndroid;
-  final String? freeTrialPeriodAndroid;
   final String? signatureAndroid;
+  final List<SubscriptionOfferAndroid>? subscriptionOffersAndroid;
+  final String? subscriptionPeriodAndroid;
 
   final String? iconUrl;
   final String? originalJson;
@@ -64,16 +62,13 @@ class IAPItem {
             json['subscriptionPeriodUnitIOS'] as String?,
         subscriptionPeriodAndroid =
             json['subscriptionPeriodAndroid'] as String?,
-        introductoryPriceCyclesAndroid =
-            json['introductoryPriceCyclesAndroid'] as int?,
-        introductoryPricePeriodAndroid =
-            json['introductoryPricePeriodAndroid'] as String?,
-        freeTrialPeriodAndroid = json['freeTrialPeriodAndroid'] as String?,
         signatureAndroid = json['signatureAndroid'] as String?,
         iconUrl = json['iconUrl'] as String?,
         originalJson = json['originalJson'] as String?,
         originalPrice = json['originalPrice'].toString(),
-        discountsIOS = _extractDiscountIOS(json['discounts']);
+        discountsIOS = _extractDiscountIOS(json['discounts']),
+        subscriptionOffersAndroid =
+            _extractSubscriptionOffersAndroid(json['subscriptionOffers']);
 
   /// wow, i find if i want to save a IAPItem, there is not "toJson" to cast it into String...
   /// i'm sorry to see that... so,
@@ -102,13 +97,7 @@ class IAPItem {
         this.introductoryPriceNumberOfPeriodsIOS;
     data['introductoryPriceSubscriptionPeriodIOS'] =
         this.introductoryPriceSubscriptionPeriodIOS;
-
     data['subscriptionPeriodAndroid'] = this.subscriptionPeriodAndroid;
-    data['introductoryPriceCyclesAndroid'] =
-        this.introductoryPriceCyclesAndroid;
-    data['introductoryPricePeriodAndroid'] =
-        this.introductoryPricePeriodAndroid;
-    data['freeTrialPeriodAndroid'] = this.freeTrialPeriodAndroid;
     data['signatureAndroid'] = this.signatureAndroid;
 
     data['iconUrl'] = this.iconUrl;
@@ -135,9 +124,6 @@ class IAPItem {
         'introductoryPriceNumberOfPeriodsIOS: $introductoryPriceNumberOfPeriodsIOS, '
         'introductoryPriceSubscriptionPeriodIOS: $introductoryPriceSubscriptionPeriodIOS, '
         'subscriptionPeriodAndroid: $subscriptionPeriodAndroid, '
-        'introductoryPriceCyclesAndroid: $introductoryPriceCyclesAndroid, '
-        'introductoryPricePeriodAndroid: $introductoryPricePeriodAndroid, '
-        'freeTrialPeriodAndroid: $freeTrialPeriodAndroid, '
         'iconUrl: $iconUrl, '
         'originalJson: $originalJson, '
         'originalPrice: $originalPrice, '
@@ -159,6 +145,69 @@ class IAPItem {
 
     return discounts;
   }
+
+  static List<SubscriptionOfferAndroid>? _extractSubscriptionOffersAndroid(
+      dynamic json) {
+    List? list = json as List?;
+    List<SubscriptionOfferAndroid>? offers;
+
+    if (list != null) {
+      offers = list
+          .map<SubscriptionOfferAndroid>(
+            (dynamic offer) => SubscriptionOfferAndroid.fromJSON(
+                offer as Map<String, dynamic>),
+          )
+          .toList();
+    }
+
+    return offers;
+  }
+}
+
+class SubscriptionOfferAndroid {
+  String? offerId;
+  String? basePlanId;
+  String? offerToken;
+  List<PricingPhaseAndroid>? pricingPhases;
+
+  SubscriptionOfferAndroid.fromJSON(Map<String, dynamic> json)
+      : offerId = json["offerId"] as String?,
+        basePlanId = json["basePlanId"] as String?,
+        offerToken = json["offerToken"] as String?,
+        pricingPhases = _extractAndroidPricingPhase(json["pricingPhases"]);
+
+  static List<PricingPhaseAndroid>? _extractAndroidPricingPhase(dynamic json) {
+    List? list = json as List?;
+    List<PricingPhaseAndroid>? phases;
+
+    if (list != null) {
+      phases = list
+          .map<PricingPhaseAndroid>(
+            (dynamic phase) =>
+                PricingPhaseAndroid.fromJSON(phase as Map<String, dynamic>),
+          )
+          .toList();
+    }
+
+    return phases;
+  }
+}
+
+class PricingPhaseAndroid {
+  String? price;
+  String? formattedPrice;
+  String? billingPeriod;
+  String? currencyCode;
+  int? recurrenceMode;
+  int? billingCycleCount;
+
+  PricingPhaseAndroid.fromJSON(Map<String, dynamic> json)
+      : price = json["price"] as String?,
+        formattedPrice = json["formattedPrice"] as String?,
+        billingPeriod = json["billingPeriod"] as String?,
+        currencyCode = json["currencyCode"] as String?,
+        recurrenceMode = json["recurrenceMode"] as int?,
+        billingCycleCount = json["billingCycleCount"] as int?;
 }
 
 class DiscountIOS {
