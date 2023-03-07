@@ -1,10 +1,17 @@
+## 5.4.0
+
+- Fixed wrong casting in checkSubscribed method by @kleeb in https://github.com/dooboolab/flutter_inapp_purchase/pull/368
+- Upgrade to billing 5.1 (reverse compatible) by @SamBergeron in https://github.com/dooboolab/flutter_inapp_purchase/pull/392
+
 ## 5.3.0
 
 ## What's Changed
-* Refactor java to kotlin, add showInAppMessageAndroid by @offline-first in https://github.com/dooboolab/flutter_inapp_purchase/pull/365
+
+- Refactor java to kotlin, add showInAppMessageAndroid by @offline-first in https://github.com/dooboolab/flutter_inapp_purchase/pull/365
 
 ## New Contributors
-* @offline-first made their first contribution in https://github.com/dooboolab/flutter_inapp_purchase/pull/365
+
+- @offline-first made their first contribution in https://github.com/dooboolab/flutter_inapp_purchase/pull/365
 
 **Full Changelog**: https://github.com/dooboolab/flutter_inapp_purchase/compare/5.2.0...5.3.0
 
