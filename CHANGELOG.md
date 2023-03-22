@@ -1,3 +1,6 @@
+## 5.4.1
+- Fixed concurrency issue on iOS. by @OctavianLfrd in https://github.com/dooboolab/flutter_inapp_purchase/pull/413
+
 ## 5.4.0
 
 - Fixed wrong casting in checkSubscribed method by @kleeb in https://github.com/dooboolab/flutter_inapp_purchase/pull/368
