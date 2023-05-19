@@ -562,8 +562,7 @@ class FlutterInappPurchase {
 
       return false;
     } else if (_platform.isAndroid) {
-      var purchases =
-          await (getAvailablePurchases());
+      var purchases = await (getAvailablePurchases());
 
       for (var purchase in purchases ?? []) {
         if (purchase.productId == sku) return true;
