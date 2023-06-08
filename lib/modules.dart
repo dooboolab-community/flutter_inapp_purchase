@@ -1,3 +1,5 @@
+import 'package:flutter_inapp_purchase/utils.dart';
+
 enum ResponseCodeAndroid {
   BILLING_RESPONSE_RESULT_OK,
   BILLING_RESPONSE_RESULT_USER_CANCELED,
@@ -79,33 +81,26 @@ class IAPItem {
   ///
   /// and then get IAPItem from "str" above
   /// IAPItem item = IAPItem.fromJSON(convert.jsonDecode(str));
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['productId'] = this.productId;
-    data['price'] = this.price;
-    data['currency'] = this.currency;
-    data['localizedPrice'] = this.localizedPrice;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['introductoryPrice'] = this.introductoryPrice;
-
-    data['subscriptionPeriodNumberIOS'] = this.subscriptionPeriodNumberIOS;
-    data['subscriptionPeriodUnitIOS'] = this.subscriptionPeriodUnitIOS;
-    data['introductoryPricePaymentModeIOS'] =
-        this.introductoryPricePaymentModeIOS;
-    data['introductoryPriceNumberOfPeriodsIOS'] =
-        this.introductoryPriceNumberOfPeriodsIOS;
-    data['introductoryPriceSubscriptionPeriodIOS'] =
-        this.introductoryPriceSubscriptionPeriodIOS;
-    data['subscriptionPeriodAndroid'] = this.subscriptionPeriodAndroid;
-    data['signatureAndroid'] = this.signatureAndroid;
-
-    data['iconUrl'] = this.iconUrl;
-    data['originalJson'] = this.originalJson;
-    data['originalPrice'] = this.originalPrice;
-    data['discounts'] = this.discountsIOS;
-    return data;
-  }
+  Map<String, dynamic> toJson()=>{
+    "productId": productId,
+    "price": price,
+    "currency": currency,
+    "localizedPrice": localizedPrice,
+    "title": title,
+    "description": description,
+    "introductoryPrice": introductoryPrice,
+    "subscriptionPeriodNumberIOS": subscriptionPeriodNumberIOS,
+    "subscriptionPeriodUnitIOS": subscriptionPeriodUnitIOS,
+    "introductoryPricePaymentModeIOS": introductoryPricePaymentModeIOS,
+    "introductoryPriceNumberOfPeriodsIOS": introductoryPriceNumberOfPeriodsIOS,
+    "introductoryPriceSubscriptionPeriodIOS": introductoryPriceSubscriptionPeriodIOS,
+    "subscriptionPeriodAndroid": subscriptionPeriodAndroid,
+    "signatureAndroid": signatureAndroid,
+    "iconUrl": iconUrl,
+    "originalJson": originalJson,
+    "originalPrice": originalPrice,
+    "discounts": discountsIOS,
+  };
 
   /// Return the contents of this class as a string
   @override
@@ -166,14 +161,16 @@ class IAPItem {
 
 class SubscriptionOfferAndroid {
   String? offerId;
-  String? basePlanId;
-  String? offerToken;
+  String basePlanId;
+  String offerToken;
+  List<String> offerTags;
   List<PricingPhaseAndroid>? pricingPhases;
 
   SubscriptionOfferAndroid.fromJSON(Map<String, dynamic> json)
       : offerId = json["offerId"] as String?,
-        basePlanId = json["basePlanId"] as String?,
-        offerToken = json["offerToken"] as String?,
+        basePlanId = json["basePlanId"] as String,
+        offerToken = json["offerToken"] as String,
+        offerTags = json["offerTags"] as List<String>,
         pricingPhases = _extractAndroidPricingPhase(json["pricingPhases"]);
 
   static List<PricingPhaseAndroid>? _extractAndroidPricingPhase(dynamic json) {
@@ -194,21 +191,31 @@ class SubscriptionOfferAndroid {
 }
 
 class PricingPhaseAndroid {
-  String? price;
-  String? formattedPrice;
-  String? billingPeriod;
-  String? currencyCode;
+  String price;
+  String formattedPrice;
+  String billingPeriod;
+  String currencyCode;
   int? recurrenceMode;
   int? billingCycleCount;
+  int priceAmountMicros;
 
   PricingPhaseAndroid.fromJSON(Map<String, dynamic> json)
-      : price = json["price"] as String?,
-        formattedPrice = json["formattedPrice"] as String?,
-        billingPeriod = json["billingPeriod"] as String?,
-        currencyCode = json["currencyCode"] as String?,
+      : price = json["price"] as String,
+        formattedPrice = json["formattedPrice"] as String,
+        priceAmountMicros = json["priceAmountMicros"],
+        billingPeriod = json["billingPeriod"] as String,
+        currencyCode = json["currencyCode"] as String,
         recurrenceMode = json["recurrenceMode"] as int?,
         billingCycleCount = json["billingCycleCount"] as int?;
+
+  int get freeTrialDays{
+    if(priceAmountMicros == 0){
+      return periodToDays(billingPeriod!);
+    }
+    return -1;
+  }
 }
+
 
 class DiscountIOS {
   String? identifier;

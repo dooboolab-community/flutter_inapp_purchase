@@ -452,7 +452,11 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                             offerItem.put("offerId", offer.offerId)
                             offerItem.put("basePlanId", offer.basePlanId)
                             offerItem.put("offerToken", offer.offerToken)
-                            offerItem.put("offerTags", offer.offerTags)
+                            val tags = JSONArray()
+                            offer.offerTags.forEach {
+                                tags.put(it)
+                            }
+                            offerItem.put("offerTags", tags)
                             val pricingPhases = JSONArray()
                             for (pricing in offer.pricingPhases.pricingPhaseList) {
                                 val pricingPhase = JSONObject()
