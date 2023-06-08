@@ -211,7 +211,7 @@ class PricingPhaseAndroid {
 
   int get freeTrialDays{
     if(priceAmountMicros == 0){
-      return periodToDays(billingPeriod!);
+      return periodToDays(billingPeriod);
     }
     return -1;
   }
