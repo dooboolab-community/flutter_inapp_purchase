@@ -267,7 +267,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                     item.put("purchaseStateAndroid", purchase.purchaseState)
                     if (type == BillingClient.ProductType.INAPP) {
                         item.put("isAcknowledgedAndroid", purchase.isAcknowledged)
-                    } else if (type == BillingClient.ProductType.SUBS) {
+                    } else {
                         item.put("autoRenewingAndroid", purchase.isAutoRenewing)
                     }
                     items.put(item)
@@ -424,9 +424,13 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                     item.put("description", productDetails.description)
 
                     // One-time offer details have changed in 5.0
-                    if (productDetails.oneTimePurchaseOfferDetails != null) {
-                        item.put("introductoryPrice", productDetails.oneTimePurchaseOfferDetails!!.formattedPrice)
+                    productDetails.oneTimePurchaseOfferDetails?.let {
+                        item.put("introductoryPrice", it.formattedPrice)
+                        item.put("price", (it.priceAmountMicros / 1000000f).toString())
+                        item.put("currency", it.priceCurrencyCode)
+                        item.put("localizedPrice", it.formattedPrice)
                     }
+
 
                     // These generalized values are derived from the first pricing object, mainly for backwards compatibility
                     // It would be better to use the actual objects in PricingPhases and SubscriptionOffers
@@ -448,10 +452,15 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                             offerItem.put("offerId", offer.offerId)
                             offerItem.put("basePlanId", offer.basePlanId)
                             offerItem.put("offerToken", offer.offerToken)
+                            offerItem.put("offerTags", offer.offerTags)
                             val pricingPhases = JSONArray()
                             for (pricing in offer.pricingPhases.pricingPhaseList) {
                                 val pricingPhase = JSONObject()
                                 pricingPhase.put("price", (pricing.priceAmountMicros / 1000000f).toString())
+                                if(pricing.priceAmountMicros == 0L){
+                                   Log.d(TAG, "FREETRIAL")
+                                }
+                                pricingPhase.put("priceAmountMicros", pricing.priceAmountMicros )
                                 pricingPhase.put("formattedPrice", pricing.formattedPrice)
                                 pricingPhase.put("billingPeriod", pricing.billingPeriod)
                                 pricingPhase.put("currencyCode", pricing.priceCurrencyCode)
