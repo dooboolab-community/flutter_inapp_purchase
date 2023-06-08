@@ -18,6 +18,7 @@
         <activity
             android:name="io.flutter.embedding.android.FlutterActivity"
             android:launchMode="singleTop"
+            android:exported="true"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
             android:hardwareAccelerated="true"
@@ -47,7 +48,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <receiver android:name = "com.amazon.device.iap.ResponseReceiver" >
+        <receiver
+            android:exported="true"
+            android:name = "com.amazon.device.iap.ResponseReceiver" >
             <intent-filter>
                 <action android:name = "com.amazon.inapp.purchasing.NOTIFY"
                     android:permission = "com.amazon.inapp.purchasing.Permission.NOTIFY" />
