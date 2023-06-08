@@ -160,17 +160,18 @@ class IAPItem {
 }
 
 class SubscriptionOfferAndroid {
-  String? offerId;
-  String basePlanId;
-  String offerToken;
-  List<String> offerTags;
-  List<PricingPhaseAndroid>? pricingPhases;
+  final String? offerId;
+  final String basePlanId;
+  final String offerToken;
+  final List<String> offerTags;
+  final List<PricingPhaseAndroid>? pricingPhases;
 
   SubscriptionOfferAndroid.fromJSON(Map<String, dynamic> json)
       : offerId = json["offerId"] as String?,
         basePlanId = json["basePlanId"] as String,
         offerToken = json["offerToken"] as String,
-        offerTags = json["offerTags"] as List<String>,
+        offerTags = (json["offerTags"] as List).map((e) => e.toString())
+            .toList(),
         pricingPhases = _extractAndroidPricingPhase(json["pricingPhases"]);
 
   static List<PricingPhaseAndroid>? _extractAndroidPricingPhase(dynamic json) {
