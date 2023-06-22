@@ -507,19 +507,22 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
 
             // Get the selected offerToken from the product, or first one if this is a migrated from 4.0 product
             // or if the offerTokenIndex was not provided
+            val productDetailsParamsBuilder = ProductDetailsParams.newBuilder().setProductDetails(selectedProductDetails)
             var offerToken : String? = null
-            if (offerTokenIndex != null) {
-                offerToken = selectedProductDetails.subscriptionOfferDetails?.get(offerTokenIndex)?.offerToken
-            }
-            if (offerToken == null) {
-                offerToken = selectedProductDetails.subscriptionOfferDetails!![0].offerToken
+
+            if (type == BillingClient.ProductType.SUBS) {
+                if (offerTokenIndex != null) {
+                    offerToken = selectedProductDetails.subscriptionOfferDetails?.get(offerTokenIndex)?.offerToken
+                }
+                if (offerToken == null) {
+                    offerToken = selectedProductDetails.subscriptionOfferDetails!![0].offerToken
+                }
+
+                productDetailsParamsBuilder.setOfferToken(offerToken)
             }
 
-            val productDetailsParamsList =
-            listOf(ProductDetailsParams.newBuilder()
-                .setProductDetails(selectedProductDetails)
-                .setOfferToken(offerToken)
-                .build())
+            val productDetailsParamsList = listOf(productDetailsParamsBuilder.build())
+
             builder.setProductDetailsParamsList(productDetailsParamsList)
 
             val params = SubscriptionUpdateParams.newBuilder()
