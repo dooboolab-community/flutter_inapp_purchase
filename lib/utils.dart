@@ -36,17 +36,17 @@ List<PurchaseResult>? extractResult(dynamic result) {
   return decoded;
 }
 
-int periodToDays(String period){
+int periodToDays(String period) {
   var days = -1;
-  if(period == 'P1W'){
+  if (period == 'P1W') {
     days = 7;
-  }else if(period == 'P1M'){
+  } else if (period == 'P1M') {
     days = 30;
-  }else if(period == 'P3M'){
+  } else if (period == 'P3M') {
     days = 90;
-  }else if(period == 'P6M'){
+  } else if (period == 'P6M') {
     days = 180;
-  }else if(period == 'P1Y'){
+  } else if (period == 'P1Y') {
     days = 365;
   }
   return days;

@@ -81,26 +81,28 @@ class IAPItem {
   ///
   /// and then get IAPItem from "str" above
   /// IAPItem item = IAPItem.fromJSON(convert.jsonDecode(str));
-  Map<String, dynamic> toJson()=>{
-    "productId": productId,
-    "price": price,
-    "currency": currency,
-    "localizedPrice": localizedPrice,
-    "title": title,
-    "description": description,
-    "introductoryPrice": introductoryPrice,
-    "subscriptionPeriodNumberIOS": subscriptionPeriodNumberIOS,
-    "subscriptionPeriodUnitIOS": subscriptionPeriodUnitIOS,
-    "introductoryPricePaymentModeIOS": introductoryPricePaymentModeIOS,
-    "introductoryPriceNumberOfPeriodsIOS": introductoryPriceNumberOfPeriodsIOS,
-    "introductoryPriceSubscriptionPeriodIOS": introductoryPriceSubscriptionPeriodIOS,
-    "subscriptionPeriodAndroid": subscriptionPeriodAndroid,
-    "signatureAndroid": signatureAndroid,
-    "iconUrl": iconUrl,
-    "originalJson": originalJson,
-    "originalPrice": originalPrice,
-    "discounts": discountsIOS,
-  };
+  Map<String, dynamic> toJson() => {
+        "productId": productId,
+        "price": price,
+        "currency": currency,
+        "localizedPrice": localizedPrice,
+        "title": title,
+        "description": description,
+        "introductoryPrice": introductoryPrice,
+        "subscriptionPeriodNumberIOS": subscriptionPeriodNumberIOS,
+        "subscriptionPeriodUnitIOS": subscriptionPeriodUnitIOS,
+        "introductoryPricePaymentModeIOS": introductoryPricePaymentModeIOS,
+        "introductoryPriceNumberOfPeriodsIOS":
+            introductoryPriceNumberOfPeriodsIOS,
+        "introductoryPriceSubscriptionPeriodIOS":
+            introductoryPriceSubscriptionPeriodIOS,
+        "subscriptionPeriodAndroid": subscriptionPeriodAndroid,
+        "signatureAndroid": signatureAndroid,
+        "iconUrl": iconUrl,
+        "originalJson": originalJson,
+        "originalPrice": originalPrice,
+        "discounts": discountsIOS,
+      };
 
   /// Return the contents of this class as a string
   @override
@@ -170,8 +172,8 @@ class SubscriptionOfferAndroid {
       : offerId = json["offerId"] as String?,
         basePlanId = json["basePlanId"] as String,
         offerToken = json["offerToken"] as String,
-        offerTags = (json["offerTags"] as List).map((e) => e.toString())
-            .toList(),
+        offerTags =
+            (json["offerTags"] as List).map((e) => e.toString()).toList(),
         pricingPhases = _extractAndroidPricingPhase(json["pricingPhases"]);
 
   static List<PricingPhaseAndroid>? _extractAndroidPricingPhase(dynamic json) {
@@ -209,14 +211,13 @@ class PricingPhaseAndroid {
         recurrenceMode = json["recurrenceMode"] as int?,
         billingCycleCount = json["billingCycleCount"] as int?;
 
-  int get freeTrialDays{
-    if(priceAmountMicros == 0){
+  int get freeTrialDays {
+    if (priceAmountMicros == 0) {
       return periodToDays(billingPeriod);
     }
     return -1;
   }
 }
-
 
 class DiscountIOS {
   String? identifier;
