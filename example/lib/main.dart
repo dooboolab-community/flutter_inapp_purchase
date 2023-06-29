@@ -69,9 +69,7 @@ class _InAppState extends State<InApp> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    setState(() {
-
-    });
+    setState(() {});
 
     // refresh items for android
     try {
@@ -117,7 +115,7 @@ class _InAppState extends State<InApp> {
 
   Future _getPurchases() async {
     List<PurchasedItem> items =
-       await FlutterInappPurchase.instance.getAvailablePurchases() ?? [];
+        await FlutterInappPurchase.instance.getAvailablePurchases() ?? [];
     for (var item in items) {
       print('${item.toString()}');
       this._purchases.add(item);
