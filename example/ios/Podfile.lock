@@ -1,22 +1,23 @@
 PODS:
-  - Flutter (1.0.0)
+  - Flutter (3.0.0)
   - flutter_inapp_purchase (0.0.1):
     - Flutter
 
 DEPENDENCIES:
-  - Flutter (from `.symlinks/flutter/ios`)
   - flutter_inapp_purchase (from `.symlinks/plugins/flutter_inapp_purchase/ios`)
 
+SPEC REPOS:
+  trunk:
+    - Flutter
+
 EXTERNAL SOURCES:
-  Flutter:
-    :path: ".symlinks/flutter/ios"
   flutter_inapp_purchase:
     :path: ".symlinks/plugins/flutter_inapp_purchase/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  Flutter: aef388869c2d2beecc8df50c818fa66e9c6eb1fb
   flutter_inapp_purchase: 5c6a1ac3f11b11d0c8c0321c0c41c1f05805e4c8
 
-PODFILE CHECKSUM: 1e5af4103afd21ca5ead147d7b81d06f494f51a2
+PODFILE CHECKSUM: aae6fa82cd47a8438f7199ba79b92a719e7a3963
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.11.3
