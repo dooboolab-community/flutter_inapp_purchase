@@ -219,7 +219,6 @@ class PricingPhaseAndroid {
   }
 }
 
-
 class DiscountIOS {
   String? identifier;
   String? type;
@@ -428,9 +427,7 @@ TransactionState? _decodeTransactionStateIOS(int? rawValue) {
 /// See also https://developer.android.com/reference/com/android/billingclient/api/Purchase.PurchaseState
 enum PurchaseState {
   pending,
-
   purchased,
-
   unspecified,
 }
 
