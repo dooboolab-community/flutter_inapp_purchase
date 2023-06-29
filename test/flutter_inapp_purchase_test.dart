@@ -177,10 +177,15 @@ void main() {
                 "offerId": "123",
                 "basePlanId": "null",
                 "offerToken": "1234",
+                "offerTags": [
+                  "tag1",
+                  "tag2"
+                ],
                 "pricingPhases": [
                   {
                     "price": "120",
                     "formattedPrice": "¥120",
+                    "priceAmountMicros": 120000000,
                     "billingPeriod": "p1m",
                     "currencyCode": "JPY",
                     "recurrenceMode": 1,
