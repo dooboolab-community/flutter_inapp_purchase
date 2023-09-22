@@ -9,6 +9,13 @@
 
 This packages is compatible with flutter v2 from `4.0.0`. For those who use older version please use `< 4.0.0`.
 
+## Sponsors
+
+### 2023-09-23
+Exciting news! Five years after developing this repository, we've secured an official sponsor. It feels like a ray of hope for a project that was on the brink of extinction. This gives me ample motivation to rejuvenate this project. I hope we can get more support so that we can collaborate with more individuals in the future. Thank you, <a href="https://namiml.com">NAMI</a>!
+
+<a href="https://namiml.com"><img src="https://github.com/dooboolab-community/react-native-iap/assets/27461460/89d71f61-bb73-400a-83bd-fe0f96eb726e" width="200"/></a>
+
 ## Sun Rise :sunrise:
 
 Since many one of you wanted me to keep working on this plugin in [#93](https://github.com/dooboolab/flutter_inapp_purchase/issues/93), I've decided to keep working on current project. I hope many one of you can help me maintain this. Thank you for all your supports in advance :tada:.
