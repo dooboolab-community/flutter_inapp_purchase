@@ -1,5 +1,6 @@
 ## 5.5.0
 * Erroneous duplicate item (#441) - Remove extra `introductoryPricePaymentModeIOS`
+* Fixed consumable products reading on Android (#439)
 * chore(deps): migrate internal packages to recent
   ```
   http: ^1.1.0
