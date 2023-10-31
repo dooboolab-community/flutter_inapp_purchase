@@ -428,42 +428,53 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                         item.put("introductoryPrice", productDetails.oneTimePurchaseOfferDetails!!.formattedPrice)
                     }
 
-                    // These generalized values are derived from the first pricing object, mainly for backwards compatibility
-                    // It would be better to use the actual objects in PricingPhases and SubscriptionOffers
+                    if (productDetails.productType == BillingClient.ProductType.INAPP) {
+                        val oneTimePurchaseOfferDetails = productDetails.oneTimePurchaseOfferDetails
 
-                    // Get first subscription offer
-                    val firstProductInfo = productDetails.subscriptionOfferDetails?.find { offer -> offer.offerId == null }
-                    if (firstProductInfo != null && firstProductInfo.pricingPhases.pricingPhaseList[0] != null) {
-                        val defaultPricingPhase = firstProductInfo.pricingPhases.pricingPhaseList[0]
-                        item.put("price", (defaultPricingPhase.priceAmountMicros / 1000000f).toString())
-                        item.put("currency", defaultPricingPhase.priceCurrencyCode)
-                        item.put("localizedPrice", defaultPricingPhase.formattedPrice)
-                        item.put("subscriptionPeriodAndroid", defaultPricingPhase.billingPeriod)
-                    }
-
-                    val subs = JSONArray()
-                    if (productDetails.subscriptionOfferDetails != null ) {
-                        for (offer in productDetails.subscriptionOfferDetails!!) {
-                            val offerItem = JSONObject()
-                            offerItem.put("offerId", offer.offerId)
-                            offerItem.put("basePlanId", offer.basePlanId)
-                            offerItem.put("offerToken", offer.offerToken)
-                            val pricingPhases = JSONArray()
-                            for (pricing in offer.pricingPhases.pricingPhaseList) {
-                                val pricingPhase = JSONObject()
-                                pricingPhase.put("price", (pricing.priceAmountMicros / 1000000f).toString())
-                                pricingPhase.put("formattedPrice", pricing.formattedPrice)
-                                pricingPhase.put("billingPeriod", pricing.billingPeriod)
-                                pricingPhase.put("currencyCode", pricing.priceCurrencyCode)
-                                pricingPhase.put("recurrenceMode", pricing.recurrenceMode)
-                                pricingPhase.put("billingCycleCount", pricing.billingCycleCount)
-                                pricingPhases.put(pricingPhase)
-                            }
-                            offerItem.put("pricingPhases", pricingPhases)
-                            subs.put(offerItem)
+                        if (oneTimePurchaseOfferDetails != null) {
+                            item.put("price", (oneTimePurchaseOfferDetails.priceAmountMicros / 1000000f).toString())
+                            item.put("currency", oneTimePurchaseOfferDetails.priceCurrencyCode)
+                            item.put("localizedPrice", oneTimePurchaseOfferDetails.formattedPrice)
                         }
+                    } else if (productDetails.productType == BillingClient.ProductType.SUBS) {
+                        // These generalized values are derived from the first pricing object, mainly for backwards compatibility
+                        // It would be better to use the actual objects in PricingPhases and SubscriptionOffers
+    
+                        // Get first subscription offer
+                        val firstProductInfo = productDetails.subscriptionOfferDetails?.find { offer -> offer.offerId == null }
+                        if (firstProductInfo != null && firstProductInfo.pricingPhases.pricingPhaseList[0] != null) {
+                            val defaultPricingPhase = firstProductInfo.pricingPhases.pricingPhaseList[0]
+                            item.put("price", (defaultPricingPhase.priceAmountMicros / 1000000f).toString())
+                            item.put("currency", defaultPricingPhase.priceCurrencyCode)
+                            item.put("localizedPrice", defaultPricingPhase.formattedPrice)
+                            item.put("subscriptionPeriodAndroid", defaultPricingPhase.billingPeriod)
+                        }
+    
+                        val subs = JSONArray()
+                        if (productDetails.subscriptionOfferDetails != null ) {
+                            for (offer in productDetails.subscriptionOfferDetails!!) {
+                                val offerItem = JSONObject()
+                                offerItem.put("offerId", offer.offerId)
+                                offerItem.put("basePlanId", offer.basePlanId)
+                                offerItem.put("offerToken", offer.offerToken)
+                                val pricingPhases = JSONArray()
+                                for (pricing in offer.pricingPhases.pricingPhaseList) {
+                                    val pricingPhase = JSONObject()
+                                    pricingPhase.put("price", (pricing.priceAmountMicros / 1000000f).toString())
+                                    pricingPhase.put("formattedPrice", pricing.formattedPrice)
+                                    pricingPhase.put("billingPeriod", pricing.billingPeriod)
+                                    pricingPhase.put("currencyCode", pricing.priceCurrencyCode)
+                                    pricingPhase.put("recurrenceMode", pricing.recurrenceMode)
+                                    pricingPhase.put("billingCycleCount", pricing.billingCycleCount)
+                                    pricingPhases.put(pricingPhase)
+                                }
+                                offerItem.put("pricingPhases", pricingPhases)
+                                subs.put(offerItem)
+                            }
+                        }
+                        item.put("subscriptionOffers", subs)
                     }
-                    item.put("subscriptionOffers", subs)
+
                     items.put(item)
                 }
                 safeChannel.success(items.toString())
