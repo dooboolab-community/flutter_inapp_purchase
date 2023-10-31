@@ -78,42 +78,51 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                 safeChannel.success("Already started. Call endConnection method if you want to start over.")
                 return
             }
-            billingClient = BillingClient.newBuilder(context!!).setListener(purchasesUpdatedListener)
-                    .enablePendingPurchases()
-                    .build()
-            billingClient!!.startConnection(object : BillingClientStateListener {
+            
+            billingClient = BillingClient.newBuilder(context ?: return).apply {
+                setListener(purchasesUpdatedListener)
+                enablePendingPurchases()
+            }.build()
+            
+            billingClient?.startConnection(object : BillingClientStateListener {
                 private var alreadyFinished = false
+            
                 override fun onBillingSetupFinished(billingResult: BillingResult) {
+                    if (alreadyFinished) return
+                    alreadyFinished = true
+            
                     try {
-                        val responseCode = billingResult.responseCode
-                        if (responseCode == BillingClient.BillingResponseCode.OK) {
-                            val item = JSONObject()
-                            item.put("connected", true)
-                            safeChannel.invokeMethod("connection-updated", item.toString())
-                            if (alreadyFinished) return
-                            alreadyFinished = true
-                            safeChannel.success("Billing client ready")
-                            return
+                        val isConnected = billingResult.responseCode == BillingClient.BillingResponseCode.OK
+                        updateConnectionStatus(isConnected)
+            
+                        val resultMessage = if (isConnected) {
+                            "Billing client ready"
                         } else {
-                            val item = JSONObject()
-                            item.put("connected", false)
-                            safeChannel.invokeMethod("connection-updated", item.toString())
-                            if (alreadyFinished) return
-                            alreadyFinished = true
-                            safeChannel.error(call.method, "responseCode: $responseCode", "")
-                            return
+                            "responseCode: ${billingResult.responseCode}"
+                        }
+            
+                        if (isConnected) {
+                            safeChannel.success(resultMessage)
+                        } else {
+                            safeChannel.error(call.method, resultMessage, "")
                         }
                     } catch (je: JSONException) {
                         je.printStackTrace()
                     }
                 }
-
+            
                 override fun onBillingServiceDisconnected() {
+                    if (alreadyFinished) return
+                    alreadyFinished = true
+                    updateConnectionStatus(false)
+                }
+            
+                private fun updateConnectionStatus(isConnected: Boolean) {
                     try {
-                        val item = JSONObject()
-                        item.put("connected", false)
+                        val item = JSONObject().apply {
+                            put("connected", isConnected)
+                        }
                         safeChannel.invokeMethod("connection-updated", item.toString())
-                        return
                     } catch (je: JSONException) {
                         je.printStackTrace()
                     }
