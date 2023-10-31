@@ -2,7 +2,7 @@ name: flutter_inapp_purchase
 description: In App Purchase plugin for flutter. This project has been forked by
   react-native-iap and we are willing to share same experience with that on
   react-native.
-version: 5.4.2
+version: 5.5.0
 homepage: https://github.com/dooboolab/flutter_inapp_purchase/blob/main/pubspec.yaml
 environment:
   sdk: ">=2.12.0 <4.0.0"
@@ -12,14 +12,14 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.1.0
-  meta: ^1.10.0
+  meta: ^1.9.1
   platform: ^3.1.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.4.2
-  test: ^1.24.9
+  test: ^1.24.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

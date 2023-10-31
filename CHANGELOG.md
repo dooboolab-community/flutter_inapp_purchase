@@ -1,3 +1,13 @@
+## 5.5.0
+* Erroneous duplicate item (#441) - Remove extra `introductoryPricePaymentModeIOS`
+* chore(deps): migrate internal packages to recent
+  ```
+  http: ^1.1.0
+  meta: ^1.10.0
+  platform: ^3.1.3
+  ```
+* chore: migrate example project to recent flutter version, 3.16.0-0.3.pre
+
 ## 5.4.2
 ## What's Changed
 * Update actions/stale action to v8 by @renovate in https://github.com/dooboolab-community/flutter_inapp_purchase/pull/414

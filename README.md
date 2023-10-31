@@ -9,13 +9,6 @@
 
 This packages is compatible with flutter v2 from `4.0.0`. For those who use older version please use `< 4.0.0`.
 
-## Sponsors
-
-### 2023-09-23
-Exciting news! Five years after developing this repository, we've secured an official sponsor. It feels like a ray of hope for a project that was on the brink of extinction. This gives me ample motivation to rejuvenate this project. I hope we can get more support so that we can collaborate with more individuals in the future. Thank you, <a href="https://namiml.com">NAMI</a>!
-
-<a href="https://namiml.com"><img src="https://github.com/dooboolab-community/react-native-iap/assets/27461460/89d71f61-bb73-400a-83bd-fe0f96eb726e" width="200"/></a>
-
 ## Sun Rise :sunrise:
 
 Since many one of you wanted me to keep working on this plugin in [#93](https://github.com/dooboolab/flutter_inapp_purchase/issues/93), I've decided to keep working on current project. I hope many one of you can help me maintain this. Thank you for all your supports in advance :tada:.
@@ -78,7 +71,7 @@ For help on editing plugin code, view the [documentation](https://flutter.io/dev
 
 ## Purchase flow in `flutter_inapp_purchase@2.0.0+
 
-![purchase-flow-sequence](https://github.com/dooboolab/react-native-iap/blob/main/docs/react-native-iapv3.svg)
+![purchase-flow-sequence](https://react-native-iap.dooboolab.com/assets/images/react-native-iapv3-8467b005f57bac1f11896c06e15577aa.svg)
 
 > When you've successfully received result from `purchaseUpdated` listener, you'll have to `verify` the purchase either by `acknowledgePurchaseAndroid`, `consumePurchaseAndroid`, `finishTransactionIOS` depending on the purchase types or platforms. You'll have to use `consumePurchaseAndroid` for `consumable` products and `android` and `acknowledgePurchaseAndroid` for `non-consumable` products either `subscription`. For `ios`, there is no differences in `verifying` purchases. You can just call `finishTransaction`. If you do not verify the purchase, it will be refunded within 3 days to users. We recommend you to `verifyReceipt` first before actually finishing transaction. Lastly, if you want to abstract three different methods into one, consider using `finishTransaction` method.
 
