@@ -7,6 +7,7 @@ import 'package:platform/platform.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  final MethodChannel channel = FlutterInappPurchase.channel;
 
   group('FlutterInappPurchase', () {
     group('showInAppMessageAndroid', () {
@@ -16,8 +17,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return "ready";
           });
@@ -47,8 +48,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return "All items have been consumed";
           });
@@ -95,8 +96,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return "Billing client ready";
           });
@@ -125,8 +126,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return "true";
           });
@@ -196,8 +197,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return result;
           });
@@ -292,8 +293,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return result;
           });
@@ -385,8 +386,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return result;
           });
@@ -475,8 +476,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return result;
           });
@@ -571,15 +572,17 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             var m = methodCall.arguments as Map<dynamic, dynamic>;
+
             if (m['type'] == 'inapp') {
               return resultInapp;
             } else if (m['type'] == 'subs') {
               return resultSubs;
             }
+
             return null;
           });
         });
@@ -670,8 +673,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return result;
           });
@@ -752,9 +755,10 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
+
             var m = methodCall.arguments as Map<dynamic, dynamic>;
             if (m['type'] == 'inapp') {
               return resultInapp;
@@ -852,8 +856,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return result;
           });
@@ -929,8 +933,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return null;
           });
@@ -985,8 +989,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return null;
           });
@@ -1045,8 +1049,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return null;
           });
@@ -1106,8 +1110,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return null;
           });
@@ -1149,8 +1153,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return null;
           });
@@ -1190,8 +1194,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return null;
           });
@@ -1225,8 +1229,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "android")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return "Billing client has ended.";
           });
@@ -1273,8 +1277,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return null;
           });
@@ -1349,8 +1353,8 @@ void main() {
           FlutterInappPurchase(FlutterInappPurchase.private(
               FakePlatform(operatingSystem: "ios")));
 
-          FlutterInappPurchase.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
             log.add(methodCall);
             return result;
           });
