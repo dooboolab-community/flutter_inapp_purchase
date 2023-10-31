@@ -1,3 +1,15 @@
+## 5.6.0
+* refactor: android init connection
+  ```
+  Used Kotlin apply for cleaner initialization of billingClient.
+  Introduced context ?: return for null-safety with context. 
+  Merged repetitive code into the updateConnectionStatus method to avoid duplication.
+  Improved the handling of the alreadyFinished flag to ensure it is only set once and at the appropriate time.
+  Streamlined the error and success handling for clarity.
+  ```
+* Migrate android billingClient to 6.0.1 
+  - https://developer.android.com/google/play/billing/release-notes#6-0-1
+
 ## 5.5.0
 * Erroneous duplicate item (#441) - Remove extra `introductoryPricePaymentModeIOS`
 * Fixed consumable products reading on Android (#439)
