@@ -41,6 +41,7 @@ class FlutterInappPurchase {
       _purchasePromotedController!.stream;
 
   static StreamController<int?>? _onInAppMessageController;
+
   static Stream<int?> get inAppMessageAndroid =>
       _onInAppMessageController!.stream;
 

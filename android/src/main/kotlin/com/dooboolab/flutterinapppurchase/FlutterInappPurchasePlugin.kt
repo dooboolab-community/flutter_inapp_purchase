@@ -94,7 +94,7 @@ class FlutterInappPurchasePlugin : FlutterPlugin, ActivityAware {
         private var isAmazon = false
 
         fun getStore(): String {
-           return if (!isAndroid && !isAmazon) "none" else if (isAndroid) "play_store" else "amazon"
+            return if (!isAndroid && !isAmazon) "none" else if (isAndroid) "play_store" else "amazon"
         }
 
         fun registerWith(registrar: Registrar) {
@@ -114,7 +114,7 @@ class FlutterInappPurchasePlugin : FlutterPlugin, ActivityAware {
         fun isAppInstalledFrom(ctx: Context, installer: String?): Boolean {
             val installerPackageName = ctx.packageManager.getInstallerPackageName(ctx.packageName)
             return installer != null && installerPackageName != null && installerPackageName.contains(
-                installer
+                    installer
             )
         }
     }
