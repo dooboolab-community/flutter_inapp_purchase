@@ -1,3 +1,8 @@
+## 5.6.1
+* Erroneous duplicate item by @deakjahn in https://github.com/dooboolab-community/flutter_inapp_purchase/pull/441
+* Fixed consumable products reading on Android by @33-Elephants in https://github.com/dooboolab-community/flutter_inapp_purchase/pull/439
+* fix: Support AGP8 namespace by @dev-yakuza in https://github.com/dooboolab-community/flutter_inapp_purchase/pull/467
+
 ## 5.6.0
 * refactor: android init connection
   ```
