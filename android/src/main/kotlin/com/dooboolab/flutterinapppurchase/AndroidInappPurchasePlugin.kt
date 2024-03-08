@@ -537,9 +537,10 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                 if (offerToken == null) {
                     offerToken = selectedProductDetails.subscriptionOfferDetails!![0].offerToken
                 }
-
-                productDetailsParamsBuilder.setOfferToken(offerToken)
+            } else {
+                offerToken = selectedProductDetails.subscriptionOfferDetails!![0].offerToken
             }
+            productDetailsParamsBuilder.setOfferToken(offerToken)
 
             val productDetailsParamsList = listOf(productDetailsParamsBuilder.build())
 
