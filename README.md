@@ -153,7 +153,7 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
     }
 
     void asyncInitState() async {
-      await FlutterInappPurchase.instance.initConnection;
+      await FlutterInappPurchase.instance.initialize();
     }
   ```
 
@@ -174,7 +174,7 @@ For help on adding as a dependency, view the [documentation](https://flutter.io/
     @override
     void dispose() async{
       super.dispose();
-      await FlutterInappPurchase.instance.endConnection;
+      await FlutterInappPurchase.instance.finalize();
     }
   ```
 
